@@ -1,0 +1,97 @@
+# Publishes a version tag (v1.2.3): the libraries to Maven Central, signed, and the visor command to the GitHub release.
+# Run it by hand for a dry run: everything is built and checked, nothing is published.
+#
+# Secrets: MAVEN_CENTRAL_USERNAME and MAVEN_CENTRAL_PASSWORD (a Central Portal user token), SIGNING_KEY (the
+# ASCII-armored private key) and SIGNING_KEY_PASSWORD.
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Work out the version
+        id: version
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            name="${GITHUB_REF_NAME#v}"
+          else
+            name="0.0.0-dryrun"
+          fi
+          if ! [[ "$name" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "error: '$name' is not a version like 1.2.3 or 1.2.3-beta.1" >&2
+            exit 1
+          fi
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
+        with:
+          packages: platform-tools platforms;android-37.0
+          log-accepted-android-sdk-licenses: false
+
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-read-only: true
+
+      # The tag is compared with the one before it, so check against that one, not against itself.
+      - name: Check
+        run: |
+          git tag -d "$GITHUB_REF_NAME" 2>/dev/null || true
+          ./gradlew check -PkitVersion="${{ steps.version.outputs.name }}"
+
+      - name: Dry run
+        if: github.event_name != 'push'
+        run: ./gradlew publishToMavenLocal :cli:distZip -PkitVersion="${{ steps.version.outputs.name }}"
+
+      - name: Publish to Maven Central
+        if: github.event_name == 'push'
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          for secret in ORG_GRADLE_PROJECT_mavenCentralUsername ORG_GRADLE_PROJECT_mavenCentralPassword ORG_GRADLE_PROJECT_signingInMemoryKey; do
+            if [ -z "${!secret}" ]; then
+              echo "error: a release secret is not set: $secret" >&2
+              exit 1
+            fi
+          done
+          ./gradlew publishToMavenCentral :cli:distZip -PkitVersion="${{ steps.version.outputs.name }}"
+
+      - name: Publish the release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NAME: ${{ steps.version.outputs.name }}
+        run: |
+          # The notes are the version's section of CHANGELOG.md.
+          awk -v v="## $NAME" '$0 == v {on=1; next} /^## / && on {exit} on' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then
+            echo "error: CHANGELOG.md has no section '## $NAME'" >&2
+            exit 1
+          fi
+          flags=(--title "Visor kit $NAME" --notes-file notes.md)
+          if [[ "$NAME" == *-* ]]; then flags+=(--prerelease); fi
+          gh release create "v$NAME" "tools/cli/build/distributions/visor-$NAME.zip" "${flags[@]}"

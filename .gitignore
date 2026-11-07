@@ -1,0 +1,25 @@
+# Gradle and Android build output
+.gradle/
+build/
+.kotlin/
+local.properties
+*.iml
+
+# Signing material and credentials, never commit
+*.jks
+*.keystore
+*.gpg
+*.asc
+secrets/
+
+# IDE
+.idea/
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local agent setup
+.claude/
+.agents/

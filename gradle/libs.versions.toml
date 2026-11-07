@@ -1,0 +1,70 @@
+# Stable releases at least two weeks old; no alphas, betas or release candidates.
+
+[versions]
+androidGradlePlugin = "9.4.1"
+kotlin = "2.4.20"
+coroutines = "1.10.2"
+kotlinxSerialization = "1.11.0"
+androidxActivity = "1.13.0"
+androidxComposeBom = "2026.09.00"
+# equals, hashCode and toString for the public types, without the copy() and componentN() of a data class,
+# which break binary compatibility each time a field is added.
+poko = "0.23.2"
+mavenPublish = "0.37.0"
+dokka = "2.2.0"
+
+# The kit runs inside other apps, which may support older phones than Visor does.
+compileSdk = "37"
+targetSdk = "37"
+minSdk = "26"
+# Visor's own floor: the sample only runs where Visor does.
+sampleMinSdk = "31"
+
+# Patched versions of libraries the Android Gradle plugin and lint bring onto the build's own classpaths, the same
+# pins as Visor's. gradle/pins.settings.gradle.kts holds every configuration to the pin-* libraries below.
+bouncycastle = "1.86"
+jose4j = "0.9.6"
+jdom2 = "2.0.6.1"
+commonsLang3 = "3.21.0"
+httpcomponents = "4.5.14"
+guava = "33.7.2-jre"
+
+[libraries]
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+androidx-activity = { module = "androidx.activity:activity", version.ref = "androidxActivity" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidxComposeBom" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+
+# Referenced by the build-logic convention plugins, which need these on their classpath.
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+maven-publish-gradle-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "mavenPublish" }
+poko-gradle-plugin = { module = "dev.drewhamilton.poko:poko-gradle-plugin", version.ref = "poko" }
+dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+# The Kotlin plugin's ABI engine, which the ABI tasks in build-logic drive.
+kotlin-abi-tools-api = { module = "org.jetbrains.kotlin:abi-tools-api", version.ref = "kotlin" }
+
+# Pins, see [versions]. The Kotlin plugin is pinned because kotlin-dsl brings Gradle's own, older one into build-logic.
+pin-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
+pin-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
+pin-bcutil = { module = "org.bouncycastle:bcutil-jdk18on", version.ref = "bouncycastle" }
+pin-jose4j = { module = "org.bitbucket.b_c:jose4j", version.ref = "jose4j" }
+pin-jdom2 = { module = "org.jdom:jdom2", version.ref = "jdom2" }
+pin-commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commonsLang3" }
+pin-httpclient = { module = "org.apache.httpcomponents:httpclient", version.ref = "httpcomponents" }
+pin-httpmime = { module = "org.apache.httpcomponents:httpmime", version.ref = "httpcomponents" }
+pin-guava = { module = "com.google.guava:guava", version.ref = "guava" }
+pin-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+poko = { id = "dev.drewhamilton.poko", version.ref = "poko" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

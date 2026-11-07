@@ -1,0 +1,942 @@
+{
+    "openrpc": "1.3.2",
+    "info": {
+        "title": "Visor kit",
+        "version": "1",
+        "description": "Methods marked x-shell are answered only on the adb shell's socket."
+    },
+    "methods": [
+        {
+            "name": "kit.hello",
+            "summary": "Starts a session and returns what Visor answers and which scopes the app holds.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "protocol",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                },
+                {
+                    "name": "kit",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "$ref": "#/components/schemas/Welcome"
+                }
+            },
+            "x-since": 1
+        },
+        {
+            "name": "glasses.status",
+            "summary": "Returns the glasses' link, model, battery, and whether they are worn, folded or recording.",
+            "paramStructure": "by-name",
+            "params": [],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "$ref": "#/components/schemas/GlassesStatus"
+                }
+            },
+            "x-scope": "state",
+            "x-since": 1
+        },
+        {
+            "name": "camera.photo",
+            "summary": "Takes a photo with the glasses and, unless asked not to, imports it into the phone's gallery.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "import",
+                    "required": false,
+                    "schema": {
+                        "type": "boolean"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "$ref": "#/components/schemas/Capture"
+                }
+            },
+            "x-scope": "camera",
+            "x-since": 1
+        },
+        {
+            "name": "camera.video.start",
+            "summary": "Starts a video or a hyperlapse on the glasses.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "kind",
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "title": "VideoKind"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "camera",
+            "x-since": 1
+        },
+        {
+            "name": "camera.video.stop",
+            "summary": "Stops the video the glasses record.",
+            "paramStructure": "by-name",
+            "params": [],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "camera",
+            "x-since": 1
+        },
+        {
+            "name": "captures.list",
+            "summary": "Lists the photos and videos on the glasses that the phone does not have yet.",
+            "paramStructure": "by-name",
+            "params": [],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/Capture"
+                    }
+                }
+            },
+            "x-scope": "camera",
+            "x-since": 1
+        },
+        {
+            "name": "captures.import",
+            "summary": "Copies a photo or video from the glasses into the phone's gallery over Wi-Fi Direct.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "$ref": "#/components/schemas/Capture"
+                }
+            },
+            "x-scope": "camera",
+            "x-since": 1
+        },
+        {
+            "name": "band.status",
+            "summary": "Returns the Neural Band's link, battery and wrist.",
+            "paramStructure": "by-name",
+            "params": [],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "$ref": "#/components/schemas/BandStatus"
+                }
+            },
+            "x-scope": "band",
+            "x-since": 1
+        },
+        {
+            "name": "band.buzz",
+            "summary": "Vibrates the Neural Band.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "durationMs",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                },
+                {
+                    "name": "strength",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "band",
+            "x-since": 1
+        },
+        {
+            "name": "display.prompter.show",
+            "summary": "Shows a script on the Display's teleprompter.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "text",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "style",
+                    "required": false,
+                    "schema": {
+                        "$ref": "#/components/schemas/PrompterStyle"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "display",
+            "x-since": 1
+        },
+        {
+            "name": "display.prompter.close",
+            "summary": "Closes the Display's teleprompter.",
+            "paramStructure": "by-name",
+            "params": [],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "display",
+            "x-since": 1
+        },
+        {
+            "name": "shell.apps",
+            "summary": "Lists the apps that hold scopes or have a session open now.",
+            "paramStructure": "by-name",
+            "params": [],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/AppInfo"
+                    }
+                }
+            },
+            "x-since": 1,
+            "x-shell": true
+        },
+        {
+            "name": "shell.grant",
+            "summary": "Grants an app scopes, as the consent screen would.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "packageName",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "scopes",
+                    "required": true,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "title": "Scope"
+                        }
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "$ref": "#/components/schemas/AppInfo"
+                }
+            },
+            "x-since": 1,
+            "x-shell": true
+        },
+        {
+            "name": "shell.revoke",
+            "summary": "Takes scopes back from an app. Its streams that need them end.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "packageName",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "scopes",
+                    "required": true,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "title": "Scope"
+                        }
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "$ref": "#/components/schemas/AppInfo"
+                }
+            },
+            "x-since": 1,
+            "x-shell": true
+        },
+        {
+            "name": "shell.simulate",
+            "summary": "Sets the topics that carry only injected events, with no glasses or band behind them.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "topics",
+                    "required": true,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "x-since": 1,
+            "x-shell": true
+        },
+        {
+            "name": "shell.inject",
+            "summary": "Sends a made-up event to every app subscribed to a topic, for example a band gesture.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "topic",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "event",
+                    "required": true,
+                    "schema": {}
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-since": 1,
+            "x-shell": true
+        }
+    ],
+    "x-topics": [
+        {
+            "name": "glasses.status",
+            "summary": "The glasses' status now, then each change.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/GlassesStatus"
+                }
+            },
+            "x-scope": "state",
+            "x-since": 1
+        },
+        {
+            "name": "captures.available",
+            "summary": "Each new photo or video on the glasses that the phone does not have yet.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/Capture"
+                }
+            },
+            "x-scope": "camera",
+            "x-since": 1
+        },
+        {
+            "name": "captures.progress",
+            "summary": "Each import's progress, at most once per whole percent.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/CaptureProgress"
+                }
+            },
+            "x-scope": "camera",
+            "x-since": 1
+        },
+        {
+            "name": "captures.imported",
+            "summary": "Each capture that reaches the phone's gallery.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/Capture"
+                }
+            },
+            "x-scope": "camera",
+            "x-since": 1
+        },
+        {
+            "name": "captures.failed",
+            "summary": "Each import that did not finish.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/CaptureFailure"
+                }
+            },
+            "x-scope": "camera",
+            "x-since": 1
+        },
+        {
+            "name": "band.status",
+            "summary": "The Neural Band's status now, then each change.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/BandStatus"
+                }
+            },
+            "x-scope": "band",
+            "x-since": 1
+        },
+        {
+            "name": "band.gestures",
+            "summary": "Every gesture the Neural Band reads, while the phone borrows it from the Display.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/Gesture"
+                }
+            },
+            "x-scope": "band",
+            "x-since": 1
+        },
+        {
+            "name": "shell.trace",
+            "summary": "Every call, answer and event between the apps and Visor, as it happens.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/TraceRecord"
+                }
+            },
+            "x-since": 1,
+            "x-shell": true
+        }
+    ],
+    "components": {
+        "schemas": {
+            "AppInfo": {
+                "type": "object",
+                "properties": {
+                    "packageName": {
+                        "type": "string"
+                    },
+                    "granted": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "title": "Scope"
+                        }
+                    },
+                    "connected": {
+                        "type": "boolean"
+                    },
+                    "kit": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "protocol": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "packageName",
+                    "granted",
+                    "connected"
+                ]
+            },
+            "BandStatus": {
+                "type": "object",
+                "properties": {
+                    "paired": {
+                        "type": "boolean"
+                    },
+                    "link": {
+                        "type": "string",
+                        "title": "Link"
+                    },
+                    "battery": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "charging": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "leftHanded": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "borrowed": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "paired",
+                    "link"
+                ]
+            },
+            "Capture": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "CaptureType"
+                    },
+                    "time": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "size": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "uri": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "type"
+                ]
+            },
+            "CaptureFailure": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "failure": {
+                        "$ref": "#/components/schemas/Failure"
+                    }
+                },
+                "required": [
+                    "id",
+                    "failure"
+                ]
+            },
+            "CaptureProgress": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "received": {
+                        "type": "integer"
+                    },
+                    "size": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "id",
+                    "received",
+                    "size"
+                ]
+            },
+            "Failure": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "title": "ErrorCode"
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "scope": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "title": "Scope"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "reason": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "code",
+                    "message"
+                ]
+            },
+            "Gesture": {
+                "type": "object",
+                "properties": {
+                    "finger": {
+                        "type": "string",
+                        "title": "Finger"
+                    },
+                    "action": {
+                        "type": "string",
+                        "title": "GestureAction"
+                    },
+                    "derived": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "title": "GestureAction"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "time": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "finger",
+                    "action",
+                    "time"
+                ]
+            },
+            "GlassesStatus": {
+                "type": "object",
+                "properties": {
+                    "paired": {
+                        "type": "boolean"
+                    },
+                    "link": {
+                        "type": "string",
+                        "title": "Link"
+                    },
+                    "model": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "serial": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "firmware": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "display": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "battery": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "charging": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "worn": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "folded": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "recording": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "caseBattery": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "paired",
+                    "link"
+                ]
+            },
+            "PrompterStyle": {
+                "type": "object",
+                "properties": {
+                    "sizeSp": {
+                        "type": "number"
+                    },
+                    "speed": {
+                        "type": "number"
+                    },
+                    "paged": {
+                        "type": "boolean"
+                    },
+                    "followVoice": {
+                        "type": "boolean"
+                    }
+                },
+                "required": []
+            },
+            "TraceRecord": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "type": "integer"
+                    },
+                    "app": {
+                        "type": "string"
+                    },
+                    "kind": {
+                        "type": "string",
+                        "title": "TraceKind"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "integer"
+                    },
+                    "body": {
+                        "anyOf": [
+                            {},
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "durationMs": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "time",
+                    "app",
+                    "kind",
+                    "name",
+                    "id"
+                ]
+            },
+            "Welcome": {
+                "type": "object",
+                "properties": {
+                    "protocol": {
+                        "type": "integer"
+                    },
+                    "visor": {
+                        "type": "string"
+                    },
+                    "granted": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "title": "Scope"
+                        }
+                    },
+                    "methods": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "topics": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "protocol",
+                    "visor",
+                    "granted",
+                    "methods",
+                    "topics"
+                ]
+            }
+        }
+    }
+}

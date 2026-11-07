@@ -1,0 +1,8 @@
+# LF in the repository. Without this, gradlew is checked out with CRLF on Windows and fails everywhere else.
+* text=auto eol=lf
+
+gradlew text eol=lf
+*.bat text eol=crlf
+
+*.jar binary
+*.png binary
