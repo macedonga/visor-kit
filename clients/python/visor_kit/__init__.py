@@ -175,14 +175,16 @@ async def connect_adb(serial=None):
 
 async def connect_network(url, token):
     """Connects to Visor's network door, such as ``ws://127.0.0.1:7333/rpc``, with a client's ``token``."""
-    import websockets
+    # The asyncio client, from websockets 13 on: the package's top-level connect is the older one there.
+    from websockets.asyncio.client import connect
+    from websockets.exceptions import ConnectionClosed
 
-    socket = await websockets.connect(url, additional_headers={"Authorization": f"Bearer {token}"})
+    socket = await connect(url, additional_headers={"Authorization": f"Bearer {token}"})
 
     async def receive():
         try:
             return await socket.recv()
-        except websockets.ConnectionClosed:
+        except ConnectionClosed:
             return None
 
     return await _hello(Visor(socket.send, receive, socket.close), "python-network")
