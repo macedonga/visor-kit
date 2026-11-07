@@ -94,8 +94,8 @@ Library versions are semver. `KitProtocol.VERSION` counts separately and only go
 
 Status as of 2026-11-07: phases 1 to 3 are built and checked, not yet tried with glasses.
 
-Parity with Meta's DAT (1.0.1) is a goal: every DAT capability gets a kit equivalent, so `docs/porting-from-dat.md`
-maps all of it. Status:
+Parity with Meta's DAT (1.0.1) is a goal: every DAT capability gets a kit equivalent, and `docs/porting-from-dat.md`
+maps all of it (written 2026-11-07 from github.com/meta/meta-wearables-dat-android). Status:
 
 | DAT | Kit | Status |
 |---|---|---|
@@ -108,7 +108,7 @@ maps all of it. Status:
 | Photo during a stream; `PhotoResolution`, `PhotoQuality` | `camera.live.photo` (HEIC, full size) | built, not tried on glasses |
 | Speech: on-device transcription | `voice.transcripts` | built: headset mic into the phone's recogniser; not tried on glasses |
 | Voice invocations (`LaunchApp`) | `voice.requests` | done |
-| Motion: accelerometer, gyroscope, magnetometer, orientation | | research: no live IMU source known yet |
+| Motion: accelerometer, gyroscope, magnetometer, orientation | | research: no live IMU source known yet (svc28 has none; svc101 is an off-by-default daemon); each capture carries a ~960 Hz IMU log Visor keeps |
 | Inputs: nav, select, back, button, capture, drag | `glasses.inputs`, `band.gestures` | built from svc28's touch and button pushes; not tried on glasses |
 | Display: FlexBox, Text, Image, Button, Icon, Video, taps back | `display.prompter` | research: the DWA broker, or a web app Visor serves |
 | `MockDeviceKit` | `FakeVisor` | done; add the new capabilities as they come |

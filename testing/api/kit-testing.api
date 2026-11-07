@@ -35,6 +35,7 @@ public final class com/macedonga/visor/kit/testing/FakeGlasses {
 	public final fun getPaired ()Z
 	public final fun getRecording ()Z
 	public final fun getSerial ()Ljava/lang/String;
+	public final fun getThermal-Uu5FLH8 ()Ljava/lang/String;
 	public final fun getWorn ()Ljava/lang/Boolean;
 	public final fun input-F_h0UPo (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun setBattery (Ljava/lang/Integer;)V
@@ -46,6 +47,7 @@ public final class com/macedonga/visor/kit/testing/FakeGlasses {
 	public final fun setName (Ljava/lang/String;)V
 	public final fun setPaired (Z)V
 	public final fun setSerial (Ljava/lang/String;)V
+	public final fun setThermal-hDHSD0Y (Ljava/lang/String;)V
 	public final fun setWorn (Ljava/lang/Boolean;)V
 }
 

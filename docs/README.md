@@ -7,14 +7,16 @@ Start with the overview, then getting started. The rest is reference.
 3. [Scopes and consent](scopes-and-consent.md): what an app may do, and how the person decides.
 4. [The connection](connection.md): connecting, Visor restarts, calls and streams, versions.
 5. Capabilities:
-   - [Glasses](glasses.md): status.
-   - [Camera and captures](camera-and-captures.md): photos, videos, imports.
+   - [Glasses](glasses.md): status, pairs, touches and presses.
+   - [Camera and captures](camera-and-captures.md): the camera live, photos, videos, imports.
    - [Neural Band](neural-band.md): gestures, status, vibration.
    - [Display](display.md): the teleprompter.
-   - [Voice and the assistant](voice-and-assistant.md): questions for the app, tools for the model, notifications.
+   - [Voice and the assistant](voice-and-assistant.md): questions for the app, transcripts, tools for the model,
+     notifications.
 6. [Errors](errors.md): every code, and what to do about it.
 7. [Testing](testing.md): the `visor` command and FakeVisor.
 8. [JSON-RPC](json-rpc.md): the VDK from any language.
 9. [The network door](network.md): JSON-RPC over WebSocket, MCP for AI agents, the Python and TypeScript clients,
    raw access.
 10. [Compatibility](compatibility.md): what never breaks, and how the build makes sure.
+11. [Porting from Meta's DAT](porting-from-dat.md): each part of Meta's toolkit and its VDK equivalent.

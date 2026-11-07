@@ -70,8 +70,8 @@ Visor instead, so the trade-offs differ:
 | Display | Layouts of text, images, buttons and video | The teleprompter today; more on the roadmap |
 | From a computer | No | Yes, through adb |
 
-DAT does some things the VDK does not do yet, such as full layouts on the Display. Those are on the roadmap
-below.
+DAT does some things the VDK does not do yet: live motion data, and full layouts on the Display. Those are on the
+roadmap below. [Porting from Meta's DAT](porting-from-dat.md) maps each part of DAT to the VDK.
 
 ## Roadmap
 

@@ -21,6 +21,7 @@ import com.macedonga.visor.kit.protocol.Link
 import com.macedonga.visor.kit.protocol.Methods
 import com.macedonga.visor.kit.protocol.PrompterStyle
 import com.macedonga.visor.kit.protocol.Scope
+import com.macedonga.visor.kit.protocol.ThermalLevel
 import com.macedonga.visor.kit.protocol.Topics
 import com.macedonga.visor.kit.server.Caller
 import com.macedonga.visor.kit.server.Dispatcher
@@ -224,6 +225,7 @@ public class FakeGlasses internal constructor() {
     public var charging: Boolean? by published(false)
     public var worn: Boolean? by published(true)
     public var folded: Boolean? by published(false)
+    public var thermal: ThermalLevel? by published(ThermalLevel.NORMAL)
 
     /** True while a video records, from the app's start to its stop. */
     public var recording: Boolean by published(false)
@@ -288,6 +290,7 @@ public class FakeGlasses internal constructor() {
             worn = worn,
             folded = folded,
             recording = recording,
+            thermal = thermal,
         )
     }
 
