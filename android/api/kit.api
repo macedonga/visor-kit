@@ -32,7 +32,14 @@ public final class com/macedonga/visor/kit/Captures {
 }
 
 public final class com/macedonga/visor/kit/Display {
+	public final fun getLayout ()Lcom/macedonga/visor/kit/DisplayLayout;
 	public final fun getPrompter ()Lcom/macedonga/visor/kit/Prompter;
+}
+
+public final class com/macedonga/visor/kit/DisplayLayout {
+	public final fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getClicks ()Lkotlinx/coroutines/flow/Flow;
+	public final fun show (Lcom/macedonga/visor/kit/protocol/Layout;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class com/macedonga/visor/kit/Glasses {

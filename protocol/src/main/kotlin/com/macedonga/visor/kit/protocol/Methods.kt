@@ -119,6 +119,24 @@ public object Methods {
     )
 
     /**
+     * Shows a layout on the Display, as a page of Visor's that fills the screen, and replaces the one shown before. The
+     * page opens when the first layout comes, and later ones update it in place. Fails with [ErrorCode.UNSUPPORTED] on
+     * glasses without a display.
+     */
+    public val DISPLAY_LAYOUT_SHOW: Method<Layout, Unit> = Method(
+        "display.layout.show", Scope.DISPLAY, 1,
+        "Shows a layout of text, images and buttons on the Display.",
+        Layout.serializer(), Unit.serializer(),
+    )
+
+    /** Empties the page, and stops serving it. The wearer leaves it as any other app. */
+    public val DISPLAY_LAYOUT_CLOSE: Method<Unit, Unit> = Method(
+        "display.layout.close", Scope.DISPLAY, 1,
+        "Empties the layout page on the Display.",
+        Unit.serializer(), Unit.serializer(),
+    )
+
+    /**
      * Answers a [VoiceRequest]: the glasses say [VoiceReply.text] in their own voice. Fails with
      * [ErrorCode.INVALID_PARAMS] and reason `expired` when the question was answered already or the glasses gave up
      * on it: they wait about 20 seconds.
@@ -166,7 +184,7 @@ public object Methods {
         CAMERA_PHOTO, CAMERA_VIDEO_START, CAMERA_VIDEO_STOP, CAMERA_LIVE_PHOTO,
         CAPTURES_LIST, CAPTURES_IMPORT,
         BAND_STATUS, BAND_BUZZ,
-        DISPLAY_PROMPTER_SHOW, DISPLAY_PROMPTER_CLOSE,
+        DISPLAY_PROMPTER_SHOW, DISPLAY_PROMPTER_CLOSE, DISPLAY_LAYOUT_SHOW, DISPLAY_LAYOUT_CLOSE,
         VOICE_REPLY,
         ASSISTANT_TOOLS_ANSWER,
         NOTIFY_POST, NOTIFY_REMOVE,
@@ -234,6 +252,13 @@ public object Topics {
         Unit.serializer(), BandStatus.serializer(),
     )
 
+    /** The clicks on the app's own layout, while it shows. Only the app that showed the layout gets them. */
+    public val DISPLAY_LAYOUT_CLICKS: Topic<Unit, LayoutClick> = Topic(
+        "display.layout.clicks", Scope.DISPLAY, 1,
+        "Each click on a button or box of the layout the app shows.",
+        Unit.serializer(), LayoutClick.serializer(),
+    )
+
     /**
      * While any app subscribes, the phone borrows the band: its gestures come here and no longer reach the Display.
      * The band goes back to the Display when the last subscriber leaves. Ends with [ErrorCode.UNSUPPORTED] when no
@@ -294,6 +319,7 @@ public object Topics {
         GLASSES_STATUS, GLASSES_PAIRS, GLASSES_INPUTS,
         CAPTURES_AVAILABLE, CAPTURES_PROGRESS, CAPTURES_IMPORTED, CAPTURES_FAILED,
         BAND_STATUS, BAND_GESTURES,
+        DISPLAY_LAYOUT_CLICKS,
         VOICE_REQUESTS, VOICE_TRANSCRIPTS,
         ASSISTANT_TOOLS,
         RAW_MESSAGES,

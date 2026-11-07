@@ -177,9 +177,19 @@ that log with the capture.
 
 ## Display
 
-DAT's `display.sendContent { flexBox { ... } }` and its components have no VDK equivalent yet. Today the VDK shows
-text on the Display's teleprompter (`visor.display.prompter`) and notifications (`visor.notify`). Layouts are on
-the roadmap.
+| DAT | VDK |
+|---|---|
+| `display.sendContent { flexBox { ... } }` | `visor.display.layout.show(Layout { ... })` |
+| `flexBox(direction = Direction.COLUMN)`, `ROW` | `column { }`, `row { }` |
+| `text(..., style = TextStyle.HEADING)` | `text("...") { style = LayoutStyle.HEADING }` |
+| `image(uri = ...)`, `image(bitmap = ...)` | `image(url)`: an `https://` URL or a `data:` URI |
+| `button(label, onClick = ...)` | `button(id, label)`, and its clicks on `visor.display.layout.clicks` |
+| `display.clearDisplay()` | `visor.display.layout.close()` |
+| `icon(...)`, `video(...)` | Not yet |
+
+Visor does not show layouts yet: it will once it can open a session with the Display's toolkit app, as DAT does.
+FakeVisor serves them already. Until then the VDK shows text on the teleprompter (`visor.display.prompter`) and
+notifications (`visor.notify`).
 
 ## Testing
 

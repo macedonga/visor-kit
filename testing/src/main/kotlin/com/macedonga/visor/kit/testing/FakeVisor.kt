@@ -15,6 +15,9 @@ import com.macedonga.visor.kit.protocol.GlassesInput
 import com.macedonga.visor.kit.protocol.GlassesPair
 import com.macedonga.visor.kit.protocol.GlassesStatus
 import com.macedonga.visor.kit.protocol.Hello
+import com.macedonga.visor.kit.protocol.Layout
+import com.macedonga.visor.kit.protocol.LayoutClick
+import com.macedonga.visor.kit.protocol.LayoutNode
 import com.macedonga.visor.kit.protocol.InputAction
 import com.macedonga.visor.kit.protocol.InputSource
 import com.macedonga.visor.kit.protocol.Link
@@ -176,6 +179,17 @@ public class FakeVisor {
             glasses.withDisplay()
             display.shown(null, null)
         }
+        answer(Methods.DISPLAY_LAYOUT_SHOW) { _, layout ->
+            called(Methods.DISPLAY_LAYOUT_SHOW.name)
+            glasses.withDisplay()
+            display.showLayout(layout)
+        }
+        answer(Methods.DISPLAY_LAYOUT_CLOSE) { _, _ ->
+            called(Methods.DISPLAY_LAYOUT_CLOSE.name)
+            glasses.withDisplay()
+            display.showLayout(null)
+        }
+        stream(Topics.DISPLAY_LAYOUT_CLICKS) { _, _ -> display.clicks }
 
         stream(Topics.VOICE_REQUESTS) { _, offer -> voice.offer(offer.phrases) }
         stream(Topics.VOICE_TRANSCRIPTS) { _, request -> voice.transcripts(request) }
@@ -381,6 +395,29 @@ public class FakeDisplay internal constructor() {
         prompterStyle = style
         _prompter.value = text
     }
+
+    private val _layout = MutableStateFlow<Layout?>(null)
+
+    /** The layout the app shows, null while none does. */
+    public val layout: StateFlow<Layout?> = _layout.asStateFlow()
+
+    internal val clicks = MutableSharedFlow<LayoutClick>(extraBufferCapacity = 64)
+
+    /**
+     * Clicks the element with [id] in the layout shown, as the wearer would. Fails when no element has that id, so a
+     * test finds a misspelt id.
+     */
+    public fun click(id: String) {
+        val shown = checkNotNull(_layout.value) { "The fake Display shows no layout." }
+        check(ids(shown.root).contains(id)) { "The layout shown has no element with id $id." }
+        clicks.tryEmit(LayoutClick(id, System.currentTimeMillis()))
+    }
+
+    internal fun showLayout(layout: Layout?) {
+        _layout.value = layout
+    }
+
+    private fun ids(node: LayoutNode): List<String> = listOfNotNull(node.id) + node.children.flatMap(::ids)
 }
 
 /** The pairs set up in the fake Visor besides the active one. [select] swaps a pair with the active [FakeGlasses]. */
