@@ -6,6 +6,7 @@ Two ways in:
   and holds every scope.
 - ``connect_network(url, token)`` reaches Visor's network door with a client's token. It needs the ``websockets``
   package, and holds the client's scopes.
+- ``connect_fake()`` reaches the FakeVisor that ``visor fake`` runs on this computer, for building without a phone.
 
     import asyncio, visor_kit
 
@@ -26,7 +27,7 @@ import os
 import shutil
 import subprocess
 
-__all__ = ["Visor", "VisorError", "connect_adb", "connect_network"]
+__all__ = ["Visor", "VisorError", "connect_adb", "connect_fake", "connect_network"]
 
 PROTOCOL = 1
 SOCKET = "visor-kit"
@@ -53,6 +54,7 @@ class Visor:
         self._ids = itertools.count(1)
         self._calls = {}
         self._streams = {}
+        self._closed = False
         self._reader = asyncio.ensure_future(self._read())
         self.welcome = None
 
@@ -90,7 +92,8 @@ class Visor:
                 else:
                     raise VisorError(value)
         finally:
-            if self._streams.pop(id, None) is not None:
+            # A stream left after close, when its generator is finalized, went with the connection.
+            if self._streams.pop(id, None) is not None and not self._closed:
                 try:
                     await self.call("kit.unsubscribe", {"subscription": id})
                 except VisorError:
@@ -107,6 +110,7 @@ class Visor:
             await records.aclose()
 
     async def close(self):
+        self._closed = True
         self._reader.cancel()
         await self._close()
 
@@ -202,3 +206,8 @@ async def connect_network(url, token):
             return None
 
     return await _hello(Visor(socket.send, receive, socket.close), "python-network")
+
+
+async def connect_fake(port=7333):
+    """Connects to the FakeVisor that ``visor fake`` runs on this computer. It holds the scopes the fake grants."""
+    return await connect_network(f"ws://127.0.0.1:{port}/rpc", "fake")

@@ -23,6 +23,7 @@ import com.macedonga.visor.kit.protocol.Welcome
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.net.ConnectException
 import java.net.InetAddress
 import java.net.Socket
 import java.time.Instant
@@ -43,7 +44,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 private val USAGE = """
-Usage: visor [-s SERIAL] [--json] COMMAND
+Usage: visor [-s SERIAL | --fake] [--json] COMMAND
 
 The Visor Development Kit (VDK) from a computer, through adb. The phone needs Visor with Developer mode on.
 
@@ -71,15 +72,18 @@ Commands:
   apps                      The apps that use the VDK, with their scopes.
   grant PACKAGE SCOPE...    Grants scopes without the consent screen.
   revoke PACKAGE SCOPE...   Takes scopes back.
+  fake [--port N] [--lan]   Runs FakeVisor on this computer, for building without a phone or glasses.
+                            visor fake --help says more.
 
 Scopes: state, pairs, inputs, camera, band, display, voice, assistant, notify, raw.
 
 Options:
   -s SERIAL                 The device, as for adb -s.
+  --fake                    The FakeVisor that visor fake runs on this computer, instead of a phone.
   --json                    JSON only, one value per line.
 """.trim()
 
-private val COMMANDS = setOf("status", "methods", "call", "watch", "live", "live-photo", "trace", "simulate", "inject", "apps", "grant", "revoke")
+private val COMMANDS = setOf("status", "methods", "call", "watch", "live", "live-photo", "trace", "simulate", "inject", "apps", "grant", "revoke", "fake")
 
 private val VERSION = Session::class.java.`package`?.implementationVersion ?: "dev"
 
@@ -97,20 +101,23 @@ fun main(args: Array<String>) {
 private fun run(args: List<String>) {
     var serial: String? = null
     var json = false
+    var fake = false
     val words = mutableListOf<String>()
     val it = args.iterator()
     while (it.hasNext()) {
         when (val word = it.next()) {
             "-s" -> serial = if (it.hasNext()) it.next() else usage("-s needs a device serial.")
             "--json" -> json = true
-            "-h", "--help", "help" -> return println(USAGE)
+            "--fake" -> fake = true
+            "-h", "--help", "help" -> return println(if (words.firstOrNull() == "fake") FAKE_USAGE else USAGE)
             "--version" -> return println("visor $VERSION, protocol ${KitProtocol.VERSION}")
             else -> words += word
         }
     }
     val command = words.firstOrNull() ?: usage("Name a command.")
     if (command !in COMMANDS) usage("No command $command.")
-    val session = Session.open(serial)
+    if (command == "fake") return runFake(words.drop(1))
+    val session = if (fake) Session.fake(FAKE_PORT) else Session.open(serial)
     // Ctrl+C ends watch, trace and simulate: the forward goes with the session, and with it any simulation.
     Runtime.getRuntime().addShutdownHook(Thread(session::close))
     Commands(session, json).run(command, words.drop(1))
@@ -118,8 +125,25 @@ private fun run(args: List<String>) {
 
 private fun usage(problem: String): Nothing = throw CliError("$problem\n\n$USAGE", exitCode = 2)
 
-/** A connection to Visor through an adb forward, which it removes when closed. */
-internal class Session private constructor(private val adb: Adb, private val port: Int, val rpc: Rpc, val welcome: Welcome) : AutoCloseable {
+private const val FAKE_PORT = 7333
+
+private fun runFake(args: List<String>) {
+    var port = FAKE_PORT
+    var lan = false
+    val it = args.iterator()
+    while (it.hasNext()) {
+        when (val word = it.next()) {
+            "--port" -> port = it.takeIf { it.hasNext() }?.next()?.toIntOrNull()?.takeIf { it in 1..65534 }
+                ?: throw CliError("--port needs a number.\n\n$FAKE_USAGE", exitCode = 2)
+            "--lan" -> lan = true
+            else -> throw CliError("No option $word.\n\n$FAKE_USAGE", exitCode = 2)
+        }
+    }
+    FakeServer(port, lan, VERSION).run()
+}
+
+/** A connection to Visor through an adb forward, which it removes when closed, or to `visor fake` on this computer. */
+internal class Session private constructor(private val adb: Adb?, private val port: Int, val rpc: Rpc, val welcome: Welcome) : AutoCloseable {
     @Volatile
     private var closed = false
 
@@ -127,7 +151,7 @@ internal class Session private constructor(private val adb: Adb, private val por
         if (closed) return
         closed = true
         rpc.close()
-        adb.removeForward(port)
+        adb?.removeForward(port)
     }
 
     companion object {
@@ -135,14 +159,24 @@ internal class Session private constructor(private val adb: Adb, private val por
             val adb = Adb(serial)
             val port = adb.forward()
             try {
-                val rpc = Rpc(Socket(InetAddress.getLoopbackAddress(), port))
-                val hello = KitJson.encodeToJsonElement(Hello.serializer(), Hello(KitProtocol.VERSION, "cli $VERSION"))
-                val welcome = KitJson.decodeFromJsonElement(Welcome.serializer(), rpc.call(Methods.HELLO.name, hello))
-                return Session(adb, port, rpc, welcome)
+                return greet(adb, port)
             } catch (e: Exception) {
                 adb.removeForward(port)
                 throw e
             }
+        }
+
+        fun fake(port: Int): Session = try {
+            greet(null, fakeShellPort(port))
+        } catch (e: ConnectException) {
+            throw CliError("No visor fake runs on this computer. Start one with: visor fake")
+        }
+
+        private fun greet(adb: Adb?, port: Int): Session {
+            val rpc = Rpc(Socket(InetAddress.getLoopbackAddress(), port))
+            val hello = KitJson.encodeToJsonElement(Hello.serializer(), Hello(KitProtocol.VERSION, "cli $VERSION"))
+            val welcome = KitJson.decodeFromJsonElement(Welcome.serializer(), rpc.call(Methods.HELLO.name, hello))
+            return Session(adb, port, rpc, welcome)
         }
     }
 }

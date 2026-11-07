@@ -101,8 +101,10 @@ For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [T
 |---|---|
 | `com.macedonga.visor:kit` | The Android library. |
 | `com.macedonga.visor:kit-testing` | `FakeVisor`, for tests. |
+| `com.macedonga.visor:kit-fake` | `FakeVisor` in plain Kotlin, for JVM tests and tools. |
+| `com.macedonga.visor:kit-server` | The server engine Visor and FakeVisor share. |
 | `com.macedonga.visor:kit-protocol` | The wire contract, for JVM tools and for Visor itself. |
-| `visor` | The command for your computer, on the [releases](https://github.com/macedonga/visor-kit/releases) page. |
+| `visor` | The command for your computer, on the [releases](https://github.com/macedonga/visor-kit/releases) page. `visor fake` runs FakeVisor for building without a phone. |
 | `visor-kit` for Python and TypeScript | Clients for other languages, in [`clients/`](clients). |
 
 ## Compatibility

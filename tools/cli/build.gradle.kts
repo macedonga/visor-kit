@@ -28,6 +28,10 @@ application {
 
 dependencies {
     implementation(project(":kit-protocol"))
+    implementation(project(":kit-fake"))
+    implementation(libs.ktor.server.cio)
+    implementation(libs.ktor.server.websockets)
+    runtimeOnly(libs.slf4j.nop)
 }
 
 // The version the command reports, from the build.

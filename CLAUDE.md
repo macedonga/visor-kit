@@ -11,11 +11,15 @@ Central, no tags. Then the history is reset to one commit and the documentation 
 
 - `protocol` (`kit-protocol`, JVM): the wire contract. Every method, topic, feed, type and error code, in
   `Methods`, `Topics`, `Feeds`, `Shell` and `JsonRpc`. Both sides compile against it.
-- `android` (`kit`, AAR): the client apps use (`Visor`, `RequestScopes`), the frozen AIDL, and the server engine
-  (`server/`: `Dispatcher`, `KitServer` for binder, `ShellServer` for adb) that Visor and FakeVisor share.
-- `testing` (`kit-testing`, AAR): `FakeVisor`, Visor in the app's own process, for tests.
+- `server` (`kit-server`, JVM): the server engine Visor and FakeVisor share: `Dispatcher`, `Routes`, `Gate`,
+  `JsonRpcSession` and `McpAdapter`. `KitException` lives in `kit-protocol`.
+- `android` (`kit`, AAR): the client apps use (`Visor`, `RequestScopes`), the frozen AIDL, and the Android doors
+  of the server (`server/`: `KitServer` for binder, `ShellServer` for adb).
+- `fake` (`kit-fake`, JVM): `FakeVisor` and its parts, in plain Kotlin.
+- `testing` (`kit-testing`, AAR): `FakeVisor.connect()`, the fake in the app's own process, for tests.
 - `tools/cli` (not published): the `visor` command. It reaches Visor through `adb forward` to the abstract socket
-  `visor-kit`, which only the shell uid may use, and speaks JSON-RPC lines.
+  `visor-kit`, which only the shell uid may use, and speaks JSON-RPC lines. `visor fake` serves `kit-fake` on
+  /rpc, /mcp and a line socket for `visor --fake`, with a console that plays the glasses.
 
 Apps need only the scopes the person grants on the consent screen. Visor's Developer mode opens nothing for apps:
 it only opens the adb socket, for the computer-side tools.

@@ -19,3 +19,7 @@
 - `kit-testing`: `FakeVisor`, Visor in the app's own process, with `FakeLive` for the live camera.
 - The `visor` command: call any method, watch any topic, trace an app's traffic, simulate the band or the glasses
   and inject events, and grant scopes, from a computer through adb. `visor live` saves or plays the camera live.
+- `visor fake`: FakeVisor on a computer, on the network door's WebSocket and MCP endpoints and for `visor --fake`,
+  with a console that plays the glasses. The Python client's `connect_fake()` and the TypeScript client's
+  `Visor.connectFake()` reach it.
+- `kit-fake`: FakeVisor in plain Kotlin, and `kit-server`: the server engine, both for the JVM.

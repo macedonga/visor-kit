@@ -1,10 +1,12 @@
 # Testing
 
-Wearing the glasses for every change is slow. The VDK has two tools so you mostly do not have to:
+Wearing the glasses for every change is slow. The VDK has three tools so you mostly do not have to:
 
 - **The `visor` command**, on your computer: talk to Visor on the phone, watch what your app does, and stand in
   for the band or the glasses.
 - **`FakeVisor`**, in your tests: Visor inside your app's process, driven by your test code.
+- **`visor fake`**, on your computer: FakeVisor behind the same doors Visor opens on a phone, for scripts, web
+  pages, MCP clients and the `visor` command, with no phone at all.
 
 ## The visor command
 
@@ -39,6 +41,7 @@ user.
 | `visor apps` | The apps that use the VDK, their scopes, and whether they are connected. |
 | `visor grant PACKAGE SCOPE...` | Grants scopes without the consent screen. |
 | `visor revoke PACKAGE SCOPE...` | Takes scopes back. |
+| `visor fake` | Runs FakeVisor on this computer. See [Without a phone](#without-a-phone-visor-fake). |
 
 Add `--json` for JSON only, one value per line, to pipe into `jq` or a script.
 
@@ -122,6 +125,9 @@ test sets, so tests run without a phone, glasses or band. It runs the same serve
 streams and errors behave the same way.
 
 ```kotlin
+import com.macedonga.visor.kit.testing.FakeVisor
+import com.macedonga.visor.kit.testing.connect
+
 @Test
 fun warnsOnLowBattery() = runBlocking {
     val fake = FakeVisor()
@@ -148,7 +154,9 @@ What the fake offers:
 | `fake.granted` | The scopes the fake person granted; all at first. Taking one back ends the streams that need it. |
 | `fake.glasses` | `paired`, `connected`, `display`, `model`, `battery`, `charging`, `worn`, `folded`, `thermal`: each change reaches `glasses.status`. `add(type)` puts a capture on the fake glasses. `input(source, action)` sends a touch or a press. |
 | `fake.band` | `paired`, `battery`, `charging`, `leftHanded`; `gesture(...)` sends a gesture; `buzzes` lists the buzzes asked for. |
-| `fake.display` | `prompter`: the script on the teleprompter, null while closed. |
+| `fake.display` | `prompter`: the script on the teleprompter, null while closed; `layout`: the layout shown; `click(id)` taps one of its elements. |
+| `fake.notify` | `shown`: the app's notifications on the Display, by id. |
+| `fake.assistant` | `tools` the app offers; `call(tool, arguments)` calls one as the model would and returns the answer. |
 | `fake.voice` | `ask(question)` asks as the wearer would and returns the app's reply; `say(text)` is an utterance the glasses hear, for `voice.transcripts`; `listening` counts the apps that collect transcripts. |
 | `fake.live` | `watching` and `config` while the app collects `camera.live`; `sendVideoConfig`, `sendVideo`, `sendAudioConfig`, `sendAudio` send samples; `stop()` ends it as the person would; `photos` counts live photos. |
 | `fake.calls` | The name of every method the app called, in order. |
@@ -162,6 +170,49 @@ fake.live.watching.first { it }
 fake.live.sendVideoConfig(parameterSets)
 fake.live.sendVideo(keyframe, ptsUs = 0, key = true)
 ```
+
+`FakeVisor` itself is plain Kotlin, in `com.macedonga.visor:kit-fake`: a JVM test or tool can drive it without
+Android. `kit-testing` adds `connect()`, which needs the Android library.
+
+## Without a phone: visor fake
+
+`visor fake` runs FakeVisor on your computer, behind the doors Visor opens on a phone:
+
+- JSON-RPC over WebSocket on `ws://127.0.0.1:7333/rpc`, as Visor's [network door](network.md), with no token;
+- MCP on `http://127.0.0.1:7333/mcp`, for an assistant on your computer;
+- the `visor` command, with `--fake` in place of `-s SERIAL`.
+
+Every scope is granted. Its console plays the glasses, and prints what apps do to them:
+
+```
+$ visor fake
+FakeVisor on ws://127.0.0.1:7333/rpc and http://127.0.0.1:7333/mcp; visor --fake on port 7334. Type help.
+00:23:47  Display: the prompter shows "Hello from the fake"
+00:23:47  Band: a buzz of 400 ms
+gesture index double_tap
+battery 12
+ask what is on the calendar today
+00:24:02  Voice: the glasses say "Two meetings, the first at ten."
+```
+
+| Type | What happens |
+|---|---|
+| `battery N` | The glasses' battery, 0 to 100. |
+| `charging`, `worn`, `folded`, `connected`, `display` with `on` or `off` | That part of `glasses.status`. |
+| `thermal LEVEL` | `normal`, `light`, `moderate`, `severe` or `critical`. |
+| `input SOURCE ACTION` | A touch or a press for `glasses.inputs`, such as `touchpad tap`. |
+| `gesture FINGER ACTION` | A band gesture for `band.gestures`, such as `index double_tap`. |
+| `photo`, `video` | A new capture on the glasses. |
+| `ask QUESTION` | The wearer asks; the app whose phrase the question holds answers. |
+| `say TEXT` | The glasses hear TEXT, for `voice.transcripts`. |
+| `tool NAME [JSON]` | The assistant calls an app's tool. |
+| `click ID` | A tap on an element of the layout on the Display. |
+| `grant SCOPE...`, `revoke SCOPE...` | The scopes the fake person granted. |
+
+From another terminal, the command works on the fake as on a phone: `visor --fake trace`, `visor --fake watch
+band.gestures`, `visor --fake call display.prompter.show '{"text":"Hi"}'`. The Python client has
+`visor_kit.connect_fake()` and the TypeScript one `Visor.connectFake()`. `--port N` moves the doors to N and the
+command's port to N + 1; `--lan` opens the doors to the local network.
 
 ## The sample app
 

@@ -12,6 +12,9 @@ androidxComposeBom = "2026.09.00"
 poko = "0.23.2"
 mavenPublish = "0.37.0"
 dokka = "2.2.0"
+# The visor command's fake: the network door Visor opens on a phone, on a computer.
+ktor = "3.6.0"
+slf4j = "2.0.17"
 
 # The VDK runs inside other apps, which may support older phones than Visor does.
 compileSdk = "37"
@@ -37,6 +40,10 @@ androidx-activity = { module = "androidx.activity:activity", version.ref = "andr
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidxComposeBom" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+ktor-server-cio = { module = "io.ktor:ktor-server-cio", version.ref = "ktor" }
+ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
+# Ktor logs through SLF4J; the command prints its own lines.
+slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j" }
 
 # Referenced by the build-logic convention plugins, which need these on their classpath.
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }

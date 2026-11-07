@@ -79,6 +79,11 @@ export class Visor {
     return visor;
   }
 
+  /** Connects to the FakeVisor that `visor fake` runs on this computer, for building without a phone. */
+  static connectFake(port: number = 7333): Promise<Visor> {
+    return Visor.connect(`ws://127.0.0.1:${port}/rpc`, "fake");
+  }
+
   /** Runs `method` with `params` and resolves with its result; rejects with a `VisorError`. */
   call<T = unknown>(method: string, params: object = {}): Promise<T> {
     const id = this.nextId++;
