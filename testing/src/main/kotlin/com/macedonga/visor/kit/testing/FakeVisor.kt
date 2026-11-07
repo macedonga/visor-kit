@@ -20,7 +20,6 @@ import com.macedonga.visor.kit.protocol.Topics
 import com.macedonga.visor.kit.server.Caller
 import com.macedonga.visor.kit.server.Dispatcher
 import com.macedonga.visor.kit.server.Gate
-import com.macedonga.visor.kit.server.KitServer
 import com.macedonga.visor.kit.server.Routes
 import java.util.Collections
 import kotlin.properties.Delegates
@@ -51,9 +50,6 @@ public class FakeVisor {
         dispatcher.recheck()
     }
 
-    /** False makes every call fail with [ErrorCode.DISABLED], as Visor does while its Developer mode is off. */
-    public var enabled: Boolean by Delegates.observable(true) { _, _, _ -> dispatcher.recheck() }
-
     public val glasses: FakeGlasses = FakeGlasses()
     public val band: FakeBand = FakeBand()
     public val display: FakeDisplay = FakeDisplay()
@@ -65,8 +61,6 @@ public class FakeVisor {
 
     private val gate = object : Gate {
         override fun admit(uid: Int): Caller = Caller(uid, APP)
-
-        override fun enabled(): Boolean = enabled
 
         override fun granted(caller: Caller): Set<Scope> = granted
 
@@ -84,10 +78,9 @@ public class FakeVisor {
     }
 
     private val dispatcher = Dispatcher(VERSION, gate, routes(), log = {})
-    private val server = KitServer(dispatcher)
 
-    /** A [Visor] connected to this fake. */
-    public suspend fun connect(): Visor = Visor.connect(server)
+    /** A [Visor] connected to this fake, in this process, with no binder: it works in a plain JVM unit test. */
+    public suspend fun connect(): Visor = Visor.connect(dispatcher, Caller(UID, APP))
 
     /** Ends every connection to this fake. */
     public fun close(): Unit = dispatcher.stop()
@@ -165,6 +158,7 @@ public class FakeVisor {
 
         // The fake knows one app: the one in its own process.
         const val APP = "app"
+        const val UID = 10_000
     }
 }
 

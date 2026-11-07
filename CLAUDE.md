@@ -13,6 +13,9 @@ Visor: their state, camera and captures, the Neural Band, and the Display. Visor
 - `testing` (`kit-testing`, AAR): `FakeVisor`, Visor in the app's own process, for tests.
 - `tools/cli` (not published): the `visor` command. It reaches Visor through `adb forward` to the abstract socket
   `visor-kit`, which only the shell uid may use, and speaks JSON-RPC lines.
+
+Apps need only the scopes the person grants on the consent screen. Visor's Developer mode opens nothing for apps:
+it only opens the adb socket, for the computer-side tools.
 - `tools/contract` (not published): writes `protocol/api/openrpc.json` and checks it against the last release.
 
 Maven group `com.macedonga.visor`, namespace `com.macedonga` proven by a TXT record on macedonga.com.

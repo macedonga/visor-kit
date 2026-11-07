@@ -34,9 +34,6 @@ public value class ErrorCode(public val id: String) {
     override fun toString(): String = id
 
     public companion object {
-        /** Developer mode is off in Visor, so Visor answers no app. */
-        public val DISABLED: ErrorCode = ErrorCode("disabled")
-
         /** The person has not granted the scope this needs. [Failure.scope] names it. */
         public val SCOPE_DENIED: ErrorCode = ErrorCode("scope_denied")
 

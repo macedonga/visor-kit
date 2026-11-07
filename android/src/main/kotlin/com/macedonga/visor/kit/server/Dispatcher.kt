@@ -60,7 +60,7 @@ public class Dispatcher(
     private val trace = MutableSharedFlow<TraceRecord>(extraBufferCapacity = 256, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     private val shellRoutes = shellRoutes()
 
-    /** Ends the streams callers may no longer have: after a scope was taken back, or the host turned the kit off. */
+    /** Ends the streams callers may no longer have, after a scope was taken back. */
     public fun recheck() {
         conversations.forEach { it.recheck() }
     }
@@ -79,7 +79,6 @@ public class Dispatcher(
     }
 
     internal suspend fun call(caller: Caller, method: String, params: String?): String {
-        requireEnabled()
         if (method == Methods.HELLO.name) return hello(caller, params)
         val answer = (if (caller.shell) shellRoutes.methods[method] else null)
             ?: routes.methods[method]
@@ -89,7 +88,6 @@ public class Dispatcher(
     }
 
     internal fun events(caller: Caller, topic: String, params: String?): Flow<String> {
-        requireEnabled()
         shellRoutes.topics[topic]?.takeIf { caller.shell }?.let { return it.events(caller, params) }
         val stream = routes.topics[topic] ?: throw KitException(ErrorCode.UNKNOWN_METHOD, "Visor does not stream $topic.")
         allow(caller, stream.topic.scope)
@@ -101,12 +99,12 @@ public class Dispatcher(
     internal fun scopeOf(topic: String): Scope? = routes.topics[topic]?.topic?.scope
 
     /** Why [caller] may no longer stream what needs [needed], or null when it still may. */
-    internal fun revoked(caller: Caller, needed: Scope?): KitException? = when {
-        !gate.enabled() -> KitException(ErrorCode.DISABLED, "Developer mode was turned off in Visor.")
-        needed != null && !caller.shell && needed !in gate.granted(caller) ->
+    internal fun revoked(caller: Caller, needed: Scope?): KitException? =
+        if (needed != null && !caller.shell && needed !in gate.granted(caller)) {
             KitException(ErrorCode.SCOPE_DENIED, "The $needed scope was taken back from ${caller.packageName}.", scope = needed)
-        else -> null
-    }
+        } else {
+            null
+        }
 
     internal fun trace(caller: Caller, kind: TraceKind, name: String, id: Long, body: String?, startedNanos: Long? = null) {
         if (name == Shell.TRACE.name || trace.subscriptionCount.value == 0) return
@@ -138,10 +136,6 @@ public class Dispatcher(
 
     private fun granted(caller: Caller): Set<Scope> =
         if (caller.shell) routes.methods.values.mapNotNullTo(LinkedHashSet()) { it.method.scope } else gate.granted(caller)
-
-    private fun requireEnabled() {
-        if (!gate.enabled()) throw KitException(ErrorCode.DISABLED, "Developer mode is off in Visor.")
-    }
 
     private fun allow(caller: Caller, needed: Scope?) {
         if (needed != null && !caller.shell && needed !in gate.granted(caller)) {

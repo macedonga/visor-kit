@@ -9,13 +9,13 @@ import com.macedonga.visor.kit.ipc.IKitService
 import com.macedonga.visor.kit.protocol.ErrorCode
 import com.macedonga.visor.kit.protocol.KitProtocol
 
-/** Where a [KitClient] gets Visor's service from. */
+/** Where a [KitClient] gets Visor from. */
 internal interface Binding {
     /**
-     * Starts delivering the service to [onService]: the service each time it comes up, null each time it goes away
-     * and may come back. [onDead] once when it cannot come back.
+     * Starts delivering Visor to [onEndpoint]: an endpoint each time Visor comes up, null each time it goes away and
+     * may come back. [onDead] once when it cannot come back.
      */
-    fun start(onService: (IKitService?) -> Unit, onDead: (KitException) -> Unit)
+    fun start(onEndpoint: (Endpoint?) -> Unit, onDead: (KitException) -> Unit)
 
     fun stop()
 }
@@ -24,18 +24,18 @@ internal interface Binding {
 internal class AndroidBinding(private val context: Context) : Binding {
     private var connection: ServiceConnection? = null
 
-    override fun start(onService: (IKitService?) -> Unit, onDead: (KitException) -> Unit) {
+    override fun start(onEndpoint: (Endpoint?) -> Unit, onDead: (KitException) -> Unit) {
         val connection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName, service: IBinder) =
-                onService(IKitService.Stub.asInterface(service))
+                onEndpoint(BinderEndpoint(IKitService.Stub.asInterface(service)))
 
-            override fun onServiceDisconnected(name: ComponentName) = onService(null)
+            override fun onServiceDisconnected(name: ComponentName) = onEndpoint(null)
 
             // Visor was updated or force-stopped: this binding is spent, so bind again.
             override fun onBindingDied(name: ComponentName) {
                 stop()
-                onService(null)
-                start(onService, onDead)
+                onEndpoint(null)
+                start(onEndpoint, onDead)
             }
 
             override fun onNullBinding(name: ComponentName) =
@@ -61,9 +61,9 @@ internal class AndroidBinding(private val context: Context) : Binding {
     }
 }
 
-/** A service in this process, for FakeVisor. */
-internal class LocalBinding(private val service: IKitService) : Binding {
-    override fun start(onService: (IKitService?) -> Unit, onDead: (KitException) -> Unit) = onService(service)
+/** An endpoint in this process, which is always there. */
+internal class LocalBinding(private val endpoint: Endpoint) : Binding {
+    override fun start(onEndpoint: (Endpoint?) -> Unit, onDead: (KitException) -> Unit) = onEndpoint(endpoint)
 
     override fun stop() = Unit
 }

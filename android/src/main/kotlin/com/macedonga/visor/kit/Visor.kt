@@ -3,7 +3,6 @@ package com.macedonga.visor.kit
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import com.macedonga.visor.kit.ipc.IKitService
 import com.macedonga.visor.kit.protocol.ErrorCode
 import com.macedonga.visor.kit.protocol.KitInternal
 import com.macedonga.visor.kit.protocol.KitProtocol
@@ -11,6 +10,8 @@ import com.macedonga.visor.kit.protocol.Method
 import com.macedonga.visor.kit.protocol.Scope
 import com.macedonga.visor.kit.protocol.Topic
 import com.macedonga.visor.kit.protocol.Welcome
+import com.macedonga.visor.kit.server.Caller
+import com.macedonga.visor.kit.server.Dispatcher
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -67,9 +68,8 @@ public class Visor internal constructor(private val client: KitClient) : AutoClo
         }
 
         /**
-         * Connects to Visor and returns once it answered. Fails with [ErrorCode.VISOR_MISSING],
-         * [ErrorCode.VISOR_TOO_OLD], or [ErrorCode.DISABLED] while Developer mode is off in Visor. Suspends while Visor
-         * starts: wrap it in `withTimeout` for a limit.
+         * Connects to Visor and returns once it answered. Fails with [ErrorCode.VISOR_MISSING] or
+         * [ErrorCode.VISOR_TOO_OLD]. Suspends while Visor starts: wrap it in `withTimeout` for a limit.
          */
         public suspend fun connect(context: Context): Visor {
             val app = context.applicationContext
@@ -77,9 +77,10 @@ public class Visor internal constructor(private val client: KitClient) : AutoClo
             return open(KitClient(AndroidBinding(app)))
         }
 
-        /** Connects to a service in this process. */
+        /** Connects straight to [dispatcher] in this process, as [caller], with no binder in between: for FakeVisor. */
         @KitInternal
-        public suspend fun connect(service: IKitService): Visor = open(KitClient(LocalBinding(service)))
+        public suspend fun connect(dispatcher: Dispatcher, caller: Caller): Visor =
+            open(KitClient(LocalBinding(LocalEndpoint(dispatcher, caller))))
 
         private suspend fun open(client: KitClient): Visor {
             try {

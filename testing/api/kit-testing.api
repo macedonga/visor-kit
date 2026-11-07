@@ -46,10 +46,8 @@ public final class com/macedonga/visor/kit/testing/FakeVisor {
 	public final fun getBand ()Lcom/macedonga/visor/kit/testing/FakeBand;
 	public final fun getCalls ()Ljava/util/List;
 	public final fun getDisplay ()Lcom/macedonga/visor/kit/testing/FakeDisplay;
-	public final fun getEnabled ()Z
 	public final fun getGlasses ()Lcom/macedonga/visor/kit/testing/FakeGlasses;
 	public final fun getGranted ()Ljava/util/Set;
-	public final fun setEnabled (Z)V
 	public final fun setGranted (Ljava/util/Set;)V
 }
 

@@ -16,9 +16,6 @@ public interface Gate {
     /** The app behind [uid], or null to turn it away. */
     public fun admit(uid: Int): Caller?
 
-    /** False while the host answers no one at all. */
-    public fun enabled(): Boolean
-
     /** The scopes [caller] holds now. Never asked for the shell, which holds them all. */
     public fun granted(caller: Caller): Set<Scope>
 

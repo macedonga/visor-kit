@@ -1,9 +1,5 @@
 package com.macedonga.visor.kit
 
-import android.os.RemoteException
-import com.macedonga.visor.kit.ipc.IKitClient
-import com.macedonga.visor.kit.ipc.IKitService
-import com.macedonga.visor.kit.ipc.IKitSession
 import com.macedonga.visor.kit.protocol.ErrorCode
 import com.macedonga.visor.kit.protocol.Failure
 import com.macedonga.visor.kit.protocol.Hello
@@ -41,15 +37,17 @@ import kotlinx.serialization.SerializationException
  * The session with Visor behind a [Visor]: it opens one each time the service comes up, says hello, runs calls, and
  * subscribes every open stream again after Visor restarts.
  *
- * [lock] guards [service], [session] and the moves of [state], so a stream registered while a session opens is
- * subscribed exactly once, and a session opened on a service that has since gone away is never used. Visor's answers arrive on binder threads and are handled there, in the order Visor sent them.
+ * [lock] guards [endpoint], [session] and the moves of [state], so a stream registered while a session opens is
+ * subscribed exactly once, and a session opened on an endpoint that has since gone away is never used. Visor's
+ * answers are handled on the thread they arrive on, a binder thread for the real Visor, in the order Visor sent
+ * them.
  */
 internal class KitClient(private val binding: Binding) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val ids = AtomicLong()
     private val lock = Any()
-    private var service: IKitService? = null
-    private var session: IKitSession? = null
+    private var endpoint: Endpoint? = null
+    private var session: Line? = null
     private val calls = ConcurrentHashMap<Long, CompletableDeferred<String>>()
     private val streams = ConcurrentHashMap<Long, Stream>()
 
@@ -62,7 +60,7 @@ internal class KitClient(private val binding: Binding) {
         }
     }
 
-    private val client = object : IKitClient.Stub() {
+    private val answers = object : Answers {
         override fun result(id: Long, result: String) {
             calls[id]?.complete(result)
         }
@@ -80,7 +78,7 @@ internal class KitClient(private val binding: Binding) {
         }
     }
 
-    fun start() = binding.start(onService = ::onService, onDead = ::finish)
+    fun start() = binding.start(onEndpoint = ::onEndpoint, onDead = ::finish)
 
     fun close() = finish(null)
 
@@ -106,21 +104,21 @@ internal class KitClient(private val binding: Binding) {
         return welcome
     }
 
-    private fun onService(service: IKitService?) {
-        if (service == null) return lost()
-        synchronized(lock) { this.service = service }
-        scope.launch { open(service) }
+    private fun onEndpoint(endpoint: Endpoint?) {
+        if (endpoint == null) return lost()
+        synchronized(lock) { this.endpoint = endpoint }
+        scope.launch { open(endpoint) }
     }
 
-    private suspend fun open(service: IKitService) {
+    private suspend fun open(endpoint: Endpoint) {
         val session = try {
-            withContext(Dispatchers.IO) { service.open(client) }
-        } catch (e: RemoteException) {
-            // Visor died while opening; the binding brings the next service.
+            withContext(Dispatchers.IO) { endpoint.open(answers) }
+        } catch (e: Gone) {
+            // Visor died while opening; the binding brings the next endpoint.
             return
         } ?: return finish(KitException(ErrorCode.FAILED, "Visor refused this app a session."))
         synchronized(lock) {
-            if (_state.value is VisorState.Closed || this.service !== service) return
+            if (_state.value is VisorState.Closed || this.endpoint !== endpoint) return
             this.session = session
         }
         val welcome = try {
@@ -147,7 +145,7 @@ internal class KitClient(private val binding: Binding) {
     private fun lost() {
         synchronized(lock) {
             if (_state.value is VisorState.Closed) return
-            service = null
+            endpoint = null
             session = null
             _state.value = VisorState.Connecting
         }
@@ -158,13 +156,13 @@ internal class KitClient(private val binding: Binding) {
         val old = synchronized(lock) {
             if (_state.value is VisorState.Closed) return
             _state.value = VisorState.Closed(error)
-            service = null
+            endpoint = null
             session.also { session = null }
         }
         binding.stop()
         try {
             old?.close()
-        } catch (e: RemoteException) {
+        } catch (e: Gone) {
             // Visor is gone already, and the session with it.
         }
         val reason = error ?: KitException(ErrorCode.CLOSED, "The app closed the connection to Visor.")
@@ -178,7 +176,7 @@ internal class KitClient(private val binding: Binding) {
         calls.values.forEach { it.completeExceptionally(error) }
     }
 
-    private suspend fun awaitOpen(): Pair<IKitSession, Welcome> {
+    private suspend fun awaitOpen(): Pair<Line, Welcome> {
         while (true) {
             when (val now = state.first { it !is VisorState.Connecting }) {
                 is VisorState.Closed -> throw now.error ?: KitException(ErrorCode.CLOSED, "The app closed the connection to Visor.")
@@ -188,20 +186,20 @@ internal class KitClient(private val binding: Binding) {
         }
     }
 
-    private suspend fun <P, R> callOn(session: IKitSession, method: Method<P, R>, params: P): R {
+    private suspend fun <P, R> callOn(session: Line, method: Method<P, R>, params: P): R {
         val id = ids.incrementAndGet()
         val answer = CompletableDeferred<String>()
         calls[id] = answer
         try {
             session.call(id, method.name, KitJson.encodeToString(method.params, params))
             return decode(method.result, answer.await(), method.name)
-        } catch (e: RemoteException) {
+        } catch (e: Gone) {
             throw KitException(ErrorCode.VISOR_GONE, "The connection to Visor broke during ${method.name}.", cause = e)
         } catch (e: CancellationException) {
             if (calls.containsKey(id)) {
                 try {
                     session.cancel(id)
-                } catch (gone: RemoteException) {
+                } catch (gone: Gone) {
                     // Visor is gone, and the call with it.
                 }
             }
@@ -238,15 +236,15 @@ internal class KitClient(private val binding: Binding) {
         }
         try {
             session?.unsubscribe(id)
-        } catch (e: RemoteException) {
+        } catch (e: Gone) {
             // Visor is gone, and the stream with it.
         }
     }
 
-    private fun send(session: IKitSession, id: Long, stream: Stream) {
+    private fun send(session: Line, id: Long, stream: Stream) {
         try {
             session.subscribe(id, stream.topic, stream.params)
-        } catch (e: RemoteException) {
+        } catch (e: Gone) {
             // The binding reports the loss, and the stream is subscribed again on the next session.
         }
     }

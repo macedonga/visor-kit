@@ -272,7 +272,6 @@ public final synthetic class com/macedonga/visor/kit/protocol/ErrorCode$$seriali
 public final class com/macedonga/visor/kit/protocol/ErrorCode$Companion {
 	public final fun getBUSY-SpTyWAY ()Ljava/lang/String;
 	public final fun getCLOSED-SpTyWAY ()Ljava/lang/String;
-	public final fun getDISABLED-SpTyWAY ()Ljava/lang/String;
 	public final fun getFAILED-SpTyWAY ()Ljava/lang/String;
 	public final fun getINVALID_PARAMS-SpTyWAY ()Ljava/lang/String;
 	public final fun getNOT_CONNECTED-SpTyWAY ()Ljava/lang/String;
