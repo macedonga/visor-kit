@@ -38,6 +38,8 @@ user.
 | `visor trace` | Prints every call, answer and event between every app and Visor, with timings. |
 | `visor simulate TOPIC...` | While it runs, apps subscribed to these topics get only the events you type. |
 | `visor inject TOPIC EVENT` | Sends one made-up event to the apps subscribed to a topic. |
+| `visor record FILE [TOPIC...]` | Saves each event of the topics to a file, until Ctrl+C. |
+| `visor replay FILE [--loop]` | Plays a recording into the apps at its own pace. |
 | `visor apps` | The apps that use the VDK, their scopes, and whether they are connected. |
 | `visor grant PACKAGE SCOPE...` | Grants scopes without the consent screen. |
 | `visor revoke PACKAGE SCOPE...` | Takes scopes back. |
@@ -117,6 +119,23 @@ visor call band.buzz '{"durationMs":120,"strength":128}'
 visor call display.prompter.show '{"text":"Two minutes left"}'
 visor --json watch band.gestures | jq -r .event.derived
 ```
+
+### Record once, replay anywhere
+
+`record` saves what the wearer does, with the state it happens in, so you can play it back while you work on
+your app, on the phone or on `visor fake`:
+
+```
+visor record walk.jsonl                     # glasses.status, glasses.inputs, band.status, band.gestures
+visor record taps.jsonl band.gestures       # only these topics
+visor replay walk.jsonl                     # into the apps on the phone
+visor --fake replay walk.jsonl --loop       # into visor fake, over and over
+```
+
+Each line is one event, `{"t": 1520, "topic": "band.gestures", "event": {...}}`, with `t` in milliseconds from
+the start of the recording. While a replay runs, its topics are simulated: apps get the recorded events, at
+their recorded times, and nothing from the real glasses or band. The events keep the times they were recorded
+with. A recording is plain JSON, so a test can read it too, or you can write one by hand.
 
 ## FakeVisor
 

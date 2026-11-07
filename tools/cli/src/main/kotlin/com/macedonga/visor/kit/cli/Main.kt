@@ -69,6 +69,10 @@ Commands:
                             example "touchpad swipe_forward"; for other topics, the event's JSON.
   inject TOPIC EVENT        Sends one made-up event to the apps subscribed to TOPIC.
                               visor inject band.gestures middle hold
+  record FILE [TOPIC...]    Saves each event of the topics to FILE as JSON lines, until Ctrl+C. By default
+                            glasses.status, glasses.inputs, band.status and band.gestures.
+  replay FILE [--loop]      Plays a recording into the apps at its own pace. Its topics are simulated while
+                            it plays, as with simulate. With --loop it starts over at the end.
   apps                      The apps that use the VDK, with their scopes.
   grant PACKAGE SCOPE...    Grants scopes without the consent screen.
   revoke PACKAGE SCOPE...   Takes scopes back.
@@ -83,7 +87,13 @@ Options:
   --json                    JSON only, one value per line.
 """.trim()
 
-private val COMMANDS = setOf("status", "methods", "call", "watch", "live", "live-photo", "trace", "simulate", "inject", "apps", "grant", "revoke", "fake")
+private val COMMANDS = setOf(
+    "status", "methods", "call", "watch", "live", "live-photo", "trace", "simulate", "inject", "record", "replay", "apps", "grant", "revoke",
+    "fake",
+)
+
+// What record saves when no topic is named: what the wearer does, and the state it happens in.
+private val RECORDED = listOf("glasses.status", "glasses.inputs", "band.status", "band.gestures")
 
 private val VERSION = Session::class.java.`package`?.implementationVersion ?: "dev"
 
@@ -196,6 +206,8 @@ private class Commands(private val session: Session, private val json: Boolean) 
         "trace" -> trace()
         "simulate" -> simulate(args.ifEmpty { usage("simulate needs a topic.") })
         "inject" -> inject(args.getOrNull(0) ?: usage("inject needs a topic."), args.drop(1).ifEmpty { usage("inject needs an event.") })
+        "record" -> record(args.getOrNull(0) ?: usage("record needs a file."), args.drop(1))
+        "replay" -> replay(args.firstOrNull { !it.startsWith("--") } ?: usage("replay needs a file."), "--loop" in args)
         "apps" -> apps()
         "grant" -> grant(Shell.GRANT.name, args)
         "revoke" -> grant(Shell.REVOKE.name, args)
@@ -368,6 +380,70 @@ private class Commands(private val session: Session, private val json: Boolean) 
             else -> parse(words.joinToString(" "))
         }
         rpc.call(Shell.INJECT.name, KitJson.encodeToJsonElement(InjectRequest.serializer(), InjectRequest(topic, event)))
+    }
+
+    /** Each event as one line, `{"t", "topic", "event"}`, with t in milliseconds from the start. */
+    private fun record(file: String, topics: List<String>) {
+        val names = topics.ifEmpty { RECORDED }
+        val out = try {
+            File(file).bufferedWriter()
+        } catch (e: IOException) {
+            throw CliError("Cannot write $file: ${e.message}")
+        }
+        val started = System.nanoTime()
+        System.err.println("Recording ${names.joinToString()} into $file. Ctrl+C stops.")
+        val open = CountDownLatch(names.size)
+        for (topic in names) {
+            rpc.subscribe(topic, null, object : Rpc.Listener {
+                override fun event(event: JsonElement) {
+                    val line = buildJsonObject {
+                        put("t", (System.nanoTime() - started) / NANOS_PER_MS)
+                        put("topic", topic)
+                        put("event", event)
+                    }
+                    // Line by line, so Ctrl+C loses nothing.
+                    synchronized(out) {
+                        out.write(line.toString())
+                        out.newLine()
+                        out.flush()
+                    }
+                }
+
+                override fun ended(failure: Failure?) {
+                    failure?.let { System.err.println("visor: $topic ended: ${Rpc.describe(it)}") }
+                    open.countDown()
+                }
+            })
+        }
+        open.await()
+        synchronized(out) { out.close() }
+    }
+
+    private fun replay(file: String, loop: Boolean) {
+        val events = try {
+            File(file).readLines()
+        } catch (e: IOException) {
+            throw CliError("Cannot read $file: ${e.message}")
+        }.filter { it.isNotBlank() }.mapIndexed { i, line ->
+            val o = runCatching { parse(line).jsonObject }.getOrNull()
+            val t = o?.get("t")?.jsonPrimitive?.longOrNull
+            val topic = o?.get("topic")?.jsonPrimitive?.contentOrNull
+            val event = o?.get("event")
+            if (t == null || topic == null || event == null) throw CliError("Line ${i + 1} of $file is not a recorded event.")
+            Triple(t, topic, event)
+        }
+        if (events.isEmpty()) throw CliError("$file holds no events.")
+        val topics = events.map { it.second }.distinct()
+        rpc.call(Shell.SIMULATE.name, KitJson.encodeToJsonElement(SimulateRequest.serializer(), SimulateRequest(topics)))
+        System.err.println("Replaying ${events.size} events of ${topics.joinToString()}: apps get only these. Ctrl+C stops.")
+        do {
+            val started = System.nanoTime()
+            for ((t, topic, event) in events) {
+                val wait = t - (System.nanoTime() - started) / NANOS_PER_MS
+                if (wait > 0) Thread.sleep(wait)
+                rpc.call(Shell.INJECT.name, KitJson.encodeToJsonElement(InjectRequest.serializer(), InjectRequest(topic, event)))
+            }
+        } while (loop)
     }
 
     private fun apps() {
