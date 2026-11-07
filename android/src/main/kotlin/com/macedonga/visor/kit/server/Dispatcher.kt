@@ -8,6 +8,7 @@ import com.macedonga.visor.kit.protocol.Hello
 import com.macedonga.visor.kit.protocol.KitInternal
 import com.macedonga.visor.kit.protocol.KitJson
 import com.macedonga.visor.kit.protocol.KitProtocol
+import com.macedonga.visor.kit.protocol.Method
 import com.macedonga.visor.kit.protocol.Methods
 import com.macedonga.visor.kit.protocol.Scope
 import com.macedonga.visor.kit.protocol.Shell
@@ -93,6 +94,12 @@ public class Dispatcher(
         allow(caller, stream.topic.scope)
         val fake = injected(topic)
         return if (topic in simulated.value) fake else merge(stream.events(caller, params), fake)
+    }
+
+    /** The methods [caller] may call now, in the order of the catalogue, without the hello and the shell's own. */
+    internal fun methodsFor(caller: Caller): List<Method<*, *>> {
+        val granted = if (caller.shell) null else gate.granted(caller)
+        return routes.methods.values.map { it.method }.filter { m -> m.scope == null || granted == null || m.scope in granted }
     }
 
     /** The scope [topic] needs, or null. */

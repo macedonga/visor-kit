@@ -4,9 +4,17 @@ import com.macedonga.visor.kit.protocol.Hello
 import com.macedonga.visor.kit.protocol.KitInternal
 import com.macedonga.visor.kit.protocol.Scope
 
-/** An app with an open session, or the adb shell when [shell] is true. */
+/**
+ * Who calls: an app with an open session, the adb shell when [shell] is true, or a client of the network door when
+ * [network] is true, whose [packageName] is then the client's name.
+ */
 @KitInternal
-public class Caller(public val uid: Int, public val packageName: String, public val shell: Boolean = false) {
+public class Caller(
+    public val uid: Int,
+    public val packageName: String,
+    public val shell: Boolean = false,
+    public val network: Boolean = false,
+) {
     override fun toString(): String = packageName
 }
 
