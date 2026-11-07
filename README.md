@@ -1,86 +1,111 @@
 # Visor kit
 
-Build on Meta's glasses from your own app or your computer, through [Visor](https://github.com/macedonga/visor).
-The kit reaches the glasses' status, camera and captures, the Meta Neural Band's gestures and vibration, and the
-Ray-Ban Display. No Meta account, no review, no analytics.
+Build your own apps and tools for Meta's smart glasses.
 
-## Requirements
+The Visor kit lets an Android app, or a script on your computer, use Ray-Ban Meta glasses, the Meta Ray-Ban
+Display and the Meta Neural Band through [Visor](https://github.com/macedonga/visor), the open Android app that
+runs them. It needs no Meta account, no Meta AI app and no developer review, and it sends nothing anywhere.
 
-- Visor on the phone, with the glasses set up and Developer mode on (Settings, Advanced).
-- For an app: Android 8.0 or later. Visor itself needs Android 12.
+> **Status:** in development. Protocol 1 and the 0.1 libraries are being tried on hardware and are not on Maven
+> Central yet.
 
-## Add it
+## What you can do
 
-```kotlin
-dependencies {
-    implementation("com.macedonga.visor:kit:0.1.0")
-    testImplementation("com.macedonga.visor:kit-testing:0.1.0")
-}
+| | |
+|---|---|
+| **Glasses** | Read the link, battery, model and firmware, and whether the glasses are worn, folded or recording, as it changes. |
+| **Camera** | Take a photo and get it in the phone's gallery. Start and stop videos and hyperlapses. |
+| **Captures** | List what is on the glasses, import it over Wi-Fi Direct, and follow each import. |
+| **Neural Band** | Receive every gesture: finger, action and the band's own reading of it. Make the band vibrate. |
+| **Display** | Put a script on the Ray-Ban Display's teleprompter. |
+
+Coming next: voice commands and tools for the assistant, notifications, a network API with an MCP server, and
+JavaScript for the Display's web apps. See the [roadmap](docs/overview.md#roadmap).
+
+## How it works
+
+Visor is the phone side of the glasses: it holds the Bluetooth and Wi-Fi link and speaks their protocol. The kit
+asks Visor to do things, and Visor asks the person first.
+
+```
+your app       --(kit library, binder)--+
+                                        +--> Visor --(Bluetooth, Wi-Fi Direct)--> glasses, Neural Band
+your computer  --(adb, JSON-RPC)--------+
 ```
 
-## Use it
+The person grants each app its **scopes** on Visor's consent screen, and can take them back at any time from
+Visor's settings. Nothing else needs turning on.
 
-```kotlin
-val visor = Visor.connect(context)
+## Quick start
 
-// Once: the person grants the scopes on Visor's consent screen.
-val ask = registerForActivityResult(RequestScopes()) { held -> /* the scopes the app holds now */ }
-ask.launch(setOf(Scope.CAMERA, Scope.BAND))
+1. Install Visor on the phone and set up the glasses.
+2. Add the library:
 
-val photo = visor.camera.takePhoto()           // in the gallery: photo.uri
-visor.band.gestures.collect { gesture ->       // the band's gestures come to the app while it collects
-    if (gesture.derived == GestureAction.DOUBLE_TAP) visor.band.buzz()
-}
-visor.display.prompter.show("Slide 3: the numbers")
-```
+   ```kotlin
+   dependencies {
+       implementation("com.macedonga.visor:kit:0.1.0")
+   }
+   ```
 
-Every call fails with a `KitException` whose `code` says why: `scope_denied` (ask with `RequestScopes`),
-`not_connected`, `unsupported` (for example the prompter on glasses without a display), `visor_too_old`, and so
-on. While Visor restarts, calls wait and streams resume by themselves.
+3. Connect, ask for scopes, and use the glasses:
 
-## Try it from your computer
+   ```kotlin
+   val visor = Visor.connect(context)
 
-The `visor` command talks to Visor on the phone through adb, over USB or wireless debugging. Get it from the
-[releases](https://github.com/macedonga/visor-kit/releases) (it needs Java 17), or build it with
-`./gradlew :cli:installDist`.
+   val ask = registerForActivityResult(RequestScopes()) { held -> /* scopes the app holds now */ }
+   ask.launch(setOf(Scope.CAMERA, Scope.BAND))
+
+   val photo = visor.camera.takePhoto()        // photo.uri is in the gallery
+   visor.band.gestures.collect { gesture ->
+       if (gesture.derived == GestureAction.DOUBLE_TAP) visor.band.buzz()
+   }
+   ```
+
+The [getting started guide](docs/getting-started.md) goes through it step by step.
+
+## Test from your computer
+
+The `visor` command reaches Visor on the phone through adb, over USB or wireless debugging, once Developer mode
+is on in Visor. You can call any method, watch any stream, see your app's traffic, and stand in for the glasses or
+the band:
 
 ```
 visor status                              # Visor, the glasses, the band, the apps that use the kit
-visor call camera.photo                   # any method, by name, with JSON params
-visor watch band.gestures glasses.status  # events as they come
 visor trace                               # every call and event between your app and Visor
 visor simulate band.gestures              # no band needed: type "index double_tap", your app gets it
-visor inject glasses.status '{"paired":true,"link":"connected","battery":5}'
 visor grant com.example.app camera band   # skip the consent screen while you develop
 ```
 
-Only adb can reach Visor this way: Visor checks that each connection comes from the shell.
+For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [Testing](docs/testing.md).
 
-## Try it without glasses
+## Documentation
 
-`FakeVisor` runs Visor inside your app's process, for unit tests and for working without the phone:
+- [Overview](docs/overview.md): what the kit is, how it compares with Meta's toolkit, and the roadmap
+- [Getting started](docs/getting-started.md)
+- [Scopes and consent](docs/scopes-and-consent.md)
+- [The connection](docs/connection.md)
+- [Glasses](docs/glasses.md), [Camera and captures](docs/camera-and-captures.md), [Neural Band](docs/neural-band.md),
+  [Display](docs/display.md)
+- [Errors](docs/errors.md)
+- [Testing](docs/testing.md)
+- [JSON-RPC](docs/json-rpc.md): the kit from any language
+- [Compatibility](docs/compatibility.md)
 
-```kotlin
-val fake = FakeVisor()
-val visor = fake.connect()
-fake.glasses.battery = 12
-fake.band.gesture(Finger.INDEX, GestureAction.TAP)
-visor.display.prompter.show("Slide 3")
-assertEquals("Slide 3", fake.display.prompter.value)
-```
+## Modules
 
-## Other languages
-
-The `visor-kit` socket speaks JSON-RPC 2.0, one object per line. Every method in
-[`protocol/api/openrpc.json`](protocol/api/openrpc.json) is a JSON-RPC method of the same name, and topics are
-streamed with `kit.subscribe`. `adb forward tcp:7333 localabstract:visor-kit` makes it reachable on your computer.
+| Artifact | What it is |
+|---|---|
+| `com.macedonga.visor:kit` | The Android library. |
+| `com.macedonga.visor:kit-testing` | `FakeVisor`, for tests. |
+| `com.macedonga.visor:kit-protocol` | The wire contract, for JVM tools and for Visor itself. |
+| `visor` | The command for your computer, on the [releases](https://github.com/macedonga/visor-kit/releases) page. |
 
 ## Compatibility
 
-Released methods, fields and Kotlin APIs never go away or change: an app built against any kit release keeps
-working with every later Visor, and the reverse. The build checks this against the last release; the rules are in
-[CLAUDE.md](CLAUDE.md).
+An app built against any kit release keeps working with every later Visor, and a newer app works with an older
+Visor as far as that Visor goes. The build enforces this against the last release. See
+[Compatibility](docs/compatibility.md).
 
 ## License
 
-Apache 2.0.
+Apache 2.0. Visor itself is AGPL-3.0; the kit is separate so that any app can use it.
