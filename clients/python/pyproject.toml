@@ -1,0 +1,15 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "visor-kit"
+version = "0.1.0"
+description = "The Visor Development Kit from Python: Meta's glasses through Visor, over adb or the network."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+network = ["websockets>=13"]

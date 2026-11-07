@@ -23,3 +23,9 @@ Thumbs.db
 # Local agent setup
 .claude/
 .agents/
+
+# Client builds
+node_modules/
+dist/
+__pycache__/
+*.egg-info/
