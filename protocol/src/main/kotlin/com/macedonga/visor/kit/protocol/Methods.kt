@@ -120,6 +120,16 @@ public object Methods {
         NoticeRemoval.serializer(), Unit.serializer(),
     )
 
+    /**
+     * Fails with [ErrorCode.UNSUPPORTED] while Developer mode is off in Visor, and with [ErrorCode.REFUSED] for the
+     * services Visor keeps to itself: identity and ownership (36), the link's authentication (54 and 79), updates (29).
+     */
+    public val RAW_SEND: Method<RawSend, Unit> = Method(
+        "raw.send", Scope.RAW, 1,
+        "Sends one message to a service of the glasses, as it is.",
+        RawSend.serializer(), Unit.serializer(),
+    )
+
     /** Every method, in the order of the reference. */
     public val all: List<Method<*, *>> = listOf(
         HELLO,
@@ -131,6 +141,7 @@ public object Methods {
         VOICE_REPLY,
         ASSISTANT_TOOLS_ANSWER,
         NOTIFY_POST, NOTIFY_REMOVE,
+        RAW_SEND,
     )
 }
 
@@ -210,6 +221,13 @@ public object Topics {
         ToolsOffer.serializer(), ToolCall.serializer(),
     )
 
+    /** Ends with the same failures as [Methods.RAW_SEND]. */
+    public val RAW_MESSAGES: Topic<RawFilter, RawMessage> = Topic(
+        "raw.messages", Scope.RAW, 1,
+        "Every message one service of the glasses sends, as it is.",
+        RawFilter.serializer(), RawMessage.serializer(),
+    )
+
     /** Every topic, in the order of the reference. */
     public val all: List<Topic<*, *>> = listOf(
         GLASSES_STATUS,
@@ -217,5 +235,6 @@ public object Topics {
         BAND_STATUS, BAND_GESTURES,
         VOICE_REQUESTS,
         ASSISTANT_TOOLS,
+        RAW_MESSAGES,
     )
 }

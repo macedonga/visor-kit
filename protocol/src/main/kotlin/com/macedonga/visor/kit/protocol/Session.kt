@@ -33,6 +33,12 @@ public value class Scope(public val id: String) {
 
         /** Notifications on the glasses. */
         public val NOTIFY: Scope = Scope("notify")
+
+        /**
+         * The glasses' own protocol messages, sent and read as they are, for research. Visor answers only while its
+         * Developer mode is on, and never for the services of the glasses' identity, ownership and updates.
+         */
+        public val RAW: Scope = Scope("raw")
     }
 }
 

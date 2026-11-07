@@ -653,6 +653,7 @@ public final class com/macedonga/visor/kit/protocol/Methods {
 	public final fun getHELLO ()Lcom/macedonga/visor/kit/protocol/Method;
 	public final fun getNOTIFY_POST ()Lcom/macedonga/visor/kit/protocol/Method;
 	public final fun getNOTIFY_REMOVE ()Lcom/macedonga/visor/kit/protocol/Method;
+	public final fun getRAW_SEND ()Lcom/macedonga/visor/kit/protocol/Method;
 	public final fun getVOICE_REPLY ()Lcom/macedonga/visor/kit/protocol/Method;
 }
 
@@ -792,6 +793,80 @@ public final class com/macedonga/visor/kit/protocol/PrompterStyle$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/macedonga/visor/kit/protocol/RawFilter {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/RawFilter$Companion;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getService ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/RawFilter$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/RawFilter$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/RawFilter;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/RawFilter;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/RawFilter$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/RawMessage {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/RawMessage$Companion;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPayload ()Ljava/lang/String;
+	public final fun getService ()I
+	public final fun getTime ()J
+	public final fun getType ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/RawMessage$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/RawMessage$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/RawMessage;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/RawMessage;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/RawMessage$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/RawSend {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/RawSend$Companion;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPayload ()Ljava/lang/String;
+	public final fun getService ()I
+	public final fun getType ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/RawSend$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/RawSend$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/RawSend;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/RawSend;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/RawSend$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class com/macedonga/visor/kit/protocol/RpcError {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/RpcError$Companion;
 	public fun equals (Ljava/lang/Object;)Z
@@ -901,6 +976,7 @@ public final class com/macedonga/visor/kit/protocol/Scope$Companion {
 	public final fun getCAMERA-iB3VXpI ()Ljava/lang/String;
 	public final fun getDISPLAY-iB3VXpI ()Ljava/lang/String;
 	public final fun getNOTIFY-iB3VXpI ()Ljava/lang/String;
+	public final fun getRAW-iB3VXpI ()Ljava/lang/String;
 	public final fun getSTATE-iB3VXpI ()Ljava/lang/String;
 	public final fun getVOICE-iB3VXpI ()Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
@@ -1123,6 +1199,7 @@ public final class com/macedonga/visor/kit/protocol/Topics {
 	public final fun getCAPTURES_IMPORTED ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getCAPTURES_PROGRESS ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getGLASSES_STATUS ()Lcom/macedonga/visor/kit/protocol/Topic;
+	public final fun getRAW_MESSAGES ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getVOICE_REQUESTS ()Lcom/macedonga/visor/kit/protocol/Topic;
 }
 

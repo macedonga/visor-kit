@@ -363,6 +363,42 @@
             "x-since": 1
         },
         {
+            "name": "raw.send",
+            "summary": "Sends one message to a service of the glasses, as it is.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "service",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                },
+                {
+                    "name": "type",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                },
+                {
+                    "name": "payload",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "raw",
+            "x-since": 1
+        },
+        {
             "name": "shell.apps",
             "summary": "Lists the apps that hold scopes or have a session open now.",
             "paramStructure": "by-name",
@@ -639,6 +675,27 @@
                 }
             },
             "x-scope": "assistant",
+            "x-since": 1
+        },
+        {
+            "name": "raw.messages",
+            "summary": "Every message one service of the glasses sends, as it is.",
+            "params": [
+                {
+                    "name": "service",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/RawMessage"
+                }
+            },
+            "x-scope": "raw",
             "x-since": 1
         },
         {
@@ -1031,6 +1088,29 @@
                     }
                 },
                 "required": []
+            },
+            "RawMessage": {
+                "type": "object",
+                "properties": {
+                    "service": {
+                        "type": "integer"
+                    },
+                    "type": {
+                        "type": "integer"
+                    },
+                    "payload": {
+                        "type": "string"
+                    },
+                    "time": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "service",
+                    "type",
+                    "payload",
+                    "time"
+                ]
             },
             "ToolCall": {
                 "type": "object",
