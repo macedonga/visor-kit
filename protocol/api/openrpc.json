@@ -147,6 +147,20 @@
             "x-since": 1
         },
         {
+            "name": "camera.live.photo",
+            "summary": "Takes a photo while the camera is live, without stopping the stream.",
+            "paramStructure": "by-name",
+            "params": [],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "$ref": "#/components/schemas/LivePhoto"
+                }
+            },
+            "x-scope": "camera",
+            "x-since": 1
+        },
+        {
             "name": "captures.list",
             "summary": "Lists the photos and videos on the glasses that the phone does not have yet.",
             "paramStructure": "by-name",
@@ -767,6 +781,44 @@
             "x-shell": true
         }
     ],
+    "x-feeds": [
+        {
+            "name": "camera.live",
+            "summary": "The glasses' camera live, with their microphones when asked, as encoded video and audio.",
+            "params": [
+                {
+                    "name": "quality",
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "title": "LiveQuality"
+                    }
+                },
+                {
+                    "name": "frameRate",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                },
+                {
+                    "name": "audio",
+                    "required": false,
+                    "schema": {
+                        "type": "boolean"
+                    }
+                }
+            ],
+            "header": {
+                "name": "header",
+                "schema": {
+                    "$ref": "#/components/schemas/LiveHeader"
+                }
+            },
+            "x-scope": "camera",
+            "x-since": 1
+        }
+    ],
     "components": {
         "schemas": {
             "AppInfo": {
@@ -1333,6 +1385,103 @@
                     "link"
                 ]
             },
+            "LiveHeader": {
+                "type": "object",
+                "properties": {
+                    "kind": {
+                        "type": "string",
+                        "title": "LiveKind"
+                    },
+                    "codec": {
+                        "type": "string"
+                    },
+                    "ptsUs": {
+                        "type": "integer"
+                    },
+                    "config": {
+                        "type": "boolean"
+                    },
+                    "key": {
+                        "type": "boolean"
+                    },
+                    "width": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "height": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "sampleRate": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "channels": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "kind",
+                    "codec",
+                    "ptsUs"
+                ]
+            },
+            "LivePhoto": {
+                "type": "object",
+                "properties": {
+                    "mime": {
+                        "type": "string"
+                    },
+                    "uri": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "data": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "mime"
+                ]
+            },
             "PrompterStyle": {
                 "type": "object",
                 "properties": {
@@ -1505,6 +1654,12 @@
                         }
                     },
                     "topics": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "feeds": {
                         "type": "array",
                         "items": {
                             "type": "string"

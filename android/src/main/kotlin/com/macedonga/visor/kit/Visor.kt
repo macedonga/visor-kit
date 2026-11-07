@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import com.macedonga.visor.kit.protocol.ErrorCode
+import com.macedonga.visor.kit.protocol.Feed
 import com.macedonga.visor.kit.protocol.KitInternal
 import com.macedonga.visor.kit.protocol.KitProtocol
 import com.macedonga.visor.kit.protocol.Method
@@ -22,7 +23,8 @@ import kotlinx.coroutines.flow.first
  * [camera], [captures], [band], [display], [voice], [assistant] and [notify], and [close] it when done.
  *
  * Every call is main-safe and fails with a [KitException]. While Visor restarts, calls wait for it and streams pick up
- * again on their own; events sent in between are lost.
+ * again on their own; events sent in between are lost. Feeds, such as [Camera.live], end with
+ * [ErrorCode.VISOR_GONE] instead.
  */
 public class Visor internal constructor(private val client: KitClient) : AutoCloseable {
     /** Where the connection stands. */
@@ -43,6 +45,9 @@ public class Visor internal constructor(private val client: KitClient) : AutoClo
     /** True when this Visor streams [topic]. False for a topic newer than the Visor installed. */
     public fun supports(topic: Topic<*, *>): Boolean = welcome()?.topics?.contains(topic.name) == true
 
+    /** True when this Visor sends [feed]. False for a feed newer than the Visor installed. */
+    public fun supports(feed: Feed<*, *>): Boolean = welcome()?.feeds?.contains(feed.name) == true
+
     /** The scopes the person has granted this app now. Ask for more with [RequestScopes]. */
     public suspend fun scopes(): Set<Scope> = client.hello().granted.toSet()
 
@@ -52,6 +57,8 @@ public class Visor internal constructor(private val client: KitClient) : AutoClo
     internal suspend fun <P, R> call(method: Method<P, R>, params: P): R = client.call(method, params)
 
     internal fun <P, E> subscribe(topic: Topic<P, E>, params: P): Flow<E> = client.subscribe(topic, params)
+
+    internal fun <P, H> feed(feed: Feed<P, H>, params: P): Flow<Pair<H, ByteArray>> = client.feed(feed, params)
 
     private fun welcome(): Welcome? = (state.value as? VisorState.Open)?.welcome
 

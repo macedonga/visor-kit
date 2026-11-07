@@ -12,9 +12,12 @@ public final class com/macedonga/visor/kit/Band {
 }
 
 public final class com/macedonga/visor/kit/Camera {
+	public final fun live ()Lkotlinx/coroutines/flow/Flow;
+	public final fun live (Lcom/macedonga/visor/kit/protocol/LiveConfig;)Lkotlinx/coroutines/flow/Flow;
 	public final fun startVideo (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun startVideo--7LDpo8 (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun stopVideo (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun takeLivePhoto (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun takePhoto (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun takePhoto (ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
@@ -43,6 +46,25 @@ public final class com/macedonga/visor/kit/KitException : java/lang/Exception {
 	public final fun getCode-SpTyWAY ()Ljava/lang/String;
 	public final fun getReason ()Ljava/lang/String;
 	public final fun getScope-_YozsWQ ()Ljava/lang/String;
+}
+
+public final class com/macedonga/visor/kit/LiveAudioDecoder : java/lang/AutoCloseable {
+	public fun <init> (Lkotlin/jvm/functions/Function4;)V
+	public fun close ()V
+	public final fun decode (Lcom/macedonga/visor/kit/LiveSample;)V
+}
+
+public final class com/macedonga/visor/kit/LiveSample {
+	public final fun getData ()[B
+	public final fun getHeader ()Lcom/macedonga/visor/kit/protocol/LiveHeader;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/macedonga/visor/kit/LiveVideoDecoder : java/lang/AutoCloseable {
+	public fun <init> (Landroid/view/Surface;)V
+	public fun <init> (Lkotlin/jvm/functions/Function2;)V
+	public fun close ()V
+	public final fun decode (Lcom/macedonga/visor/kit/LiveSample;)V
 }
 
 public final class com/macedonga/visor/kit/Notify {
@@ -77,6 +99,7 @@ public final class com/macedonga/visor/kit/Visor : java/lang/AutoCloseable {
 	public final fun getState ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getVoice ()Lcom/macedonga/visor/kit/Voice;
 	public final fun scopes (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun supports (Lcom/macedonga/visor/kit/protocol/Feed;)Z
 	public final fun supports (Lcom/macedonga/visor/kit/protocol/Method;)Z
 	public final fun supports (Lcom/macedonga/visor/kit/protocol/Topic;)Z
 }
@@ -157,6 +180,7 @@ public abstract interface class com/macedonga/visor/kit/ipc/IKitSession : androi
 	public abstract fun call (JLjava/lang/String;Ljava/lang/String;)V
 	public abstract fun cancel (J)V
 	public abstract fun close ()V
+	public abstract fun openFeed (JLjava/lang/String;Ljava/lang/String;Landroid/os/ParcelFileDescriptor;)V
 	public abstract fun subscribe (JLjava/lang/String;Ljava/lang/String;)V
 	public abstract fun unsubscribe (J)V
 }
@@ -167,6 +191,7 @@ public class com/macedonga/visor/kit/ipc/IKitSession$Default : com/macedonga/vis
 	public fun call (JLjava/lang/String;Ljava/lang/String;)V
 	public fun cancel (J)V
 	public fun close ()V
+	public fun openFeed (JLjava/lang/String;Ljava/lang/String;Landroid/os/ParcelFileDescriptor;)V
 	public fun subscribe (JLjava/lang/String;Ljava/lang/String;)V
 	public fun unsubscribe (J)V
 }
@@ -176,5 +201,9 @@ public abstract class com/macedonga/visor/kit/ipc/IKitSession$Stub : android/os/
 	public fun asBinder ()Landroid/os/IBinder;
 	public static fun asInterface (Landroid/os/IBinder;)Lcom/macedonga/visor/kit/ipc/IKitSession;
 	public fun onTransact (ILandroid/os/Parcel;Landroid/os/Parcel;I)Z
+}
+
+public class com/macedonga/visor/kit/ipc/IKitSession$_Parcel {
+	public fun <init> ()V
 }
 

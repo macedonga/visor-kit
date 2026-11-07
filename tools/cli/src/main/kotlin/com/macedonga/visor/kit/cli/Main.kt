@@ -3,12 +3,16 @@ package com.macedonga.visor.kit.cli
 import com.macedonga.visor.kit.protocol.AppInfo
 import com.macedonga.visor.kit.protocol.BandStatus
 import com.macedonga.visor.kit.protocol.Failure
+import com.macedonga.visor.kit.protocol.Feeds
 import com.macedonga.visor.kit.protocol.GlassesStatus
 import com.macedonga.visor.kit.protocol.GrantRequest
 import com.macedonga.visor.kit.protocol.Hello
 import com.macedonga.visor.kit.protocol.InjectRequest
 import com.macedonga.visor.kit.protocol.KitJson
 import com.macedonga.visor.kit.protocol.KitProtocol
+import com.macedonga.visor.kit.protocol.LiveHeader
+import com.macedonga.visor.kit.protocol.LiveKind
+import com.macedonga.visor.kit.protocol.LivePhoto
 import com.macedonga.visor.kit.protocol.Methods
 import com.macedonga.visor.kit.protocol.Scope
 import com.macedonga.visor.kit.protocol.Shell
@@ -16,11 +20,15 @@ import com.macedonga.visor.kit.protocol.SimulateRequest
 import com.macedonga.visor.kit.protocol.Topics
 import com.macedonga.visor.kit.protocol.TraceRecord
 import com.macedonga.visor.kit.protocol.Welcome
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import java.net.InetAddress
 import java.net.Socket
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Base64
 import java.util.concurrent.CountDownLatch
 import kotlin.system.exitProcess
 import kotlinx.serialization.DeserializationStrategy
@@ -30,6 +38,8 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 
 private val USAGE = """
@@ -45,6 +55,12 @@ Commands:
   watch TOPIC [JSON]...     Prints each event as it comes, until Ctrl+C. JSON after a topic is its params.
                               visor watch band.gestures glasses.status
                               visor watch voice.requests '{"phrases":["the garage"]}'
+  live FILE [JSON]          Saves the camera live to FILE as raw HEVC or H.264, until Ctrl+C. With FILE -,
+                            writes to standard output for a player. JSON is the feed's params; with
+                            "audio": true the sound goes to FILE.aac. The glasses film while it runs.
+                              visor live - | ffplay -fflags nobuffer -
+                              visor live out.hevc '{"quality":"high","audio":true}'
+  live-photo FILE           Takes a photo while the camera is live and saves the HEIC to FILE.
   trace                     Prints every call, answer and event between the apps and Visor.
   simulate TOPIC...         While it runs, apps get only the events you type, one per line, and no
                             glasses or band are used. For band.gestures type FINGER ACTION, for
@@ -55,14 +71,14 @@ Commands:
   grant PACKAGE SCOPE...    Grants scopes without the consent screen.
   revoke PACKAGE SCOPE...   Takes scopes back.
 
-Scopes: state, camera, band, display.
+Scopes: state, pairs, camera, band, display, voice, assistant, notify, raw.
 
 Options:
   -s SERIAL                 The device, as for adb -s.
   --json                    JSON only, one value per line.
 """.trim()
 
-private val COMMANDS = setOf("status", "methods", "call", "watch", "trace", "simulate", "inject", "apps", "grant", "revoke")
+private val COMMANDS = setOf("status", "methods", "call", "watch", "live", "live-photo", "trace", "simulate", "inject", "apps", "grant", "revoke")
 
 private val VERSION = Session::class.java.`package`?.implementationVersion ?: "dev"
 
@@ -140,6 +156,8 @@ private class Commands(private val session: Session, private val json: Boolean) 
         "methods" -> methods()
         "call" -> call(args.getOrNull(0) ?: usage("call needs a method."), args.getOrNull(1))
         "watch" -> watch(args.ifEmpty { usage("watch needs a topic.") })
+        "live" -> live(args.getOrNull(0) ?: usage("live needs a file, or - for standard output."), args.getOrNull(1))
+        "live-photo" -> livePhoto(args.getOrNull(0) ?: usage("live-photo needs a file."))
         "trace" -> trace()
         "simulate" -> simulate(args.ifEmpty { usage("simulate needs a topic.") })
         "inject" -> inject(args.getOrNull(0) ?: usage("inject needs a topic."), args.drop(1).ifEmpty { usage("inject needs an event.") })
@@ -178,11 +196,13 @@ private class Commands(private val session: Session, private val json: Boolean) 
         // Separate: a method and a topic can share a name, as glasses.status does.
         val methods = (Methods.all + Shell.methods).associate { it.name to it.summary }
         val topics = (Topics.all + Shell.topics).associate { it.name to it.summary }
+        val feeds = Feeds.all.associate { it.name to it.summary }
         val welcome = session.welcome
         if (json) {
             println(buildJsonObject {
                 put("methods", KitJson.encodeToJsonElement(ListSerializer(String.serializer()), welcome.methods))
                 put("topics", KitJson.encodeToJsonElement(ListSerializer(String.serializer()), welcome.topics))
+                put("feeds", KitJson.encodeToJsonElement(ListSerializer(String.serializer()), welcome.feeds))
             })
             return
         }
@@ -190,6 +210,9 @@ private class Commands(private val session: Session, private val json: Boolean) 
         welcome.methods.forEach { println("  ${it.padEnd(NAME_WIDTH)}${methods[it].orEmpty()}") }
         println("Topics")
         welcome.topics.forEach { println("  ${it.padEnd(NAME_WIDTH)}${topics[it].orEmpty()}") }
+        if (welcome.feeds.isEmpty()) return
+        println("Feeds")
+        welcome.feeds.forEach { println("  ${it.padEnd(NAME_WIDTH)}${feeds[it].orEmpty()}") }
     }
 
     private fun call(method: String, params: String?) {
@@ -223,6 +246,47 @@ private class Commands(private val session: Session, private val json: Boolean) 
             })
         }
         open.await()
+    }
+
+    /** Over JSON-RPC a feed is a topic: each event is a record, `{"header", "payload"}` with the payload in Base64. */
+    private fun live(file: String, params: String?) {
+        val video: OutputStream = if (file == "-") System.out else FileOutputStream(file)
+        var audio: OutputStream? = null
+        var adts: Adts? = null
+        System.err.println("Filming with the glasses into ${if (file == "-") "standard output" else file}. Ctrl+C stops.")
+        val over = CountDownLatch(1)
+        rpc.subscribe(Feeds.CAMERA_LIVE.name, params?.let(::parse), object : Rpc.Listener {
+            override fun event(event: JsonElement) {
+                val record = event.jsonObject
+                val header = decode(LiveHeader.serializer(), record.getValue("header"))
+                val payload = Base64.getDecoder().decode(record.getValue("payload").jsonPrimitive.content)
+                when {
+                    header.kind == LiveKind.VIDEO -> video.write(payload)
+                    file == "-" -> Unit
+                    header.config -> adts = Adts.of(payload)
+                    else -> adts?.let { format ->
+                        val out = audio ?: FileOutputStream("$file.aac").also { audio = it }
+                        out.write(format.header(payload.size))
+                        out.write(payload)
+                    }
+                }
+            }
+
+            override fun ended(failure: Failure?) {
+                failure?.let { System.err.println("visor: the live ended: ${Rpc.describe(it)}") }
+                over.countDown()
+            }
+        })
+        over.await()
+        video.flush()
+        audio?.close()
+    }
+
+    private fun livePhoto(file: String) {
+        val photo = decode(LivePhoto.serializer(), rpc.call(Methods.CAMERA_LIVE_PHOTO.name))
+        val data = photo.data ?: throw CliError("Visor sent the photo as ${photo.uri}, which a computer cannot read.")
+        File(file).writeBytes(Base64.getDecoder().decode(data))
+        if (!json) println("Saved $file")
     }
 
     private fun trace() {

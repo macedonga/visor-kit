@@ -19,8 +19,9 @@ your app       --(VDK library, binder)--+
 your computer  --(adb, JSON-RPC)--------+
 ```
 
-Everything the VDK does is a **method** (a request with one answer, like `camera.photo`) or a **topic** (a
-stream of events, like `band.gestures`). Both have a name, a scope, and the protocol version that added them.
+Everything the VDK does is a **method** (a request with one answer, like `camera.photo`), a **topic** (a
+stream of events, like `band.gestures`) or a **feed** (a stream of binary records, like the live video of
+`camera.live`). Each has a name, a scope, and the protocol version that added it.
 The [kit-protocol](../protocol) module defines all of them, and
 [`protocol/api/openrpc.json`](../protocol/api/openrpc.json) describes them for any language.
 
@@ -45,7 +46,7 @@ The glasses' own safeguards stay in place: the capture light turns on for every 
 | Area | Methods and topics | Glasses |
 |---|---|---|
 | [Glasses](glasses.md) | `glasses.status`, `glasses.pairs`, `glasses.select` | All |
-| [Camera](camera-and-captures.md) | `camera.photo`, `camera.video.start`, `camera.video.stop` | All |
+| [Camera](camera-and-captures.md) | `camera.photo`, `camera.video.start`, `camera.video.stop`, `camera.live`, `camera.live.photo` | All |
 | [Captures](camera-and-captures.md) | `captures.list`, `captures.import`, `captures.available`, `captures.progress`, `captures.imported`, `captures.failed` | All |
 | [Neural Band](neural-band.md) | `band.status`, `band.gestures`, `band.buzz` | Meta Ray-Ban Display with a Neural Band |
 | [Display](display.md) | `display.prompter.show`, `display.prompter.close` | Meta Ray-Ban Display |
@@ -63,14 +64,14 @@ Visor instead, so the trade-offs differ:
 | Needs | The Meta AI app, a Meta account, registration | Visor, and the person's consent |
 | Gating | Meta can turn features off per user; several can't be published yet | None |
 | Telemetry | Crash reports and analytics on by default | None |
-| Camera | A video stream up to 720p over Bluetooth | Photos and videos, imported over Wi-Fi Direct |
+| Camera | A video stream up to 720p over Bluetooth | A live stream up to 1080p at 30 frames over Wi-Fi Direct, encoded or decoded, with the microphones; photos and videos, imported over Wi-Fi Direct |
 | Neural Band | Navigation events only | Every gesture as the band reports it, and vibration |
 | Voice | "Hey Meta" can open an app | Questions that name an app go to it, answered in the glasses' own voice; tools for the model |
 | Display | Layouts of text, images, buttons and video | The teleprompter today; more on the roadmap |
 | From a computer | No | Yes, through adb |
 
-DAT does some things the VDK does not do yet, such as a live camera stream for apps and full layouts on the
-Display. Those are on the roadmap below.
+DAT does some things the VDK does not do yet, such as full layouts on the Display. Those are on the roadmap
+below.
 
 ## Roadmap
 

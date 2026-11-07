@@ -108,6 +108,16 @@ export class Visor {
     };
   }
 
+  /**
+   * Calls `onRecord` with each record of the feed `name`, such as `camera.live`: its header, and its payload as bytes.
+   * Ends as `subscribe` does.
+   */
+  feed<H = unknown>(name: string, params: object, onRecord: (header: H, payload: Uint8Array) => void, onEnd?: (error?: VisorError) => void): Subscription {
+    return this.subscribe<{ header: H; payload: string }>(name, params, (record) => {
+      onRecord(record.header, Uint8Array.from(atob(record.payload), (c) => c.charCodeAt(0)));
+    }, onEnd);
+  }
+
   close(): void {
     this.socket.close();
   }

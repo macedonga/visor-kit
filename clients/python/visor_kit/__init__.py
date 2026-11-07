@@ -19,6 +19,7 @@ Two ways in:
 """
 
 import asyncio
+import base64
 import itertools
 import json
 import os
@@ -29,6 +30,9 @@ __all__ = ["Visor", "VisorError", "connect_adb", "connect_network"]
 
 PROTOCOL = 1
 SOCKET = "visor-kit"
+
+# A feed's record is one JSON message, and a keyframe in Base64 runs to megabytes.
+MAX_MESSAGE = 64 << 20
 
 
 class VisorError(Exception):
@@ -91,6 +95,16 @@ class Visor:
                     await self.call("kit.unsubscribe", {"subscription": id})
                 except VisorError:
                     pass  # Visor is gone, and the stream with it.
+
+    async def feed(self, name, params=None):
+        """Yields ``(header, payload)`` for each record of the feed ``name``, such as ``camera.live``: the header as a
+        dict, the payload as bytes. Ends as ``subscribe`` does."""
+        records = self.subscribe(name, params)
+        try:
+            async for record in records:
+                yield record["header"], base64.b64decode(record["payload"])
+        finally:
+            await records.aclose()
 
     async def close(self):
         self._reader.cancel()
@@ -156,7 +170,7 @@ async def connect_adb(serial=None):
     adb = [_adb()] + (["-s", serial] if serial else [])
     port = int(subprocess.run(adb + ["forward", "tcp:0", f"localabstract:{SOCKET}"],
                               check=True, capture_output=True, text=True).stdout.strip())
-    reader, writer = await asyncio.open_connection("127.0.0.1", port)
+    reader, writer = await asyncio.open_connection("127.0.0.1", port, limit=MAX_MESSAGE)
 
     async def send(text):
         writer.write(text.encode() + b"\n")
@@ -179,7 +193,7 @@ async def connect_network(url, token):
     from websockets.asyncio.client import connect
     from websockets.exceptions import ConnectionClosed
 
-    socket = await connect(url, additional_headers={"Authorization": f"Bearer {token}"})
+    socket = await connect(url, additional_headers={"Authorization": f"Bearer {token}"}, max_size=MAX_MESSAGE)
 
     async def receive():
         try:

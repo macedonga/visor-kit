@@ -48,6 +48,18 @@ public final class com/macedonga/visor/kit/testing/FakeGlasses {
 	public final fun setWorn (Ljava/lang/Boolean;)V
 }
 
+public final class com/macedonga/visor/kit/testing/FakeLive {
+	public final fun getConfig ()Lcom/macedonga/visor/kit/protocol/LiveConfig;
+	public final fun getPhotos ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getWatching ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun sendAudio ([BJ)V
+	public final fun sendAudioConfig ([BII)V
+	public final fun sendVideo ([BJZ)V
+	public final fun sendVideoConfig ([B)V
+	public final fun sendVideoConfig ([BLjava/lang/String;II)V
+	public final fun stop ()V
+}
+
 public final class com/macedonga/visor/kit/testing/FakeNotify {
 	public final fun getShown ()Lkotlinx/coroutines/flow/StateFlow;
 }
@@ -67,6 +79,7 @@ public final class com/macedonga/visor/kit/testing/FakeVisor {
 	public final fun getDisplay ()Lcom/macedonga/visor/kit/testing/FakeDisplay;
 	public final fun getGlasses ()Lcom/macedonga/visor/kit/testing/FakeGlasses;
 	public final fun getGranted ()Ljava/util/Set;
+	public final fun getLive ()Lcom/macedonga/visor/kit/testing/FakeLive;
 	public final fun getNotify ()Lcom/macedonga/visor/kit/testing/FakeNotify;
 	public final fun getPairs ()Lcom/macedonga/visor/kit/testing/FakePairs;
 	public final fun getVoice ()Lcom/macedonga/visor/kit/testing/FakeVoice;

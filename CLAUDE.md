@@ -9,8 +9,8 @@ Central, no tags. Then the history is reset to one commit and the documentation 
 
 ## Modules
 
-- `protocol` (`kit-protocol`, JVM): the wire contract. Every method, topic, type and error code, in
-  `Methods`, `Topics`, `Shell` and `JsonRpc`. Both sides compile against it.
+- `protocol` (`kit-protocol`, JVM): the wire contract. Every method, topic, feed, type and error code, in
+  `Methods`, `Topics`, `Feeds`, `Shell` and `JsonRpc`. Both sides compile against it.
 - `android` (`kit`, AAR): the client apps use (`Visor`, `RequestScopes`), the frozen AIDL, and the server engine
   (`server/`: `Dispatcher`, `KitServer` for binder, `ShellServer` for adb) that Visor and FakeVisor share.
 - `testing` (`kit-testing`, AAR): `FakeVisor`, Visor in the app's own process, for tests.
@@ -32,12 +32,13 @@ a rule they cannot see is still a rule.
 
 The wire, checked by `:contract:checkContract` against the last `v*` tag:
 
-1. A released method, topic or type is never removed or renamed, and keeps its scope, its `since` and its result.
+1. A released method, topic, feed or type is never removed or renamed, and keeps its scope, its `since` and its
+   result, event or header.
 2. A released field keeps its name, its type, and whether it is required.
 3. A new field is optional and has a default, so a peer that does not know it still works.
 4. A set of values that can grow (scopes, error codes, kinds, gesture actions) is a string value class with the
    known values in its companion. Never an enum: an older app must not crash on a newer value.
-5. Anything new raises `KitProtocol.VERSION` by one, and a new method or topic has `since` equal to it.
+5. Anything new raises `KitProtocol.VERSION` by one, and a new method, topic or feed has `since` equal to it.
 6. Meaning is part of the contract. A method keeps doing what it did; new behavior is a new method or an
    optional field that asks for it.
 7. A new failure uses an existing `ErrorCode` when one fits. Clients treat unknown codes as `failed`.
@@ -45,7 +46,8 @@ The wire, checked by `:contract:checkContract` against the last `v*` tag:
 Binder:
 
 8. The AIDL in `android/src/main/aidl` is frozen. Transaction codes never change; a new method takes the next
-   free code. Messages stay JSON strings, so the AIDL never needs a new type.
+   free code. Messages stay JSON strings, and a feed's bytes go over a socket the app hands over, framed as
+   `KitProtocol.FEED_END` says, so the AIDL needs no other type.
 
 Kotlin API, checked by `checkAbi` (the dump in each module's `api/`) and `checkAbiCompatibility` (against the last
 `v*` tag):
@@ -101,9 +103,9 @@ maps all of it. Status:
 | `DeviceSession` and its states | `VisorState` | done |
 | `DeviceSelector` | `glasses.pairs`, `glasses.select` | done |
 | `Device`: battery, charging, don, hinge, link, thermal, display | `glasses.status` | done |
-| Camera stream: quality, frame rate, HEVC or decoded | `camera.live` | to build: Visor's Live over Wi-Fi Direct |
-| Stream audio (PCM) | `camera.live` audio | to build: the Live's AAC, decoded in the client |
-| Photo during a stream; `PhotoResolution`, `PhotoQuality` | `camera.photo`, Live photo | to build: the Live's HEIC photo |
+| Camera stream: quality, frame rate, HEVC or decoded | `camera.live`, `LiveVideoDecoder` | built, not tried on glasses |
+| Stream audio (PCM) | `camera.live` audio, `LiveAudioDecoder` | built, not tried on glasses |
+| Photo during a stream; `PhotoResolution`, `PhotoQuality` | `camera.live.photo` (HEIC, full size) | built, not tried on glasses |
 | Speech: on-device transcription | `voice.transcripts` | to build: headset mic and the phone's recogniser |
 | Voice invocations (`LaunchApp`) | `voice.requests` | done |
 | Motion: accelerometer, gyroscope, magnetometer, orientation | | research: no live IMU source known yet |

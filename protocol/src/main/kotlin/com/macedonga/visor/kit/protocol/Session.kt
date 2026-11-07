@@ -130,4 +130,6 @@ public class Welcome @KitInternal constructor(
     public val methods: List<String>,
     /** The names of the topics Visor streams. */
     public val topics: List<String>,
+    /** The names of the feeds Visor sends. */
+    public val feeds: List<String> = emptyList(),
 )

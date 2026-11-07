@@ -21,7 +21,7 @@ internal fun breaks(released: JsonObject, now: JsonObject): List<String> {
     if (version < releasedVersion) problems += "the protocol version went down from $releasedVersion to $version"
 
     var added = false
-    for (section in listOf("methods", "x-topics")) {
+    for (section in listOf("methods", "x-topics", "x-feeds")) {
         val old = released.named(section)
         val new = now.named(section)
         for ((name, before) in old) {
@@ -29,7 +29,7 @@ internal fun breaks(released: JsonObject, now: JsonObject): List<String> {
                 problems += "$name is gone"
                 null
             } ?: continue
-            for (key in listOf("x-scope", "x-since", "x-shell", "result", "event")) {
+            for (key in listOf("x-scope", "x-since", "x-shell", "result", "event", "header")) {
                 if (before[key] != after[key]) problems += "$name changed its $key"
             }
             added = compareFields("$name params", before.params(), after.params(), problems) || added

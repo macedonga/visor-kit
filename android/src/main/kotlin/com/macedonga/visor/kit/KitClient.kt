@@ -2,6 +2,7 @@ package com.macedonga.visor.kit
 
 import com.macedonga.visor.kit.protocol.ErrorCode
 import com.macedonga.visor.kit.protocol.Failure
+import com.macedonga.visor.kit.protocol.Feed
 import com.macedonga.visor.kit.protocol.Hello
 import com.macedonga.visor.kit.protocol.KitJson
 import com.macedonga.visor.kit.protocol.KitProtocol
@@ -20,6 +21,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,7 +37,7 @@ import kotlinx.serialization.SerializationException
 
 /**
  * The session with Visor behind a [Visor]: it opens one each time the service comes up, says hello, runs calls, and
- * subscribes every open stream again after Visor restarts.
+ * subscribes every open stream again after Visor restarts. Feeds end instead: what they carried is gone with Visor.
  *
  * [lock] guards [endpoint], [session] and the moves of [state], so a stream registered while a session opens is
  * subscribed exactly once, and a session opened on an endpoint that has since gone away is never used. Visor's
@@ -54,11 +56,15 @@ internal class KitClient(private val binding: Binding) {
     private val _state = MutableStateFlow<VisorState>(VisorState.Connecting)
     val state: StateFlow<VisorState> = _state.asStateFlow()
 
-    private class Stream(val topic: String, val params: String, val events: ProducerScope<String>) {
+    /** A topic's subscription, or a feed when [feed]. */
+    private class Stream(val name: String, val params: String, val feed: Boolean, val events: ProducerScope<Received>) {
         fun end(error: KitException?) {
             events.close(error)
         }
     }
+
+    /** An event, or a feed's record: its header and payload. */
+    private class Received(val json: String, val payload: ByteArray)
 
     private val answers = object : Answers {
         override fun result(id: Long, result: String) {
@@ -70,7 +76,12 @@ internal class KitClient(private val binding: Binding) {
         }
 
         override fun event(subscription: Long, event: String) {
-            streams[subscription]?.events?.trySend(event)
+            streams[subscription]?.events?.trySend(Received(event, NO_PAYLOAD))
+        }
+
+        // Blocks while the app's buffer is full, which slows Visor down to the app's pace.
+        override fun record(subscription: Long, header: String, payload: ByteArray) {
+            streams[subscription]?.events?.trySendBlocking(Received(header, payload))
         }
 
         override fun ended(subscription: Long, failure: String?) {
@@ -90,11 +101,21 @@ internal class KitClient(private val binding: Binding) {
         return callOn(session, method, params)
     }
 
-    fun <P, E> subscribe(topic: Topic<P, E>, params: P): Flow<E> = callbackFlow {
+    fun <P, E> subscribe(topic: Topic<P, E>, params: P): Flow<E> =
+        open(topic.name, KitJson.encodeToString(topic.params, params), feed = false)
+            .buffer(Channel.UNLIMITED)
+            .map { decode(topic.event, it.json, topic.name) }
+
+    fun <P, H> feed(feed: Feed<P, H>, params: P): Flow<Pair<H, ByteArray>> =
+        open(feed.name, KitJson.encodeToString(feed.params, params), feed = true)
+            .buffer(FEED_BUFFER)
+            .map { decode(feed.header, it.json, feed.name) to it.payload }
+
+    private fun open(name: String, params: String, feed: Boolean): Flow<Received> = callbackFlow {
         val id = ids.incrementAndGet()
-        register(id, Stream(topic.name, KitJson.encodeToString(topic.params, params), this))
+        register(id, Stream(name, params, feed, this))
         awaitClose { unregister(id) }
-    }.buffer(Channel.UNLIMITED).map { decode(topic.event, it, topic.name) }
+    }
 
     /** Says hello again, for the scopes the app holds now. */
     suspend fun hello(): Welcome {
@@ -132,24 +153,27 @@ internal class KitClient(private val binding: Binding) {
             if (this.session !== session) return
             _state.value = VisorState.Open(welcome)
             for ((id, stream) in streams) {
-                if (stream.topic in welcome.topics) {
+                if (serves(welcome, stream)) {
                     send(session, id, stream)
                 } else if (streams.remove(id) != null) {
                     tooOld += stream
                 }
             }
         }
-        tooOld.forEach { it.end(tooOld(welcome, it.topic)) }
+        tooOld.forEach { it.end(tooOld(welcome, it)) }
     }
 
     private fun lost() {
-        synchronized(lock) {
+        val feeds = synchronized(lock) {
             if (_state.value is VisorState.Closed) return
             endpoint = null
             session = null
             _state.value = VisorState.Connecting
+            streams.filterValues { it.feed }.keys.mapNotNull(streams::remove)
         }
-        failCalls(KitException(ErrorCode.VISOR_GONE, "The connection to Visor broke."))
+        val error = KitException(ErrorCode.VISOR_GONE, "The connection to Visor broke.")
+        failCalls(error)
+        feeds.forEach { it.end(error) }
     }
 
     private fun finish(error: KitException?) {
@@ -213,8 +237,8 @@ internal class KitClient(private val binding: Binding) {
         val ended: KitException? = synchronized(lock) {
             when (val now = _state.value) {
                 is VisorState.Closed -> now.error ?: KitException(ErrorCode.CLOSED, "The app closed the connection to Visor.")
-                is VisorState.Open -> if (stream.topic !in now.welcome.topics) {
-                    tooOld(now.welcome, stream.topic)
+                is VisorState.Open -> if (!serves(now.welcome, stream)) {
+                    tooOld(now.welcome, stream)
                 } else {
                     streams[id] = stream
                     session?.let { send(it, id, stream) }
@@ -243,14 +267,16 @@ internal class KitClient(private val binding: Binding) {
 
     private fun send(session: Line, id: Long, stream: Stream) {
         try {
-            session.subscribe(id, stream.topic, stream.params)
+            if (stream.feed) session.openFeed(id, stream.name, stream.params) else session.subscribe(id, stream.name, stream.params)
         } catch (e: Gone) {
-            // The binding reports the loss, and the stream is subscribed again on the next session.
+            // The binding reports the loss: a stream is subscribed again on the next session, a feed ends.
         }
     }
 
-    private fun tooOld(welcome: Welcome, name: String) =
-        KitException(ErrorCode.VISOR_TOO_OLD, "Visor ${welcome.visor} does not stream $name. Update Visor.")
+    private fun serves(welcome: Welcome, stream: Stream) = stream.name in (if (stream.feed) welcome.feeds else welcome.topics)
+
+    private fun tooOld(welcome: Welcome, stream: Stream) =
+        KitException(ErrorCode.VISOR_TOO_OLD, "Visor ${welcome.visor} does not ${if (stream.feed) "send" else "stream"} ${stream.name}. Update Visor.")
 
     private fun failureOf(json: String): KitException = try {
         KitJson.decodeFromString(Failure.serializer(), json).toException()
@@ -262,5 +288,12 @@ internal class KitClient(private val binding: Binding) {
         KitJson.decodeFromString(strategy, json)
     } catch (e: SerializationException) {
         throw KitException(ErrorCode.FAILED, "Visor's answer to $name does not fit this VDK: $json", cause = e)
+    }
+
+    private companion object {
+        val NO_PAYLOAD = ByteArray(0)
+
+        // About two seconds of live video and audio; past it, Visor waits for the app.
+        const val FEED_BUFFER = 128
     }
 }

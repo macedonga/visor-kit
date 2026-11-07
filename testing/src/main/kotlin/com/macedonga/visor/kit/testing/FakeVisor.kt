@@ -7,6 +7,7 @@ import com.macedonga.visor.kit.protocol.Capture
 import com.macedonga.visor.kit.protocol.CaptureProgress
 import com.macedonga.visor.kit.protocol.CaptureType
 import com.macedonga.visor.kit.protocol.ErrorCode
+import com.macedonga.visor.kit.protocol.Feeds
 import com.macedonga.visor.kit.protocol.Finger
 import com.macedonga.visor.kit.protocol.Gesture
 import com.macedonga.visor.kit.protocol.GestureAction
@@ -56,6 +57,7 @@ public class FakeVisor {
 
     /** The pairs set up in the fake Visor besides the active one, which is [glasses]. */
     public val pairs: FakePairs = FakePairs(glasses)
+    public val live: FakeLive = FakeLive(glasses)
     public val band: FakeBand = FakeBand()
     public val display: FakeDisplay = FakeDisplay()
     public val voice: FakeVoice = FakeVoice()
@@ -127,6 +129,11 @@ public class FakeVisor {
                 glasses.recording = false
                 glasses.add(CaptureType.VIDEO)
             }
+        }
+        feed(Feeds.CAMERA_LIVE) { _, config -> live.watch(config) }
+        answer(Methods.CAMERA_LIVE_PHOTO) { _, _ ->
+            called(Methods.CAMERA_LIVE_PHOTO.name)
+            live.photo()
         }
         answer(Methods.CAPTURES_LIST) { _, _ ->
             called(Methods.CAPTURES_LIST.name)

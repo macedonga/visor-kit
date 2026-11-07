@@ -1,5 +1,7 @@
 package com.macedonga.visor.kit.contract
 
+import com.macedonga.visor.kit.protocol.Feed
+import com.macedonga.visor.kit.protocol.Feeds
 import com.macedonga.visor.kit.protocol.JsonSchemas
 import com.macedonga.visor.kit.protocol.KitProtocol
 import com.macedonga.visor.kit.protocol.Method
@@ -17,12 +19,13 @@ import kotlinx.serialization.json.put
 
 /**
  * The wire contract as an OpenRPC document: each method with its params by name and its result, the topics under
- * `x-topics`, and every type under `components.schemas`. `x-scope` and `x-since` carry the VDK's own rules.
+ * `x-topics`, the feeds under `x-feeds`, and every type under `components.schemas`. `x-scope` and `x-since` carry the VDK's own rules.
  */
 internal fun openRpc(): JsonObject {
     val schemas = JsonSchemas(inline = false)
     val methods = (Methods.all + Shell.methods).map { method(it, schemas) }
     val topics = (Topics.all + Shell.topics).map { topic(it, schemas) }
+    val feeds = Feeds.all.map { feed(it, schemas) }
     return buildJsonObject {
         put("openrpc", "1.3.2")
         put("info", buildJsonObject {
@@ -32,6 +35,7 @@ internal fun openRpc(): JsonObject {
         })
         put("methods", JsonArray(methods))
         put("x-topics", JsonArray(topics))
+        put("x-feeds", JsonArray(feeds))
         put("components", buildJsonObject { put("schemas", JsonObject(schemas.definitions)) })
     }
 }
@@ -57,6 +61,17 @@ private fun topic(topic: Topic<*, *>, schemas: JsonSchemas) = buildJsonObject {
         put("schema", schemas.of(topic.event.descriptor))
     })
     common(topic.scope?.id, topic.since, topic in Shell.topics)
+}
+
+private fun feed(feed: Feed<*, *>, schemas: JsonSchemas) = buildJsonObject {
+    put("name", feed.name)
+    put("summary", feed.summary)
+    put("params", params(feed.params.descriptor, schemas))
+    put("header", buildJsonObject {
+        put("name", "header")
+        put("schema", schemas.of(feed.header.descriptor))
+    })
+    common(feed.scope?.id, feed.since, shell = false)
 }
 
 private fun kotlinx.serialization.json.JsonObjectBuilder.common(scope: String?, since: Int, shell: Boolean) {

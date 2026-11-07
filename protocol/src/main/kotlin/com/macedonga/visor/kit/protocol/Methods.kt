@@ -64,6 +64,16 @@ public object Methods {
         Unit.serializer(), Unit.serializer(),
     )
 
+    /**
+     * Takes a photo with the camera that [Feeds.CAMERA_LIVE] streams, while it streams, at the glasses' full photo
+     * size. Fails with [ErrorCode.BUSY] when the Live is not running, and [ErrorCode.TIMEOUT] when no photo comes.
+     */
+    public val CAMERA_LIVE_PHOTO: Method<Unit, LivePhoto> = Method(
+        "camera.live.photo", Scope.CAMERA, 1,
+        "Takes a photo while the camera is live, without stopping the stream.",
+        Unit.serializer(), LivePhoto.serializer(),
+    )
+
     public val CAPTURES_LIST: Method<Unit, List<Capture>> = Method(
         "captures.list", Scope.CAMERA, 1,
         "Lists the photos and videos on the glasses that the phone does not have yet.",
@@ -153,7 +163,7 @@ public object Methods {
     public val all: List<Method<*, *>> = listOf(
         HELLO,
         GLASSES_STATUS, GLASSES_PAIRS, GLASSES_SELECT,
-        CAMERA_PHOTO, CAMERA_VIDEO_START, CAMERA_VIDEO_STOP,
+        CAMERA_PHOTO, CAMERA_VIDEO_START, CAMERA_VIDEO_STOP, CAMERA_LIVE_PHOTO,
         CAPTURES_LIST, CAPTURES_IMPORT,
         BAND_STATUS, BAND_BUZZ,
         DISPLAY_PROMPTER_SHOW, DISPLAY_PROMPTER_CLOSE,

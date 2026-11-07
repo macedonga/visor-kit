@@ -22,16 +22,20 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -90,10 +94,18 @@ public class Dispatcher(
 
     internal fun events(caller: Caller, topic: String, params: String?): Flow<String> {
         shellRoutes.topics[topic]?.takeIf { caller.shell }?.let { return it.events(caller, params) }
+        // JSON-RPC has no feeds of its own: there a feed is a topic of Base64 records.
+        if (topic in routes.feeds) return records(caller, topic, params).map(Record::json)
         val stream = routes.topics[topic] ?: throw KitException(ErrorCode.UNKNOWN_METHOD, "Visor does not stream $topic.")
         allow(caller, stream.topic.scope)
         val fake = injected(topic)
         return if (topic in simulated.value) fake else merge(stream.events(caller, params), fake)
+    }
+
+    internal fun records(caller: Caller, feed: String, params: String?): Flow<Record> {
+        val supply = routes.feeds[feed] ?: throw KitException(ErrorCode.UNKNOWN_METHOD, "Visor does not send $feed.")
+        allow(caller, supply.feed.scope)
+        return supply.records(caller, params)
     }
 
     /** The methods [caller] may call now, in the order of the catalogue, without the hello and the shell's own. */
@@ -102,8 +114,8 @@ public class Dispatcher(
         return routes.methods.values.map { it.method }.filter { m -> m.scope == null || granted == null || m.scope in granted }
     }
 
-    /** The scope [topic] needs, or null. */
-    internal fun scopeOf(topic: String): Scope? = routes.topics[topic]?.topic?.scope
+    /** The scope a topic or a feed needs, or null. */
+    internal fun scopeOf(name: String): Scope? = routes.topics[name]?.topic?.scope ?: routes.feeds[name]?.feed?.scope
 
     /** Why [caller] may no longer stream what needs [needed], or null when it still may. */
     internal fun revoked(caller: Caller, needed: Scope?): KitException? =
@@ -137,7 +149,7 @@ public class Dispatcher(
         }
         val methods = listOf(Methods.HELLO.name) + routes.methods.keys + if (caller.shell) shellRoutes.methods.keys else emptySet()
         val topics = routes.topics.keys + if (caller.shell) shellRoutes.topics.keys else emptySet()
-        val welcome = Welcome(KitProtocol.VERSION, visorVersion, granted(caller).toList(), methods, topics.toList())
+        val welcome = Welcome(KitProtocol.VERSION, visorVersion, granted(caller).toList(), methods, topics.toList(), routes.feeds.keys.toList())
         return KitJson.encodeToString(Welcome.serializer(), welcome)
     }
 
@@ -210,12 +222,30 @@ internal interface Peer {
     fun closed()
 }
 
-/** One caller's calls and streams, whatever the transport. */
+/** Where one feed's records go. Only the feed's own coroutine calls it, and a write may block. */
+internal interface FeedSink {
+    /** False once the reader is gone, or stopped reading for too long. */
+    fun write(header: String, payload: ByteArray): Boolean
+
+    /** Tells the reader the feed is over, [failure] null when it simply ended, and lets go of the transport. */
+    fun end(failure: Failure?)
+
+    /** Lets go of the transport without a word. */
+    fun close()
+}
+
+/** One caller's calls, streams and feeds, whatever the transport. */
 internal class Conversation(private val dispatcher: Dispatcher, val caller: Caller, private val peer: Peer) {
     private val calls = ConcurrentHashMap<Long, Job>()
     private val streams = ConcurrentHashMap<Long, Running>()
 
-    private class Running(val topic: String, val params: String?, val job: Job)
+    private class Running(val name: String, val params: String?, val feed: Boolean) {
+        lateinit var job: Job
+
+        // Set before a feed is cancelled for a scope taken back, so the feed tells its reader why.
+        @Volatile
+        var revoked: Failure? = null
+    }
 
     fun call(id: Long, method: String, params: String?) {
         val started = System.nanoTime()
@@ -248,27 +278,68 @@ internal class Conversation(private val dispatcher: Dispatcher, val caller: Call
         start(id, topic, params)
     }
 
+    /** Runs a feed into [sink] until it ends, or [unsubscribe] stops it. */
+    fun openFeed(id: Long, feed: String, params: String?, sink: FeedSink) {
+        dispatcher.trace(caller, TraceKind.SUBSCRIBE, feed, id, params)
+        val running = Running(feed, params, feed = true)
+        // The feed's only writer, so its last word comes after its last record. Writes block: hence IO.
+        running.job = dispatcher.scope.launch(Dispatchers.IO, start = CoroutineStart.LAZY) {
+            var readerGone = false
+            val ending = try {
+                dispatcher.records(caller, feed, params)
+                    .takeWhile { record ->
+                        dispatcher.trace(caller, TraceKind.EVENT, feed, id, record.header)
+                        sink.write(record.header, record.payload).also { readerGone = !it }
+                    }
+                    .collect()
+                null
+            } catch (e: CancellationException) {
+                running.revoked ?: run {
+                    sink.close()
+                    throw e
+                }
+            } catch (e: Exception) {
+                failureOf(e, feed)
+            }
+            withContext(NonCancellable) {
+                streams.remove(id, running)
+                if (readerGone) {
+                    sink.close()
+                } else {
+                    dispatcher.trace(caller, TraceKind.ENDED, feed, id, ending?.let { KitJson.encodeToString(Failure.serializer(), it) })
+                    sink.end(ending)
+                }
+            }
+        }
+        streams[id] = running
+        running.job.start()
+    }
+
+    /** Stops a stream or a feed. */
     fun unsubscribe(id: Long) {
         val running = streams.remove(id) ?: return
         running.job.cancel()
-        dispatcher.trace(caller, TraceKind.UNSUBSCRIBE, running.topic, id, null)
+        dispatcher.trace(caller, TraceKind.UNSUBSCRIBE, running.name, id, null)
     }
 
     /** Starts the streams of [topic] over, the app none the wiser: after the shell changed what is simulated. */
     fun restart(topic: String) {
         for ((id, running) in streams) {
-            if (running.topic != topic || !streams.remove(id, running)) continue
+            if (running.feed || running.name != topic || !streams.remove(id, running)) continue
             running.job.cancel()
-            start(id, running.topic, running.params)
+            start(id, running.name, running.params)
         }
     }
 
     fun recheck() {
         for ((id, running) in streams) {
-            val ending = dispatcher.revoked(caller, dispatcher.scopeOf(running.topic)) ?: continue
-            if (streams.remove(id, running)) {
+            val ending = dispatcher.revoked(caller, dispatcher.scopeOf(running.name))?.toFailure() ?: continue
+            if (running.feed) {
+                running.revoked = ending
                 running.job.cancel()
-                finish(id, running.topic, ending.toFailure())
+            } else if (streams.remove(id, running)) {
+                running.job.cancel()
+                finish(id, running.name, ending)
             }
         }
     }
@@ -283,7 +354,8 @@ internal class Conversation(private val dispatcher: Dispatcher, val caller: Call
     }
 
     private fun start(id: Long, topic: String, params: String?) {
-        val job = dispatcher.scope.launch(start = CoroutineStart.LAZY) {
+        val running = Running(topic, params, feed = false)
+        running.job = dispatcher.scope.launch(start = CoroutineStart.LAZY) {
             val ending = try {
                 dispatcher.events(caller, topic, params).collect { event ->
                     dispatcher.trace(caller, TraceKind.EVENT, topic, id, event)
@@ -296,11 +368,10 @@ internal class Conversation(private val dispatcher: Dispatcher, val caller: Call
                 failureOf(e, topic)
             }
             // Whoever takes the stream out of the map tells the app it ended: this job, or recheck.
-            val running = streams[id]
-            if (running?.job === coroutineContext.job && streams.remove(id, running)) finish(id, topic, ending)
+            if (streams.remove(id, running)) finish(id, topic, ending)
         }
-        streams[id] = Running(topic, params, job)
-        job.start()
+        streams[id] = running
+        running.job.start()
     }
 
     private fun finish(id: Long, topic: String, failure: Failure?) {

@@ -5,7 +5,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
+import android.view.Surface
+import android.view.SurfaceHolder
+import android.view.SurfaceView
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,13 +39,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.macedonga.visor.kit.KitException
+import com.macedonga.visor.kit.LiveVideoDecoder
 import com.macedonga.visor.kit.RequestScopes
 import com.macedonga.visor.kit.Visor
 import com.macedonga.visor.kit.VisorState
+import com.macedonga.visor.kit.protocol.LiveConfig
+import com.macedonga.visor.kit.protocol.LiveQuality
 import com.macedonga.visor.kit.protocol.Scope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
 /** Every capability of the VDK on one screen: the app's side of the VDK, tried on the phone. */
@@ -131,6 +141,16 @@ private fun Sample() {
                 }
             }
 
+            var watching by remember { mutableStateOf(false) }
+            FlowRow(verticalArrangement = Arrangement.Center, itemVerticalAlignment = Alignment.CenterVertically) {
+                Switch(watching, { watching = it })
+                Text("  Camera live")
+            }
+            if (watching) {
+                LivePreview(v, grants, log)
+                OutlinedButton({ run("live photo") { it.camera.takeLivePhoto().uri } }) { Text("Take live photo") }
+            }
+
             var script by remember { mutableStateOf("Hello from the Visor Development Kit") }
             OutlinedTextField(script, { script = it }, Modifier.fillMaxWidth(), label = { Text("Teleprompter") })
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -139,6 +159,40 @@ private fun Sample() {
             }
         }
         log.take(LOG_LINES).forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
+    }
+}
+
+/** The camera live on a SurfaceView, decoded by the phone, for as long as it is shown. */
+@Composable
+private fun LivePreview(visor: Visor, grants: Int, log: MutableList<String>) {
+    var surface by remember { mutableStateOf<Surface?>(null) }
+    AndroidView(
+        factory = { context ->
+            SurfaceView(context).apply {
+                holder.addCallback(object : SurfaceHolder.Callback {
+                    override fun surfaceCreated(holder: SurfaceHolder) {
+                        surface = holder.surface
+                    }
+
+                    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) = Unit
+
+                    override fun surfaceDestroyed(holder: SurfaceHolder) {
+                        surface = null
+                    }
+                })
+            }
+        },
+        // The glasses film upright.
+        modifier = Modifier.fillMaxWidth().aspectRatio(9f / 16f),
+    )
+    val target = surface ?: return
+    LaunchedEffect(visor, grants, target) {
+        LiveVideoDecoder(target).use { video ->
+            visor.camera.live(LiveConfig { quality = LiveQuality.HIGH })
+                .logged(log, "live")
+                .flowOn(Dispatchers.IO)
+                .collect { video.decode(it) }
+        }
     }
 }
 

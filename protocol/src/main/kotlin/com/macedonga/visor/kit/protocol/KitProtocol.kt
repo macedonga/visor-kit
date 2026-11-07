@@ -21,6 +21,13 @@ public object KitProtocol {
 
     /** The scope ids, a `String[]`: the ones asked for in the request, the ones the app holds in the result. */
     public const val EXTRA_SCOPES: String = "com.macedonga.visor.kit.extra.SCOPES"
+
+    /**
+     * A feed's records over binder: a 4-byte big-endian header length, the header as UTF-8 JSON, a 4-byte big-endian
+     * payload length, the payload. A header length of FEED_END closes the feed: a 4-byte length and a [Failure] as
+     * JSON follow, a length of 0 when the feed simply ended.
+     */
+    public const val FEED_END: Int = 0
 }
 
 /**

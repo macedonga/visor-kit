@@ -63,6 +63,20 @@ JSON-RPC has no streams, so the VDK adds three methods and two notifications:
 
 The answer to `kit.subscribe` always comes before the subscription's first event.
 
+## Feeds
+
+A feed, such as `camera.live`, streams binary records. Over JSON-RPC it is subscribed with `kit.subscribe` like a
+topic, and each event is a record: its `header`, and its `payload` in Base64.
+
+```
+-> {"jsonrpc":"2.0","id":5,"method":"kit.subscribe","params":{"topic":"camera.live","params":{"quality":"low"}}}
+<- {"jsonrpc":"2.0","id":5,"result":{"subscription":5}}
+<- {"jsonrpc":"2.0","method":"kit.event","params":{"subscription":5,"event":{"header":{"kind":"video","codec":"video/hevc","ptsUs":0,"config":true,"width":360,"height":640},"payload":"AAAAAUAB..."}}}
+```
+
+A keyframe in Base64 runs to hundreds of kilobytes at `full_hd`: allow lines that long. The Python and TypeScript clients have
+`feed`, which decodes the payload.
+
 ## The contract
 
 [`protocol/api/openrpc.json`](../protocol/api/openrpc.json) is an [OpenRPC](https://open-rpc.org) document of
@@ -72,6 +86,7 @@ every method, its params and its answer, with every type under `components.schem
 - `x-since`: the protocol version that added it.
 - `x-shell`: answered only to the adb shell.
 - `x-topics`: the topics, each with its `params` and its `event`.
+- `x-feeds`: the feeds, each with its `params` and its record's `header`.
 
 Generate a client from it, or read it as the reference. It is written by the build from the Kotlin contract, so
 it is always exact.

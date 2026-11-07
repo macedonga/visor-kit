@@ -14,17 +14,17 @@ People update Visor and your app at different times, so the VDK promises that ei
 ## Versions
 
 - **Library versions** (`kit`, `kit-protocol`, `kit-testing`) follow semantic versioning.
-- **The protocol version** (`KitProtocol.VERSION`) is one number that each release adding a method, topic or field
-  raises by one. It only goes up. Each method and topic records the version that added it in `since`.
+- **The protocol version** (`KitProtocol.VERSION`) is one number that each release adding a method, topic, feed or
+  field raises by one. It only goes up. Each method, topic and feed records the version that added it in `since`.
 
 ## What changes, and how
 
 | Change | Allowed? |
 |---|---|
-| A new method, topic, type or scope | Yes, with a higher protocol version. |
+| A new method, topic, feed, type or scope | Yes, with a higher protocol version. |
 | A new optional field in params, a result or an event | Yes. |
 | A new value in an open set (error codes, scopes, gesture actions, capture types) | Yes. Your code must treat values it does not know as unknown. |
-| Removing or renaming a method, topic, type or field | No. |
+| Removing or renaming a method, topic, feed, type or field | No. |
 | Changing a field's type, or whether it is required | No. |
 | Removing public Kotlin API | Only in a major release, after a deprecation in two minor releases. |
 

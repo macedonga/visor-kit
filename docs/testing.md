@@ -31,6 +31,8 @@ user.
 | `visor methods` | The methods and topics this Visor answers. |
 | `visor call METHOD [JSON]` | Runs any method and prints its answer. |
 | `visor watch TOPIC...` | Prints each event of one or more topics as it comes, until Ctrl+C. |
+| `visor live FILE [JSON]` | Saves the camera live as raw HEVC or H.264, the sound beside it as `FILE.aac`, until Ctrl+C. |
+| `visor live-photo FILE` | Takes a photo while the camera is live and saves the HEIC. |
 | `visor trace` | Prints every call, answer and event between every app and Visor, with timings. |
 | `visor simulate TOPIC...` | While it runs, apps subscribed to these topics get only the events you type. |
 | `visor inject TOPIC EVENT` | Sends one made-up event to the apps subscribed to a topic. |
@@ -39,6 +41,18 @@ user.
 | `visor revoke PACKAGE SCOPE...` | Takes scopes back. |
 
 Add `--json` for JSON only, one value per line, to pipe into `jq` or a script.
+
+### Watch the camera
+
+`visor live` films with the glasses until Ctrl+C. Write to a file, or to standard output for a player:
+
+```
+visor live - | ffplay -fflags nobuffer -
+visor live walk.hevc '{"quality":"full_hd","frameRate":30,"audio":true}'
+ffmpeg -i walk.hevc -i walk.hevc.aac -c copy walk.mp4
+```
+
+In PowerShell 5, pipe through `cmd /c` or save to a file: PowerShell's pipe changes binary data.
 
 ### See what your app does
 
@@ -134,9 +148,18 @@ What the fake offers:
 | `fake.glasses` | `paired`, `connected`, `display`, `model`, `battery`, `charging`, `worn`, `folded`: each change reaches `glasses.status`. `add(type)` puts a capture on the fake glasses. |
 | `fake.band` | `paired`, `battery`, `charging`, `leftHanded`; `gesture(...)` sends a gesture; `buzzes` lists the buzzes asked for. |
 | `fake.display` | `prompter`: the script on the teleprompter, null while closed. |
+| `fake.live` | `watching` and `config` while the app collects `camera.live`; `sendVideoConfig`, `sendVideo`, `sendAudioConfig`, `sendAudio` send samples; `stop()` ends it as the person would; `photos` counts live photos. |
 | `fake.calls` | The name of every method the app called, in order. |
 
 Photos taken on the fake have `content://com.macedonga.visor.kit.testing/captures/...` URIs, which open nothing.
+
+The fake films nothing: your test sends each live sample. Wait until the app watches, or the sample is lost:
+
+```kotlin
+fake.live.watching.first { it }
+fake.live.sendVideoConfig(parameterSets)
+fake.live.sendVideo(keyframe, ptsUs = 0, key = true)
+```
 
 ## The sample app
 
