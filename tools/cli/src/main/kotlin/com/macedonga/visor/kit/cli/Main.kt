@@ -175,8 +175,9 @@ private class Commands(private val session: Session, private val json: Boolean) 
     }
 
     private fun methods() {
-        val known = (Methods.all + Shell.methods).associate { it.name to it.summary } +
-            (Topics.all + Shell.topics).associate { it.name to it.summary }
+        // Separate: a method and a topic can share a name, as glasses.status does.
+        val methods = (Methods.all + Shell.methods).associate { it.name to it.summary }
+        val topics = (Topics.all + Shell.topics).associate { it.name to it.summary }
         val welcome = session.welcome
         if (json) {
             println(buildJsonObject {
@@ -186,9 +187,9 @@ private class Commands(private val session: Session, private val json: Boolean) 
             return
         }
         println("Methods")
-        welcome.methods.forEach { println("  ${it.padEnd(NAME_WIDTH)}${known[it].orEmpty()}") }
+        welcome.methods.forEach { println("  ${it.padEnd(NAME_WIDTH)}${methods[it].orEmpty()}") }
         println("Topics")
-        welcome.topics.forEach { println("  ${it.padEnd(NAME_WIDTH)}${known[it].orEmpty()}") }
+        welcome.topics.forEach { println("  ${it.padEnd(NAME_WIDTH)}${topics[it].orEmpty()}") }
     }
 
     private fun call(method: String, params: String?) {
