@@ -47,4 +47,26 @@ public class GlassesStatus @KitInternal constructor(
     public val recording: Boolean? = null,
     /** The charging case's battery, from 0 to 100, while the glasses sit in the case. */
     public val caseBattery: Int? = null,
+    /** How hot the glasses run, by their own measure. */
+    public val thermal: ThermalLevel? = null,
+    /** True while the glasses slow themselves down to cool off or to save power. */
+    public val throttling: Boolean? = null,
 )
+
+/** How hot the glasses run, by their own measure, from [NORMAL] up. */
+@Serializable
+@JvmInline
+public value class ThermalLevel(public val id: String) {
+    override fun toString(): String = id
+
+    public companion object {
+        public val NORMAL: ThermalLevel = ThermalLevel("normal")
+        public val LIGHT: ThermalLevel = ThermalLevel("light")
+        public val MODERATE: ThermalLevel = ThermalLevel("moderate")
+        public val SEVERE: ThermalLevel = ThermalLevel("severe")
+        public val CRITICAL: ThermalLevel = ThermalLevel("critical")
+
+        /** About to switch off to cool down. */
+        public val SHUTDOWN: ThermalLevel = ThermalLevel("shutdown")
+    }
+}

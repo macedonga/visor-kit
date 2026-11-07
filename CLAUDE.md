@@ -92,6 +92,25 @@ Library versions are semver. `KitProtocol.VERSION` counts separately and only go
 
 Status as of 2026-11-07: phases 1 to 3 are built and checked, not yet tried with glasses.
 
+Parity with Meta's DAT (1.0.1) is a goal: every DAT capability gets a kit equivalent, so `docs/porting-from-dat.md`
+maps all of it. Status:
+
+| DAT | Kit | Status |
+|---|---|---|
+| `Wearables`, registration, permissions | `Visor.connect`, `RequestScopes` | done |
+| `DeviceSession` and its states | `VisorState` | done |
+| `DeviceSelector` | `glasses.pairs`, `glasses.select` | done |
+| `Device`: battery, charging, don, hinge, link, thermal, display | `glasses.status` | done |
+| Camera stream: quality, frame rate, HEVC or decoded | `camera.live` | to build: Visor's Live over Wi-Fi Direct |
+| Stream audio (PCM) | `camera.live` audio | to build: the Live's AAC, decoded in the client |
+| Photo during a stream; `PhotoResolution`, `PhotoQuality` | `camera.photo`, Live photo | to build: the Live's HEIC photo |
+| Speech: on-device transcription | `voice.transcripts` | to build: headset mic and the phone's recogniser |
+| Voice invocations (`LaunchApp`) | `voice.requests` | done |
+| Motion: accelerometer, gyroscope, magnetometer, orientation | | research: no live IMU source known yet |
+| Inputs: nav, select, back, button, capture, drag | `band.gestures` | research: touchpad and capture button on the phone |
+| Display: FlexBox, Text, Image, Button, Icon, Video, taps back | `display.prompter` | research: the DWA broker, or a web app Visor serves |
+| `MockDeviceKit` | `FakeVisor` | done; add the new capabilities as they come |
+
 0. Measure on the glasses: band gestures while the Display keeps the band (RELAY lease); whether a Display web
    app's requests take the IP tunnel or the svc41111 HTTP relay; a Visor-made svc9002 card; touchpad and capture
    button events on glasses without a display; whether the Display carries a DWA broker.

@@ -1305,6 +1305,27 @@
                                 "type": "null"
                             }
                         ]
+                    },
+                    "thermal": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "title": "ThermalLevel"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "throttling": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 },
                 "required": [
