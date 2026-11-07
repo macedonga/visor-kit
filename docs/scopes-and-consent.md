@@ -9,6 +9,7 @@ Developer mode.
 | Scope | Lets the app | Methods and topics |
 |---|---|---|
 | `state` | See whether the glasses are connected, worn and charged | `glasses.status` |
+| `pairs` | See every pair set up in Visor, with names and looks, and choose which one Visor connects to | `glasses.pairs`, `glasses.select` |
 | `camera` | Take photos and videos, and copy them to the phone | `camera.*`, `captures.*` |
 | `band` | Read the Neural Band's gestures and make it vibrate | `band.*` |
 | `display` | Show text on the Display | `display.*` |

@@ -49,6 +49,45 @@
             "x-since": 1
         },
         {
+            "name": "glasses.pairs",
+            "summary": "Lists every pair of glasses set up in Visor, with its name, model, looks and last battery.",
+            "paramStructure": "by-name",
+            "params": [],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/GlassesPair"
+                    }
+                }
+            },
+            "x-scope": "pairs",
+            "x-since": 1
+        },
+        {
+            "name": "glasses.select",
+            "summary": "Makes another pair of glasses the active one, the pair every other method acts on.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "serial",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "$ref": "#/components/schemas/GlassesPair"
+                }
+            },
+            "x-scope": "pairs",
+            "x-since": 1
+        },
+        {
             "name": "camera.photo",
             "summary": "Takes a photo with the glasses and, unless asked not to, imports it into the phone's gallery.",
             "paramStructure": "by-name",
@@ -552,6 +591,22 @@
             "x-since": 1
         },
         {
+            "name": "glasses.pairs",
+            "summary": "Every pair of glasses set up in Visor, now and on each change.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/GlassesPair"
+                    }
+                }
+            },
+            "x-scope": "pairs",
+            "x-since": 1
+        },
+        {
             "name": "captures.available",
             "summary": "Each new photo or video on the glasses that the phone does not have yet.",
             "params": [],
@@ -955,6 +1010,182 @@
                     "time"
                 ]
             },
+            "GlassesLook": {
+                "type": "object",
+                "properties": {
+                    "style": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "styleName": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "color": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "colorName": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "lens": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "lensName": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "size": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": []
+            },
+            "GlassesPair": {
+                "type": "object",
+                "properties": {
+                    "serial": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "active": {
+                        "type": "boolean"
+                    },
+                    "link": {
+                        "type": "string",
+                        "title": "Link"
+                    },
+                    "product": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "display": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "look": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/GlassesLook"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "battery": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "caseBattery": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "lastSeen": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "band": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "serial",
+                    "active",
+                    "link"
+                ]
+            },
             "GlassesStatus": {
                 "type": "object",
                 "properties": {
@@ -966,6 +1197,16 @@
                         "title": "Link"
                     },
                     "model": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "name": {
                         "anyOf": [
                             {
                                 "type": "string"

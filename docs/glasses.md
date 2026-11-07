@@ -1,6 +1,7 @@
 # Glasses
 
-Scope: `state`. All glasses.
+Visor can have several pairs set up, and connects to one at a time: the **active** pair. Every method acts on the
+active pair. The status needs the `state` scope; seeing every pair and choosing the active one needs `pairs`.
 
 ## Status
 
@@ -16,6 +17,7 @@ A `GlassesStatus`:
 | `paired` | `Boolean` | False when Visor has no glasses set up. Every other field is then empty. |
 | `link` | `Link` | `disconnected`, `connecting` or `connected`. |
 | `model` | `String?` | The glasses' own model name, to show to people. |
+| `name` | `String?` | The name the person gave the pair. |
 | `serial` | `String?` | |
 | `firmware` | `String?` | The firmware build. |
 | `display` | `Boolean?` | True for glasses with a display. Null until Visor has seen the glasses once. |
@@ -29,12 +31,48 @@ A `GlassesStatus`:
 The values come from the glasses, so most are null while they are not connected. Tell models apart by `display`,
 never by `model`, whose wording can change.
 
+## Your pairs
+
+Scope: `pairs`.
+
+```kotlin
+visor.glasses.pairs.collect { pairs ->
+    pairs.forEach { println("${it.name ?: it.look?.styleName} ${if (it.active) "(active)" else ""}") }
+}
+visor.glasses.select("2Y0YBYPJ8F007Q")
+```
+
+`pairs` sends every pair set up in Visor now, then each time one is added, renamed, removed or made active.
+`select` makes another pair the active one: Visor lets go of the pair connected now and connects to the new one, as
+when the person picks it on Visor's home. It returns once Visor has switched, before the pair is connected, so watch
+`status` for the link. It fails with `busy` while a Live view or an import holds the glasses, and with
+`invalid_params` and reason `not_found` for a serial Visor has not set up.
+
+A `GlassesPair`:
+
+| Field | Type | Meaning |
+|---|---|---|
+| `serial` | `String` | |
+| `name` | `String?` | The name the person gave the pair. |
+| `active` | `Boolean` | True for the pair Visor connects to now. |
+| `link` | `Link` | The active pair's link; the others read `disconnected`. |
+| `product` | `Int?` | Meta's product id of the model, such as 266 for Ray-Ban Meta (Gen 2). |
+| `display` | `Boolean?` | True for glasses with a display. |
+| `look` | `GlassesLook?` | Frame, colour and lenses from Meta's record of the serial: `style`, `styleName`, `color`, `colorName`, `lens`, `lensName`, `size`. |
+| `battery` | `Int?` | The battery when Visor last heard from the pair. |
+| `caseBattery` | `Int?` | The case's battery at that time. |
+| `lastSeen` | `Long?` | When Visor last heard from the pair, in milliseconds since 1970. |
+| `band` | `String?` | The serial of the Neural Band paired with it. |
+
 ## JSON-RPC
 
 | | Name | Params | Answer |
 |---|---|---|---|
 | Method | `glasses.status` | none | a `GlassesStatus` |
 | Topic | `glasses.status` | none | a `GlassesStatus` now, then on each change |
+| Method | `glasses.pairs` | none | a list of `GlassesPair` |
+| Topic | `glasses.pairs` | none | the list now, then on each change |
+| Method | `glasses.select` | `serial` | the new active `GlassesPair` |
 
 ```
 $ visor call glasses.status

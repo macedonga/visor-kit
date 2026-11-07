@@ -16,6 +16,9 @@ public value class Scope(public val id: String) {
         /** The glasses' link, battery, model, and whether they are worn or folded. */
         public val STATE: Scope = Scope("state")
 
+        /** Every pair of glasses set up in Visor, with its name and looks, and the choice of the one Visor connects to. */
+        public val PAIRS: Scope = Scope("pairs")
+
         /** Photos, videos, and the captures on the glasses. */
         public val CAMERA: Scope = Scope("camera")
 

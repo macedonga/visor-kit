@@ -29,6 +29,8 @@ public class GlassesStatus @KitInternal constructor(
     public val link: Link,
     /** The glasses' own model name, to show to people. Code tells models apart by [display], never by this. */
     public val model: String? = null,
+    /** The name the person gave the pair, in Visor or in the Meta app. */
+    public val name: String? = null,
     public val serial: String? = null,
     /** The glasses' firmware build. */
     public val firmware: String? = null,

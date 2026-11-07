@@ -13,7 +13,7 @@ runs them. It needs no Meta account, no Meta AI app and no developer review, and
 
 | | |
 |---|---|
-| **Glasses** | Read the link, battery, model and firmware, and whether the glasses are worn, folded or recording, as it changes. |
+| **Glasses** | Read the link, battery, model and firmware, and whether the glasses are worn, folded or recording, as it changes. See every pair set up in Visor, with its name and looks, and switch the active one. |
 | **Camera** | Take a photo and get it in the phone's gallery. Start and stop videos and hyperlapses. |
 | **Captures** | List what is on the glasses, import it over Wi-Fi Direct, and follow each import. |
 | **Neural Band** | Receive every gesture: finger, action and the band's own reading of it. Make the band vibrate. |

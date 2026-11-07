@@ -10,6 +10,7 @@ import com.macedonga.visor.kit.protocol.ErrorCode
 import com.macedonga.visor.kit.protocol.Finger
 import com.macedonga.visor.kit.protocol.Gesture
 import com.macedonga.visor.kit.protocol.GestureAction
+import com.macedonga.visor.kit.protocol.GlassesPair
 import com.macedonga.visor.kit.protocol.GlassesStatus
 import com.macedonga.visor.kit.protocol.Hello
 import com.macedonga.visor.kit.protocol.Link
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -46,11 +48,14 @@ import kotlinx.coroutines.flow.onStart
  */
 public class FakeVisor {
     /** The scopes the fake person granted: all of them at first. Taking one back ends the streams that need it. */
-    public var granted: Set<Scope> by Delegates.observable(setOf(Scope.STATE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.VOICE, Scope.ASSISTANT, Scope.NOTIFY)) { _, _, _ ->
+    public var granted: Set<Scope> by Delegates.observable(setOf(Scope.STATE, Scope.PAIRS, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.VOICE, Scope.ASSISTANT, Scope.NOTIFY)) { _, _, _ ->
         dispatcher.recheck()
     }
 
     public val glasses: FakeGlasses = FakeGlasses()
+
+    /** The pairs set up in the fake Visor besides the active one, which is [glasses]. */
+    public val pairs: FakePairs = FakePairs(glasses)
     public val band: FakeBand = FakeBand()
     public val display: FakeDisplay = FakeDisplay()
     public val voice: FakeVoice = FakeVoice()
@@ -94,6 +99,15 @@ public class FakeVisor {
             glasses.status.value
         }
         stream(Topics.GLASSES_STATUS) { _, _ -> glasses.status }
+        answer(Methods.GLASSES_PAIRS) { _, _ ->
+            called(Methods.GLASSES_PAIRS.name)
+            pairs.now()
+        }
+        stream(Topics.GLASSES_PAIRS) { _, _ -> pairs.list }
+        answer(Methods.GLASSES_SELECT) { _, selection ->
+            called(Methods.GLASSES_SELECT.name)
+            pairs.select(selection.serial)
+        }
 
         answer(Methods.CAMERA_PHOTO) { _, request ->
             called(Methods.CAMERA_PHOTO.name)
@@ -190,6 +204,8 @@ public class FakeVisor {
 public class FakeGlasses internal constructor() {
     public var paired: Boolean by published(true)
     public var connected: Boolean by published(true)
+    public var serial: String by published("FAKE0001")
+    public var name: String? by published("My glasses")
     public var display: Boolean by published(true)
     public var model: String? by published("Fake glasses")
     public var battery: Int? by published(80)
@@ -245,7 +261,8 @@ public class FakeGlasses internal constructor() {
             paired = true,
             link = if (connected) Link.CONNECTED else Link.DISCONNECTED,
             model = model,
-            serial = "FAKE0001",
+            name = name,
+            serial = serial,
             firmware = "fake",
             display = display,
             battery = battery,
@@ -343,4 +360,41 @@ public class FakeDisplay internal constructor() {
         prompterStyle = style
         _prompter.value = text
     }
+}
+
+/** The pairs set up in the fake Visor besides the active one. [select] swaps a pair with the active [FakeGlasses]. */
+public class FakePairs internal constructor(private val glasses: FakeGlasses) {
+    private val others = MutableStateFlow<List<GlassesPair>>(emptyList())
+
+    /** Sets up another pair, not active, with no display. */
+    public fun add(serial: String, name: String?) {
+        add(serial, name, display = false)
+    }
+
+    public fun add(serial: String, name: String?, display: Boolean) {
+        others.value = others.value.filter { it.serial != serial } +
+            GlassesPair(serial, name, active = false, link = Link.DISCONNECTED, display = display)
+    }
+
+    internal val list: Flow<List<GlassesPair>> = combine(glasses.status, others) { _, rest -> listOf(active()) + rest }
+
+    internal fun now(): List<GlassesPair> = listOf(active()) + others.value
+
+    internal fun select(serial: String): GlassesPair {
+        if (serial == glasses.serial) return active()
+        val target = others.value.firstOrNull { it.serial == serial }
+            ?: throw KitException(ErrorCode.INVALID_PARAMS, "The fake Visor has no pair $serial.", reason = "not_found")
+        val before = active()
+        others.value = others.value - target + GlassesPair(before.serial, before.name, active = false, link = Link.DISCONNECTED, display = before.display)
+        glasses.serial = target.serial
+        glasses.name = target.name
+        glasses.display = target.display == true
+        return active()
+    }
+
+    private fun active() = GlassesPair(
+        glasses.serial, glasses.name, active = true,
+        link = if (glasses.connected) Link.CONNECTED else Link.DISCONNECTED,
+        display = glasses.display, battery = glasses.battery,
+    )
 }

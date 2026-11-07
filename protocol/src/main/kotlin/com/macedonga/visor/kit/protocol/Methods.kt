@@ -21,6 +21,25 @@ public object Methods {
         Unit.serializer(), GlassesStatus.serializer(),
     )
 
+    /** Every pair set up in Visor, the active one marked. */
+    public val GLASSES_PAIRS: Method<Unit, List<GlassesPair>> = Method(
+        "glasses.pairs", Scope.PAIRS, 1,
+        "Lists every pair of glasses set up in Visor, with its name, model, looks and last battery.",
+        Unit.serializer(), ListSerializer(GlassesPair.serializer()),
+    )
+
+    /**
+     * Makes [PairSelection.serial] the active pair: Visor lets go of the pair connected now and connects to it, as when
+     * the person picks it on Visor's home. Answers once Visor has switched, before the new pair is connected. Fails
+     * with [ErrorCode.INVALID_PARAMS] and reason `not_found` for a serial Visor has not set up, and with
+     * [ErrorCode.BUSY] while a Live view or an import holds the glasses.
+     */
+    public val GLASSES_SELECT: Method<PairSelection, GlassesPair> = Method(
+        "glasses.select", Scope.PAIRS, 1,
+        "Makes another pair of glasses the active one, the pair every other method acts on.",
+        PairSelection.serializer(), GlassesPair.serializer(),
+    )
+
     /**
      * Fails with [ErrorCode.NOT_CONNECTED], [ErrorCode.BUSY] while a video records, [ErrorCode.TIMEOUT] when the
      * glasses do not take it, and the reasons of [CAPTURES_IMPORT] when the import fails.
@@ -133,7 +152,7 @@ public object Methods {
     /** Every method, in the order of the reference. */
     public val all: List<Method<*, *>> = listOf(
         HELLO,
-        GLASSES_STATUS,
+        GLASSES_STATUS, GLASSES_PAIRS, GLASSES_SELECT,
         CAMERA_PHOTO, CAMERA_VIDEO_START, CAMERA_VIDEO_STOP,
         CAPTURES_LIST, CAPTURES_IMPORT,
         BAND_STATUS, BAND_BUZZ,
@@ -152,6 +171,13 @@ public object Topics {
         "glasses.status", Scope.STATE, 1,
         "The glasses' status now, then each change.",
         Unit.serializer(), GlassesStatus.serializer(),
+    )
+
+    /** Sends the list at once, then each time a pair is added, renamed, removed or made active. */
+    public val GLASSES_PAIRS: Topic<Unit, List<GlassesPair>> = Topic(
+        "glasses.pairs", Scope.PAIRS, 1,
+        "Every pair of glasses set up in Visor, now and on each change.",
+        Unit.serializer(), ListSerializer(GlassesPair.serializer()),
     )
 
     /** Sends each capture once. After Visor restarts, it sends again the ones still waiting. */
@@ -230,7 +256,7 @@ public object Topics {
 
     /** Every topic, in the order of the reference. */
     public val all: List<Topic<*, *>> = listOf(
-        GLASSES_STATUS,
+        GLASSES_STATUS, GLASSES_PAIRS,
         CAPTURES_AVAILABLE, CAPTURES_PROGRESS, CAPTURES_IMPORTED, CAPTURES_FAILED,
         BAND_STATUS, BAND_GESTURES,
         VOICE_REQUESTS,
