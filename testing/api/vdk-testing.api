@@ -1,3 +1,8 @@
+public final class com/macedonga/visor/vdk/testing/FakeAssistant {
+	public final fun call (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getTools ()Ljava/util/List;
+}
+
 public final class com/macedonga/visor/vdk/testing/FakeBand {
 	public final fun gesture-GmMkv5U (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun gesture-ojuZR5M (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
@@ -39,15 +44,26 @@ public final class com/macedonga/visor/vdk/testing/FakeGlasses {
 	public final fun setWorn (Ljava/lang/Boolean;)V
 }
 
+public final class com/macedonga/visor/vdk/testing/FakeNotify {
+	public final fun getShown ()Lkotlinx/coroutines/flow/StateFlow;
+}
+
 public final class com/macedonga/visor/vdk/testing/FakeVisor {
 	public fun <init> ()V
 	public final fun close ()V
 	public final fun connect (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getAssistant ()Lcom/macedonga/visor/vdk/testing/FakeAssistant;
 	public final fun getBand ()Lcom/macedonga/visor/vdk/testing/FakeBand;
 	public final fun getCalls ()Ljava/util/List;
 	public final fun getDisplay ()Lcom/macedonga/visor/vdk/testing/FakeDisplay;
 	public final fun getGlasses ()Lcom/macedonga/visor/vdk/testing/FakeGlasses;
 	public final fun getGranted ()Ljava/util/Set;
+	public final fun getNotify ()Lcom/macedonga/visor/vdk/testing/FakeNotify;
+	public final fun getVoice ()Lcom/macedonga/visor/vdk/testing/FakeVoice;
 	public final fun setGranted (Ljava/util/Set;)V
+}
+
+public final class com/macedonga/visor/vdk/testing/FakeVoice {
+	public final fun ask (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 

@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.first
 
 /**
  * A connection to Visor, the app that runs the glasses. Get one with [connect], reach the glasses through [glasses],
- * [camera], [captures], [band] and [display], and [close] it when done.
+ * [camera], [captures], [band], [display], [voice], [assistant] and [notify], and [close] it when done.
  *
  * Every call is main-safe and fails with a [VdkException]. While Visor restarts, calls wait for it and streams pick up
  * again on their own; events sent in between are lost.
@@ -33,6 +33,9 @@ public class Visor internal constructor(private val client: VdkClient) : AutoClo
     public val captures: Captures = Captures(this)
     public val band: Band = Band(this)
     public val display: Display = Display(this)
+    public val voice: Voice = Voice(this)
+    public val assistant: Assistant = Assistant(this)
+    public val notify: Notify = Notify(this)
 
     /** True when this Visor answers [method]. False for a method newer than the Visor installed. */
     public fun supports(method: Method<*, *>): Boolean = welcome()?.methods?.contains(method.name) == true

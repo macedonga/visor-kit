@@ -46,13 +46,16 @@ import kotlinx.coroutines.flow.onStart
  */
 public class FakeVisor {
     /** The scopes the fake person granted: all of them at first. Taking one back ends the streams that need it. */
-    public var granted: Set<Scope> by Delegates.observable(setOf(Scope.STATE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY)) { _, _, _ ->
+    public var granted: Set<Scope> by Delegates.observable(setOf(Scope.STATE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.VOICE, Scope.ASSISTANT, Scope.NOTIFY)) { _, _, _ ->
         dispatcher.recheck()
     }
 
     public val glasses: FakeGlasses = FakeGlasses()
     public val band: FakeBand = FakeBand()
     public val display: FakeDisplay = FakeDisplay()
+    public val voice: FakeVoice = FakeVoice()
+    public val assistant: FakeAssistant = FakeAssistant()
+    public val notify: FakeNotify = FakeNotify()
 
     private val _calls = Collections.synchronizedList(mutableListOf<String>())
 
@@ -146,6 +149,27 @@ public class FakeVisor {
             called(Methods.DISPLAY_PROMPTER_CLOSE.name)
             glasses.withDisplay()
             display.shown(null, null)
+        }
+
+        stream(Topics.VOICE_REQUESTS) { _, offer -> voice.offer(offer.phrases) }
+        answer(Methods.VOICE_REPLY) { _, reply ->
+            called(Methods.VOICE_REPLY.name)
+            voice.replied(reply)
+        }
+        stream(Topics.ASSISTANT_TOOLS) { _, offer -> assistant.offer(offer.tools) }
+        answer(Methods.ASSISTANT_TOOLS_ANSWER) { _, answer ->
+            called(Methods.ASSISTANT_TOOLS_ANSWER.name)
+            assistant.answered(answer)
+        }
+        answer(Methods.NOTIFY_POST) { _, notice ->
+            called(Methods.NOTIFY_POST.name)
+            glasses.withDisplay()
+            notify.posted(notice)
+        }
+        answer(Methods.NOTIFY_REMOVE) { _, removal ->
+            called(Methods.NOTIFY_REMOVE.name)
+            glasses.withDisplay()
+            notify.removed(removal.id)
         }
     }
 

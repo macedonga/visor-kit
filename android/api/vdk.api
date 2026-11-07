@@ -1,3 +1,9 @@
+public final class com/macedonga/visor/vdk/Assistant {
+	public final fun answer (Lcom/macedonga/visor/vdk/protocol/ToolCall;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun fail (Lcom/macedonga/visor/vdk/protocol/ToolCall;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun tools (Ljava/util/List;)Lkotlinx/coroutines/flow/Flow;
+}
+
 public final class com/macedonga/visor/vdk/Band {
 	public final fun buzz (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun buzz-KLykuaI (JFLkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -30,6 +36,11 @@ public final class com/macedonga/visor/vdk/Glasses {
 	public final fun getStatus ()Lkotlinx/coroutines/flow/Flow;
 }
 
+public final class com/macedonga/visor/vdk/Notify {
+	public final fun post (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun remove (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
 public final class com/macedonga/visor/vdk/Prompter {
 	public final fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun show (Ljava/lang/String;Lcom/macedonga/visor/vdk/protocol/PrompterStyle;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -54,12 +65,15 @@ public final class com/macedonga/visor/vdk/VdkException : java/lang/Exception {
 public final class com/macedonga/visor/vdk/Visor : java/lang/AutoCloseable {
 	public static final field Companion Lcom/macedonga/visor/vdk/Visor$Companion;
 	public fun close ()V
+	public final fun getAssistant ()Lcom/macedonga/visor/vdk/Assistant;
 	public final fun getBand ()Lcom/macedonga/visor/vdk/Band;
 	public final fun getCamera ()Lcom/macedonga/visor/vdk/Camera;
 	public final fun getCaptures ()Lcom/macedonga/visor/vdk/Captures;
 	public final fun getDisplay ()Lcom/macedonga/visor/vdk/Display;
 	public final fun getGlasses ()Lcom/macedonga/visor/vdk/Glasses;
+	public final fun getNotify ()Lcom/macedonga/visor/vdk/Notify;
 	public final fun getState ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getVoice ()Lcom/macedonga/visor/vdk/Voice;
 	public final fun scopes (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun supports (Lcom/macedonga/visor/vdk/protocol/Method;)Z
 	public final fun supports (Lcom/macedonga/visor/vdk/protocol/Topic;)Z
@@ -86,6 +100,12 @@ public final class com/macedonga/visor/vdk/VisorState$Connecting : com/macedonga
 
 public final class com/macedonga/visor/vdk/VisorState$Open : com/macedonga/visor/vdk/VisorState {
 	public final fun getWelcome ()Lcom/macedonga/visor/vdk/protocol/Welcome;
+}
+
+public final class com/macedonga/visor/vdk/Voice {
+	public final fun reply (Lcom/macedonga/visor/vdk/protocol/VoiceRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun reply (Lcom/macedonga/visor/vdk/protocol/VoiceRequest;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun requests (Ljava/util/List;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface class com/macedonga/visor/vdk/ipc/IVdkClient : android/os/IInterface {

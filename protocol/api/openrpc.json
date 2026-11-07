@@ -233,6 +233,136 @@
             "x-since": 1
         },
         {
+            "name": "voice.reply",
+            "summary": "Answers a question the wearer asked the app, in the glasses' own voice.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "request",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "text",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "listen",
+                    "required": false,
+                    "schema": {
+                        "type": "boolean"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "voice",
+            "x-since": 1
+        },
+        {
+            "name": "assistant.tools.answer",
+            "summary": "Answers the assistant's call of one of the app's tools.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "call",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "text",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "error",
+                    "required": false,
+                    "schema": {
+                        "type": "boolean"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "assistant",
+            "x-since": 1
+        },
+        {
+            "name": "notify.post",
+            "summary": "Shows a notification on the Display, or replaces the app's one with the same id.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "title",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "text",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "notify",
+            "x-since": 1
+        },
+        {
+            "name": "notify.remove",
+            "summary": "Takes one of the app's notifications away from the Display.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "notify",
+            "x-since": 1
+        },
+        {
             "name": "shell.apps",
             "summary": "Lists the apps that hold scopes or have a session open now.",
             "paramStructure": "by-name",
@@ -461,6 +591,54 @@
                 }
             },
             "x-scope": "band",
+            "x-since": 1
+        },
+        {
+            "name": "voice.requests",
+            "summary": "The wearer's questions that name one of the app's phrases, for the app to answer.",
+            "params": [
+                {
+                    "name": "phrases",
+                    "required": true,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/VoiceRequest"
+                }
+            },
+            "x-scope": "voice",
+            "x-since": 1
+        },
+        {
+            "name": "assistant.tools",
+            "summary": "Offers the assistant's model the app's tools, and brings each call of one.",
+            "params": [
+                {
+                    "name": "tools",
+                    "required": true,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ToolSpec"
+                        }
+                    }
+                }
+            ],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/ToolCall"
+                }
+            },
+            "x-scope": "assistant",
             "x-since": 1
         },
         {
@@ -854,6 +1032,39 @@
                 },
                 "required": []
             },
+            "ToolCall": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "tool": {
+                        "type": "string"
+                    },
+                    "arguments": {}
+                },
+                "required": [
+                    "id",
+                    "tool",
+                    "arguments"
+                ]
+            },
+            "ToolSpec": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "schema": {}
+                },
+                "required": [
+                    "name",
+                    "description"
+                ]
+            },
             "TraceRecord": {
                 "type": "object",
                 "properties": {
@@ -898,6 +1109,35 @@
                     "kind",
                     "name",
                     "id"
+                ]
+            },
+            "VoiceRequest": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "text": {
+                        "type": "string"
+                    },
+                    "phrase": {
+                        "type": "string"
+                    },
+                    "intent": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "text",
+                    "phrase"
                 ]
             },
             "Welcome": {

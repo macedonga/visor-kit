@@ -24,6 +24,15 @@ public value class Scope(public val id: String) {
 
         /** What the Display shows. */
         public val DISPLAY: Scope = Scope("display")
+
+        /** The wearer's questions that name the app, and the glasses' voice to answer them. */
+        public val VOICE: Scope = Scope("voice")
+
+        /** Tools for the assistant's model, which it may call while it answers the wearer. */
+        public val ASSISTANT: Scope = Scope("assistant")
+
+        /** Notifications on the glasses. */
+        public val NOTIFY: Scope = Scope("notify")
     }
 }
 

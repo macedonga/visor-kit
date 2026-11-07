@@ -89,6 +89,37 @@ public object Methods {
         Unit.serializer(), Unit.serializer(),
     )
 
+    /**
+     * Answers a [VoiceRequest]: the glasses say [VoiceReply.text] in their own voice. Fails with
+     * [ErrorCode.INVALID_PARAMS] and reason `expired` when the question was answered already or the glasses gave up
+     * on it: they wait about 20 seconds.
+     */
+    public val VOICE_REPLY: Method<VoiceReply, Unit> = Method(
+        "voice.reply", Scope.VOICE, 1,
+        "Answers a question the wearer asked the app, in the glasses' own voice.",
+        VoiceReply.serializer(), Unit.serializer(),
+    )
+
+    /** Answers a [ToolCall]. Fails like [VOICE_REPLY] once the model stopped waiting, after 15 seconds. */
+    public val ASSISTANT_TOOLS_ANSWER: Method<ToolAnswer, Unit> = Method(
+        "assistant.tools.answer", Scope.ASSISTANT, 1,
+        "Answers the assistant's call of one of the app's tools.",
+        ToolAnswer.serializer(), Unit.serializer(),
+    )
+
+    /** Fails with [ErrorCode.UNSUPPORTED] on glasses without a display, which show no notifications of apps. */
+    public val NOTIFY_POST: Method<Notice, Unit> = Method(
+        "notify.post", Scope.NOTIFY, 1,
+        "Shows a notification on the Display, or replaces the app's one with the same id.",
+        Notice.serializer(), Unit.serializer(),
+    )
+
+    public val NOTIFY_REMOVE: Method<NoticeRemoval, Unit> = Method(
+        "notify.remove", Scope.NOTIFY, 1,
+        "Takes one of the app's notifications away from the Display.",
+        NoticeRemoval.serializer(), Unit.serializer(),
+    )
+
     /** Every method, in the order of the reference. */
     public val all: List<Method<*, *>> = listOf(
         HELLO,
@@ -97,6 +128,9 @@ public object Methods {
         CAPTURES_LIST, CAPTURES_IMPORT,
         BAND_STATUS, BAND_BUZZ,
         DISPLAY_PROMPTER_SHOW, DISPLAY_PROMPTER_CLOSE,
+        VOICE_REPLY,
+        ASSISTANT_TOOLS_ANSWER,
+        NOTIFY_POST, NOTIFY_REMOVE,
     )
 }
 
@@ -154,10 +188,34 @@ public object Topics {
         Unit.serializer(), Gesture.serializer(),
     )
 
+    /**
+     * While the app subscribes, the wearer's questions that hold one of its [VoiceOffer.phrases] come to it instead of
+     * the assistant's model. Each needs a [Methods.VOICE_REPLY] within about 20 seconds, or the glasses tell the
+     * wearer the app did not answer. Ends with [ErrorCode.INVALID_PARAMS] when no phrase has a word in it.
+     */
+    public val VOICE_REQUESTS: Topic<VoiceOffer, VoiceRequest> = Topic(
+        "voice.requests", Scope.VOICE, 1,
+        "The wearer's questions that name one of the app's phrases, for the app to answer.",
+        VoiceOffer.serializer(), VoiceRequest.serializer(),
+    )
+
+    /**
+     * While the app subscribes, the assistant's model may use its [ToolsOffer.tools], and each call comes here. Each
+     * needs a [Methods.ASSISTANT_TOOLS_ANSWER] within 15 seconds. Ends with [ErrorCode.INVALID_PARAMS] when a tool's
+     * name or schema does not fit.
+     */
+    public val ASSISTANT_TOOLS: Topic<ToolsOffer, ToolCall> = Topic(
+        "assistant.tools", Scope.ASSISTANT, 1,
+        "Offers the assistant's model the app's tools, and brings each call of one.",
+        ToolsOffer.serializer(), ToolCall.serializer(),
+    )
+
     /** Every topic, in the order of the reference. */
     public val all: List<Topic<*, *>> = listOf(
         GLASSES_STATUS,
         CAPTURES_AVAILABLE, CAPTURES_PROGRESS, CAPTURES_IMPORTED, CAPTURES_FAILED,
         BAND_STATUS, BAND_GESTURES,
+        VOICE_REQUESTS,
+        ASSISTANT_TOOLS,
     )
 }
