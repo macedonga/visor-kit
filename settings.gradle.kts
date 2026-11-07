@@ -35,8 +35,12 @@ apply(from = "gradle/pins.settings.gradle.kts")
 // substituted for the published coordinates without any mapping.
 include(":kit-protocol")
 project(":kit-protocol").projectDir = file("protocol")
+include(":kit-server")
+project(":kit-server").projectDir = file("server")
 include(":kit")
 project(":kit").projectDir = file("android")
+include(":kit-fake")
+project(":kit-fake").projectDir = file("fake")
 include(":kit-testing")
 project(":kit-testing").projectDir = file("testing")
 // Not published: the `visor` command for a computer, the checks that keep the wire contract compatible, and

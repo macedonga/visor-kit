@@ -15,4 +15,5 @@ kotlin {
 
 dependencies {
     api(project(":kit"))
+    api(project(":kit-fake"))
 }

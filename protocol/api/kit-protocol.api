@@ -1,3 +1,10 @@
+public final class com/macedonga/visor/kit/KitException : java/lang/Exception {
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getCode-SpTyWAY ()Ljava/lang/String;
+	public final fun getReason ()Ljava/lang/String;
+	public final fun getScope-_YozsWQ ()Ljava/lang/String;
+}
+
 public final class com/macedonga/visor/kit/protocol/AppInfo {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/AppInfo$Companion;
 	public fun equals (Ljava/lang/Object;)Z

@@ -41,17 +41,17 @@ import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * Visor's side of the VDK, whatever the transport: the scope checks, [Methods.HELLO], the shell's own methods, the
- * injected and simulated events, and the trace. [KitServer] carries it over binder to apps, [ShellServer] over a
- * socket to adb.
+ * injected and simulated events, and the trace. On Android, KitServer carries it over binder to apps and ShellServer
+ * over a socket to adb; [JsonRpcSession] carries it over any line or frame transport.
  */
 @KitInternal
 public class Dispatcher(
     private val visorVersion: String,
-    internal val gate: Gate,
+    public val gate: Gate,
     private val routes: Routes,
-    internal val log: (String) -> Unit,
+    public val log: (String) -> Unit,
 ) {
-    internal val scope = CoroutineScope(
+    public val scope: CoroutineScope = CoroutineScope(
         SupervisorJob() + Dispatchers.Default + CoroutineExceptionHandler { _, e -> log("VDK: a handler crashed: $e") },
     )
     private val conversations = ConcurrentHashMap.newKeySet<Conversation>()
@@ -76,7 +76,8 @@ public class Dispatcher(
         scope.cancel()
     }
 
-    internal fun open(caller: Caller, peer: Peer): Conversation = Conversation(this, caller, peer).also { conversations += it }
+    @KitInternal
+    public fun open(caller: Caller, peer: Peer): Conversation = Conversation(this, caller, peer).also { conversations += it }
 
     internal fun closed(conversation: Conversation) {
         conversations -= conversation
@@ -209,33 +210,36 @@ public class Dispatcher(
 }
 
 /** Where a [Conversation] sends its answers. Each send returns false once the other side is gone. */
-internal interface Peer {
-    fun result(id: Long, result: String): Boolean
+@KitInternal
+public interface Peer {
+    public fun result(id: Long, result: String): Boolean
 
-    fun failure(id: Long, failure: Failure): Boolean
+    public fun failure(id: Long, failure: Failure): Boolean
 
-    fun event(subscription: Long, event: String): Boolean
+    public fun event(subscription: Long, event: String): Boolean
 
-    fun ended(subscription: Long, failure: Failure?): Boolean
+    public fun ended(subscription: Long, failure: Failure?): Boolean
 
     /** The conversation is over: let go of the transport. */
-    fun closed()
+    public fun closed()
 }
 
 /** Where one feed's records go. Only the feed's own coroutine calls it, and a write may block. */
-internal interface FeedSink {
+@KitInternal
+public interface FeedSink {
     /** False once the reader is gone, or stopped reading for too long. */
-    fun write(header: String, payload: ByteArray): Boolean
+    public fun write(header: String, payload: ByteArray): Boolean
 
     /** Tells the reader the feed is over, [failure] null when it simply ended, and lets go of the transport. */
-    fun end(failure: Failure?)
+    public fun end(failure: Failure?)
 
     /** Lets go of the transport without a word. */
-    fun close()
+    public fun close()
 }
 
 /** One caller's calls, streams and feeds, whatever the transport. */
-internal class Conversation(private val dispatcher: Dispatcher, val caller: Caller, private val peer: Peer) {
+@KitInternal
+public class Conversation internal constructor(private val dispatcher: Dispatcher, public val caller: Caller, private val peer: Peer) {
     private val calls = ConcurrentHashMap<Long, Job>()
     private val streams = ConcurrentHashMap<Long, Running>()
 
@@ -247,7 +251,7 @@ internal class Conversation(private val dispatcher: Dispatcher, val caller: Call
         var revoked: Failure? = null
     }
 
-    fun call(id: Long, method: String, params: String?) {
+    public fun call(id: Long, method: String, params: String?) {
         val started = System.nanoTime()
         dispatcher.trace(caller, TraceKind.CALL, method, id, params)
         val job = dispatcher.scope.launch(start = CoroutineStart.LAZY) {
@@ -269,17 +273,17 @@ internal class Conversation(private val dispatcher: Dispatcher, val caller: Call
         job.start()
     }
 
-    fun cancel(id: Long) {
+    public fun cancel(id: Long) {
         calls.remove(id)?.cancel()
     }
 
-    fun subscribe(id: Long, topic: String, params: String?) {
+    public fun subscribe(id: Long, topic: String, params: String?) {
         dispatcher.trace(caller, TraceKind.SUBSCRIBE, topic, id, params)
         start(id, topic, params)
     }
 
     /** Runs a feed into [sink] until it ends, or [unsubscribe] stops it. */
-    fun openFeed(id: Long, feed: String, params: String?, sink: FeedSink) {
+    public fun openFeed(id: Long, feed: String, params: String?, sink: FeedSink) {
         dispatcher.trace(caller, TraceKind.SUBSCRIBE, feed, id, params)
         val running = Running(feed, params, feed = true)
         // The feed's only writer, so its last word comes after its last record. Writes block: hence IO.
@@ -316,14 +320,14 @@ internal class Conversation(private val dispatcher: Dispatcher, val caller: Call
     }
 
     /** Stops a stream or a feed. */
-    fun unsubscribe(id: Long) {
+    public fun unsubscribe(id: Long) {
         val running = streams.remove(id) ?: return
         running.job.cancel()
         dispatcher.trace(caller, TraceKind.UNSUBSCRIBE, running.name, id, null)
     }
 
     /** Starts the streams of [topic] over, the app none the wiser: after the shell changed what is simulated. */
-    fun restart(topic: String) {
+    internal fun restart(topic: String) {
         for ((id, running) in streams) {
             if (running.feed || running.name != topic || !streams.remove(id, running)) continue
             running.job.cancel()
@@ -331,7 +335,7 @@ internal class Conversation(private val dispatcher: Dispatcher, val caller: Call
         }
     }
 
-    fun recheck() {
+    internal fun recheck() {
         for ((id, running) in streams) {
             val ending = dispatcher.revoked(caller, dispatcher.scopeOf(running.name))?.toFailure() ?: continue
             if (running.feed) {
@@ -344,7 +348,7 @@ internal class Conversation(private val dispatcher: Dispatcher, val caller: Call
         }
     }
 
-    fun end() {
+    public fun end() {
         dispatcher.closed(this)
         calls.values.forEach { it.cancel() }
         streams.values.forEach { it.job.cancel() }

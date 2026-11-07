@@ -15,7 +15,7 @@ kotlin {
 }
 
 dependencies {
-    api(project(":kit-protocol"))
+    api(project(":kit-server"))
     api(libs.kotlinx.coroutines.core)
     // RequestScopes is an ActivityResultContract.
     api(libs.androidx.activity)

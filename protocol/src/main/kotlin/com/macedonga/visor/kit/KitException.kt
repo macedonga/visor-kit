@@ -9,7 +9,7 @@ import com.macedonga.visor.kit.protocol.Scope
 public class KitException @KitInternal constructor(
     public val code: ErrorCode,
     message: String,
-    /** With [ErrorCode.SCOPE_DENIED], the scope to ask the person for with [RequestScopes]. */
+    /** With [ErrorCode.SCOPE_DENIED], the scope to ask the person for, with RequestScopes on Android. */
     public val scope: Scope? = null,
     /** A finer reason, from the set the method documents. */
     public val reason: String? = null,

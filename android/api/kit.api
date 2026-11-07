@@ -49,13 +49,6 @@ public final class com/macedonga/visor/kit/Glasses {
 	public final fun select (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class com/macedonga/visor/kit/KitException : java/lang/Exception {
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getCode-SpTyWAY ()Ljava/lang/String;
-	public final fun getReason ()Ljava/lang/String;
-	public final fun getScope-_YozsWQ ()Ljava/lang/String;
-}
-
 public final class com/macedonga/visor/kit/LiveAudioDecoder : java/lang/AutoCloseable {
 	public fun <init> (Lkotlin/jvm/functions/Function4;)V
 	public fun close ()V

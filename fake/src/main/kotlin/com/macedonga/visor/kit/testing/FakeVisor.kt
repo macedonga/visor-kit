@@ -1,7 +1,6 @@
 package com.macedonga.visor.kit.testing
 
 import com.macedonga.visor.kit.KitException
-import com.macedonga.visor.kit.Visor
 import com.macedonga.visor.kit.protocol.BandStatus
 import com.macedonga.visor.kit.protocol.Capture
 import com.macedonga.visor.kit.protocol.CaptureProgress
@@ -15,6 +14,7 @@ import com.macedonga.visor.kit.protocol.GlassesInput
 import com.macedonga.visor.kit.protocol.GlassesPair
 import com.macedonga.visor.kit.protocol.GlassesStatus
 import com.macedonga.visor.kit.protocol.Hello
+import com.macedonga.visor.kit.protocol.KitInternal
 import com.macedonga.visor.kit.protocol.Layout
 import com.macedonga.visor.kit.protocol.LayoutClick
 import com.macedonga.visor.kit.protocol.LayoutNode
@@ -94,10 +94,13 @@ public class FakeVisor {
         }
     }
 
-    private val dispatcher = Dispatcher(VERSION, gate, routes(), log = {})
+    /** The fake's server engine, for a transport to carry: `connect()` on Android, `visor fake` on a computer. */
+    @KitInternal
+    public val dispatcher: Dispatcher = Dispatcher(VERSION, gate, routes(), log = {})
 
-    /** A [Visor] connected to this fake, in this process, with no binder: it works in a plain JVM unit test. */
-    public suspend fun connect(): Visor = Visor.connect(dispatcher, Caller(UID, APP))
+    /** The one app the fake admits, granted [granted]. */
+    @KitInternal
+    public val caller: Caller get() = Caller(UID, APP)
 
     /** Ends every connection to this fake. */
     public fun close(): Unit = dispatcher.stop()
