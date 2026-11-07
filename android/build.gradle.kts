@@ -1,49 +1,49 @@
 plugins {
-    id("kit.android.library")
-    id("kit.publish")
+    id("vdk.android.library")
+    id("vdk.publish")
 }
 
 description = "Lets an Android app use Meta glasses through Visor: their state, camera, Neural Band and Display."
 
 android {
-    namespace = "com.macedonga.visor.kit"
+    namespace = "com.macedonga.visor.vdk"
     buildFeatures { aidl = true }
 }
 
 kotlin {
-    compilerOptions { optIn.add("com.macedonga.visor.kit.protocol.KitInternal") }
+    compilerOptions { optIn.add("com.macedonga.visor.vdk.protocol.VdkInternal") }
 }
 
 dependencies {
-    api(project(":kit-protocol"))
+    api(project(":vdk-protocol"))
     api(libs.kotlinx.coroutines.core)
     // RequestScopes is an ActivityResultContract.
     api(libs.androidx.activity)
     implementation(libs.kotlinx.coroutines.android)
 }
 
-/** Writes the library's version into the code, for the Hello that tells Visor which kit an app runs. */
-abstract class KitVersionSource : DefaultTask() {
+/** Writes the library's version into the code, for the Hello that tells Visor which VDK an app runs. */
+abstract class VdkVersionSource : DefaultTask() {
     @get:Input
-    abstract val kitVersion: Property<String>
+    abstract val vdkVersion: Property<String>
 
     @get:OutputDirectory
     abstract val outputDir: DirectoryProperty
 
     @TaskAction
     fun write() {
-        val file = outputDir.file("com/macedonga/visor/kit/KitVersion.kt").get().asFile
+        val file = outputDir.file("com/macedonga/visor/vdk/VdkVersion.kt").get().asFile
         file.parentFile.mkdirs()
-        file.writeText("package com.macedonga.visor.kit\n\ninternal const val KIT_VERSION: String = \"${kitVersion.get()}\"\n")
+        file.writeText("package com.macedonga.visor.vdk\n\ninternal const val VDK_VERSION: String = \"${vdkVersion.get()}\"\n")
     }
 }
 
-val kitVersionSource = tasks.register<KitVersionSource>("kitVersionSource") {
-    kitVersion.set(version.toString())
+val vdkVersionSource = tasks.register<VdkVersionSource>("vdkVersionSource") {
+    vdkVersion.set(version.toString())
 }
 
 androidComponents {
     onVariants { variant ->
-        variant.sources.kotlin?.addGeneratedSourceDirectory(kitVersionSource, KitVersionSource::outputDir)
+        variant.sources.kotlin?.addGeneratedSourceDirectory(vdkVersionSource, VdkVersionSource::outputDir)
     }
 }

@@ -34,7 +34,7 @@ import org.jetbrains.kotlin.abi.tools.AbiTools
 
 /**
  * The public ABI of a module's classes, written as the Kotlin plugin's own dump format with its own engine
- * (`org.jetbrains.kotlin:abi-tools`). The Kotlin plugin's ABI validation reads no Android compilation, so the kit
+ * (`org.jetbrains.kotlin:abi-tools`). The Kotlin plugin's ABI validation reads no Android compilation, so the VDK
  * runs the engine itself, the same way for every module.
  */
 @CacheableTask
@@ -119,7 +119,7 @@ abstract class CheckAbi : DefaultTask() {
         if (referenceText.get() != built.get().asFile.readText()) {
             throw GradleException(
                 "The public ABI changed. Run ${updateTask.get()}, review the diff of ${reference.path} and commit it. " +
-                    "A removed or changed line breaks apps built against a released kit: see CLAUDE.md.",
+                    "A removed or changed line breaks apps built against a released VDK: see CLAUDE.md.",
             )
         }
         stamp.get().asFile.writeText("ok\n")
@@ -206,7 +206,7 @@ internal fun Project.abiTasks(): TaskProvider<DumpAbi> {
     val update = "$path:updateAbi"
     val dump = tasks.register<DumpAbi>("dumpAbi") {
         this.tools.from(tools)
-        excludedAnnotations.add(KIT_INTERNAL)
+        excludedAnnotations.add(VDK_INTERNAL)
         this.dump.set(layout.buildDirectory.file("abi/$name.api"))
     }
     tasks.register("updateAbi") {

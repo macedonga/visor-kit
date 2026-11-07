@@ -24,7 +24,7 @@ fails with `refused` when the Display turns it down, `timeout` when it does not 
 | `paged` | false | A page at a time instead of scrolling. |
 | `followVoice` | false | Scroll as the wearer reads aloud, with the Display's own speech recognition. |
 
-The wearer can close the teleprompter on the Display; the kit does not hear about it. Captions or translation
+The wearer can close the teleprompter on the Display; the VDK does not hear about it. Captions or translation
 opening on the Display also take its place.
 
 ## JSON-RPC
@@ -35,7 +35,7 @@ opening on the Display also take its place.
 | Method | `display.prompter.close` | none | `{}` |
 
 ```
-visor call display.prompter.show '{"text":"Hello","style":{"paged":true}}'
+vdk call display.prompter.show '{"text":"Hello","style":{"paged":true}}'
 ```
 
-More of the Display (cards on its home, web apps that reach the kit) is on the [roadmap](overview.md#roadmap).
+More of the Display (cards on its home, web apps that reach the VDK) is on the [roadmap](overview.md#roadmap).

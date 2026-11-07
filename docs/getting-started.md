@@ -9,12 +9,12 @@ person for what it needs, on Visor's consent screen.
 
 ## 2. Add the library
 
-The kit needs Android 8.0 (API 26) or later in your app. Visor itself runs on Android 12 and later.
+The VDK needs Android 8.0 (API 26) or later in your app. Visor itself runs on Android 12 and later.
 
 ```kotlin
 dependencies {
-    implementation("com.macedonga.visor:kit:0.1.0")
-    testImplementation("com.macedonga.visor:kit-testing:0.1.0")
+    implementation("com.macedonga.visor:vdk:0.1.0")
+    testImplementation("com.macedonga.visor:vdk-testing:0.1.0")
 }
 ```
 
@@ -30,7 +30,7 @@ if (!Visor.isInstalled(context)) {
 }
 val visor = try {
     Visor.connect(context)
-} catch (e: KitException) {
+} catch (e: VdkException) {
     // e.code is VISOR_TOO_OLD, or another code: see Errors.
     return
 }
@@ -68,7 +68,7 @@ lifecycleScope.launch {
     try {
         val photo = visor.camera.takePhoto()
         imageView.setImageURI(Uri.parse(photo.uri))
-    } catch (e: KitException) {
+    } catch (e: VdkException) {
         when (e.code) {
             ErrorCode.SCOPE_DENIED -> ask.launch(setOf(e.scope!!))
             ErrorCode.NOT_CONNECTED -> showMessage("Put the glasses on.")
@@ -85,8 +85,8 @@ your app needs no media permission to show it.
 
 While you build, two tools save you from wearing the glasses:
 
-- The `visor` command on your computer shows what your app sends and receives, and can stand in for the band or
-  the glasses: `visor simulate band.gestures`, then type `index double_tap`.
+- The `vdk` command on your computer shows what your app sends and receives, and can stand in for the band or
+  the glasses: `vdk simulate band.gestures`, then type `index double_tap`.
 - `FakeVisor` runs Visor inside your tests.
 
 Both are in [Testing](testing.md).

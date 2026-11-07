@@ -1,13 +1,13 @@
 {
     "openrpc": "1.3.2",
     "info": {
-        "title": "Visor kit",
+        "title": "VDK",
         "version": "1",
         "description": "Methods marked x-shell are answered only on the adb shell's socket."
     },
     "methods": [
         {
-            "name": "kit.hello",
+            "name": "vdk.hello",
             "summary": "Starts a session and returns what Visor answers and which scopes the app holds.",
             "paramStructure": "by-name",
             "params": [
@@ -19,7 +19,7 @@
                     }
                 },
                 {
-                    "name": "kit",
+                    "name": "vdk",
                     "required": true,
                     "schema": {
                         "type": "string"
@@ -495,7 +495,7 @@
                     "connected": {
                         "type": "boolean"
                     },
-                    "kit": {
+                    "vdk": {
                         "anyOf": [
                             {
                                 "type": "string"

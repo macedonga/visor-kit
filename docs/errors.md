@@ -1,12 +1,12 @@
 # Errors
 
-Every failed call, and every stream that ends badly, throws a `KitException` (in JSON-RPC, an error whose `data`
+Every failed call, and every stream that ends badly, throws a `VdkException` (in JSON-RPC, an error whose `data`
 is a `Failure`). Act on `code`. `message` is for logs: its wording changes between releases.
 
 ```kotlin
 try {
     visor.camera.takePhoto()
-} catch (e: KitException) {
+} catch (e: VdkException) {
     Log.w(TAG, "photo failed: ${e.code} ${e.reason}: ${e.message}")
 }
 ```

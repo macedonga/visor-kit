@@ -13,7 +13,7 @@ poko = "0.23.2"
 mavenPublish = "0.37.0"
 dokka = "2.2.0"
 
-# The kit runs inside other apps, which may support older phones than Visor does.
+# The VDK runs inside other apps, which may support older phones than Visor does.
 compileSdk = "37"
 targetSdk = "37"
 minSdk = "26"

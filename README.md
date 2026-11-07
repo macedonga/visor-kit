@@ -1,8 +1,8 @@
-# Visor kit
+# VDK
 
 Build your own apps and tools for Meta's smart glasses.
 
-The Visor kit lets an Android app, or a script on your computer, use Ray-Ban Meta glasses, the Meta Ray-Ban
+The VDK lets an Android app, or a script on your computer, use Ray-Ban Meta glasses, the Meta Ray-Ban
 Display and the Meta Neural Band through [Visor](https://github.com/macedonga/visor), the open Android app that
 runs them. It needs no Meta account, no Meta AI app and no developer review, and it sends nothing anywhere.
 
@@ -24,11 +24,11 @@ JavaScript for the Display's web apps. See the [roadmap](docs/overview.md#roadma
 
 ## How it works
 
-Visor is the phone side of the glasses: it holds the Bluetooth and Wi-Fi link and speaks their protocol. The kit
+Visor is the phone side of the glasses: it holds the Bluetooth and Wi-Fi link and speaks their protocol. The VDK
 asks Visor to do things, and Visor asks the person first.
 
 ```
-your app       --(kit library, binder)--+
+your app       --(VDK library, binder)--+
                                         +--> Visor --(Bluetooth, Wi-Fi Direct)--> glasses, Neural Band
 your computer  --(adb, JSON-RPC)--------+
 ```
@@ -43,7 +43,7 @@ Visor's settings. Nothing else needs turning on.
 
    ```kotlin
    dependencies {
-       implementation("com.macedonga.visor:kit:0.1.0")
+       implementation("com.macedonga.visor:vdk:0.1.0")
    }
    ```
 
@@ -65,22 +65,22 @@ The [getting started guide](docs/getting-started.md) goes through it step by ste
 
 ## Test from your computer
 
-The `visor` command reaches Visor on the phone through adb, over USB or wireless debugging, once Developer mode
+The `vdk` command reaches Visor on the phone through adb, over USB or wireless debugging, once Developer mode
 is on in Visor. You can call any method, watch any stream, see your app's traffic, and stand in for the glasses or
 the band:
 
 ```
-visor status                              # Visor, the glasses, the band, the apps that use the kit
-visor trace                               # every call and event between your app and Visor
-visor simulate band.gestures              # no band needed: type "index double_tap", your app gets it
-visor grant com.example.app camera band   # skip the consent screen while you develop
+vdk status                              # Visor, the glasses, the band, the apps that use the VDK
+vdk trace                               # every call and event between your app and Visor
+vdk simulate band.gestures              # no band needed: type "index double_tap", your app gets it
+vdk grant com.example.app camera band   # skip the consent screen while you develop
 ```
 
 For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [Testing](docs/testing.md).
 
 ## Documentation
 
-- [Overview](docs/overview.md): what the kit is, how it compares with Meta's toolkit, and the roadmap
+- [Overview](docs/overview.md): what the VDK is, how it compares with Meta's toolkit, and the roadmap
 - [Getting started](docs/getting-started.md)
 - [Scopes and consent](docs/scopes-and-consent.md)
 - [The connection](docs/connection.md)
@@ -88,24 +88,24 @@ For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [T
   [Display](docs/display.md)
 - [Errors](docs/errors.md)
 - [Testing](docs/testing.md)
-- [JSON-RPC](docs/json-rpc.md): the kit from any language
+- [JSON-RPC](docs/json-rpc.md): the VDK from any language
 - [Compatibility](docs/compatibility.md)
 
 ## Modules
 
 | Artifact | What it is |
 |---|---|
-| `com.macedonga.visor:kit` | The Android library. |
-| `com.macedonga.visor:kit-testing` | `FakeVisor`, for tests. |
-| `com.macedonga.visor:kit-protocol` | The wire contract, for JVM tools and for Visor itself. |
+| `com.macedonga.visor:vdk` | The Android library. |
+| `com.macedonga.visor:vdk-testing` | `FakeVisor`, for tests. |
+| `com.macedonga.visor:vdk-protocol` | The wire contract, for JVM tools and for Visor itself. |
 | `visor` | The command for your computer, on the [releases](https://github.com/macedonga/visor-kit/releases) page. |
 
 ## Compatibility
 
-An app built against any kit release keeps working with every later Visor, and a newer app works with an older
+An app built against any VDK release keeps working with every later Visor, and a newer app works with an older
 Visor as far as that Visor goes. The build enforces this against the last release. See
 [Compatibility](docs/compatibility.md).
 
 ## License
 
-Apache 2.0. Visor itself is AGPL-3.0; the kit is separate so that any app can use it.
+Apache 2.0. Visor itself is AGPL-3.0; the VDK is separate so that any app can use it.

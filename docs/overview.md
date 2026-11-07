@@ -1,8 +1,8 @@
 # Overview
 
-The Visor kit is how other software uses Meta's glasses through Visor. Visor is an Android app that replaces the
+The VDK is how other software uses Meta's glasses through Visor. Visor is an Android app that replaces the
 Meta AI app as the phone side of Ray-Ban Meta glasses, the Meta Ray-Ban Display and the Meta Neural Band: it
-holds their Bluetooth and Wi-Fi links and speaks their protocol. The kit gives that link to your code.
+holds their Bluetooth and Wi-Fi links and speaks their protocol. The VDK gives that link to your code.
 
 ## Who it is for
 
@@ -14,22 +14,22 @@ holds their Bluetooth and Wi-Fi links and speaks their protocol. The kit gives t
 ## How it works
 
 ```
-your app       --(kit library, binder)--+
+your app       --(VDK library, binder)--+
                                         +--> Visor --(Bluetooth, Wi-Fi Direct)--> glasses, Neural Band
 your computer  --(adb, JSON-RPC)--------+
 ```
 
-Everything the kit does is a **method** (a request with one answer, like `camera.photo`) or a **topic** (a
+Everything the VDK does is a **method** (a request with one answer, like `camera.photo`) or a **topic** (a
 stream of events, like `band.gestures`). Both have a name, a scope, and the protocol version that added them.
-The [kit-protocol](../protocol) module defines all of them, and
+The [vdk-protocol](../protocol) module defines all of them, and
 [`protocol/api/openrpc.json`](../protocol/api/openrpc.json) describes them for any language.
 
 There are two ways in today:
 
-- **The Android library** (`com.macedonga.visor:kit`). Your app binds to Visor's kit service. Visor knows which
+- **The Android library** (`com.macedonga.visor:vdk`). Your app binds to Visor's VDK service. Visor knows which
   app is calling from Android itself, by its package and its signing certificate, so nothing can pretend to be
   your app.
-- **The adb socket.** Visor listens on a local socket that only adb's shell user may use. The `visor` command on
+- **The adb socket.** Visor listens on a local socket that only adb's shell user may use. The `vdk` command on
   your computer, or any program that speaks [JSON-RPC](json-rpc.md), reaches it with `adb forward`.
 
 The person stays in charge:
@@ -38,7 +38,7 @@ The person stays in charge:
   Settings. An app needs nothing else. See [Scopes and consent](scopes-and-consent.md).
 - **Developer mode** in Visor opens the adb socket for the computer-side tools. Apps never need it.
 
-The glasses' own safeguards stay in place: the capture light turns on for every photo and video the kit takes.
+The glasses' own safeguards stay in place: the capture light turns on for every photo and video the VDK takes.
 
 ## What it can do
 
@@ -52,10 +52,10 @@ The glasses' own safeguards stay in place: the capture light turns on for every 
 
 ## Compared with Meta's Wearables Device Access Toolkit
 
-Meta's toolkit (DAT) works through the Meta AI app and a Meta-signed program on the glasses. The kit works through
+Meta's toolkit (DAT) works through the Meta AI app and a Meta-signed program on the glasses. The VDK works through
 Visor instead, so the trade-offs differ:
 
-| | Meta's toolkit | Visor kit |
+| | Meta's toolkit | VDK |
 |---|---|---|
 | Needs | The Meta AI app, a Meta account, registration | Visor, and the person's consent |
 | Gating | Meta can turn features off per user; several can't be published yet | None |
@@ -65,12 +65,12 @@ Visor instead, so the trade-offs differ:
 | Display | Layouts of text, images, buttons and video | The teleprompter today; more on the roadmap |
 | From a computer | No | Yes, through adb |
 
-DAT does some things the kit does not do yet, such as a live camera stream for apps and full layouts on the
+DAT does some things the VDK does not do yet, such as a live camera stream for apps and full layouts on the
 Display. Those are on the roadmap below.
 
 ## Roadmap
 
-1. **Kit 0.1:** the glasses' status, the camera and captures, the Neural Band, the Display's teleprompter, the
+1. **VDK 0.1:** the glasses' status, the camera and captures, the Neural Band, the Display's teleprompter, the
    `visor` command and FakeVisor.
 2. **Voice and the assistant:** phrases routed to apps ("Hey Meta, ask My App..."), tools for the assistant's
    model, answers in the glasses' own voice, and notifications on the glasses.

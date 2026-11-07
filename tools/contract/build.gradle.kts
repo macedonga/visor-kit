@@ -14,22 +14,22 @@ java {
 kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
-        optIn.add("com.macedonga.visor.kit.protocol.KitInternal")
+        optIn.add("com.macedonga.visor.vdk.protocol.VdkInternal")
         optIn.add("kotlinx.serialization.ExperimentalSerializationApi")
     }
 }
 
 dependencies {
-    implementation(project(":kit-protocol"))
+    implementation(project(":vdk-protocol"))
 }
 
 val document = rootProject.layout.projectDirectory.file("protocol/api/openrpc.json")
 
-// Writes protocol/api/openrpc.json from kit-protocol.
+// Writes protocol/api/openrpc.json from vdk-protocol.
 tasks.register<JavaExec>("updateContract") {
     group = "verification"
     classpath = sourceSets.main.get().runtimeClasspath
-    mainClass.set("com.macedonga.visor.kit.contract.MainKt")
+    mainClass.set("com.macedonga.visor.vdk.contract.MainKt")
     args("update", document.asFile.path)
 }
 
@@ -37,7 +37,7 @@ tasks.register<JavaExec>("updateContract") {
 val checkContract = tasks.register<JavaExec>("checkContract") {
     group = "verification"
     classpath = sourceSets.main.get().runtimeClasspath
-    mainClass.set("com.macedonga.visor.kit.contract.MainKt")
+    mainClass.set("com.macedonga.visor.vdk.contract.MainKt")
     args("check", document.asFile.path, rootProject.layout.projectDirectory.asFile.path)
 }
 

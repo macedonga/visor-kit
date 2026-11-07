@@ -1,17 +1,17 @@
 plugins {
-    id("kit.jvm.library")
-    id("kit.publish")
+    id("vdk.jvm.library")
+    id("vdk.publish")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.poko)
 }
 
-description = "The Visor kit's wire contract: its methods, topics, their types and the error codes."
+description = "The VDK's wire contract: its methods, topics, their types and the error codes."
 
 dependencies {
     api(libs.kotlinx.serialization.json)
 }
 
-// The module that declares KitInternal uses it everywhere.
+// The module that declares VdkInternal uses it everywhere.
 kotlin {
-    compilerOptions { optIn.add("com.macedonga.visor.kit.protocol.KitInternal") }
+    compilerOptions { optIn.add("com.macedonga.visor.vdk.protocol.VdkInternal") }
 }

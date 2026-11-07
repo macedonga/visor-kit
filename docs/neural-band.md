@@ -71,5 +71,5 @@ time, and with `refused` when the band turns it down.
 | Topic | `band.status` | none | `BandStatus` now, then on each change |
 | Topic | `band.gestures` | none | `Gesture` |
 
-Without a band, `visor simulate band.gestures` makes Visor send only the gestures you type, and borrows nothing.
+Without a band, `vdk simulate band.gestures` makes Visor send only the gestures you type, and borrows nothing.
 See [Testing](testing.md).

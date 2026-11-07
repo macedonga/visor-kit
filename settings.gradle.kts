@@ -27,19 +27,19 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "visor-kit"
+rootProject.name = "vdk"
 
 apply(from = "gradle/pins.settings.gradle.kts")
 
 // Project names are the artifact ids, so a build that includes this one (Visor, with includeBuild) gets them
 // substituted for the published coordinates without any mapping.
-include(":kit-protocol")
-project(":kit-protocol").projectDir = file("protocol")
-include(":kit")
-project(":kit").projectDir = file("android")
-include(":kit-testing")
-project(":kit-testing").projectDir = file("testing")
-// Not published: the `visor` command for a computer, the checks that keep the wire contract compatible, and
+include(":vdk-protocol")
+project(":vdk-protocol").projectDir = file("protocol")
+include(":vdk")
+project(":vdk").projectDir = file("android")
+include(":vdk-testing")
+project(":vdk-testing").projectDir = file("testing")
+// Not published: the `vdk` command for a computer, the checks that keep the wire contract compatible, and
 // the sample app.
 include(":cli")
 project(":cli").projectDir = file("tools/cli")

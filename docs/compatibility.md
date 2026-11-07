@@ -1,20 +1,20 @@
 # Compatibility
 
-People update Visor and your app at different times, so the kit promises that either one can be the older side.
+People update Visor and your app at different times, so the VDK promises that either one can be the older side.
 
 ## The promise
 
-- An app built against any kit release works with every later Visor.
-- An app built against a newer kit works with an older Visor, for everything that Visor has. `visor.supports(...)`
+- An app built against any VDK release works with every later Visor.
+- An app built against a newer VDK works with an older Visor, for everything that Visor has. `visor.supports(...)`
   tells you what it has, and anything newer fails with `visor_too_old` instead of misbehaving.
-- Upgrading the kit in your app never breaks code that compiled against an earlier release of the same major
+- Upgrading the VDK in your app never breaks code that compiled against an earlier release of the same major
   version, at the source level or the binary level.
 - A method keeps doing what it did. New behavior comes as a new method, or as an optional field that asks for it.
 
 ## Versions
 
-- **Library versions** (`kit`, `kit-protocol`, `kit-testing`) follow semantic versioning.
-- **The protocol version** (`KitProtocol.VERSION`) is one number that each release adding a method, topic or field
+- **Library versions** (`vdk`, `vdk-protocol`, `vdk-testing`) follow semantic versioning.
+- **The protocol version** (`VdkProtocol.VERSION`) is one number that each release adding a method, topic or field
   raises by one. It only goes up. Each method and topic records the version that added it in `since`.
 
 ## What changes, and how
@@ -33,7 +33,7 @@ People update Visor and your app at different times, so the kit promises that ei
 - Use `else` in every `when` over `ErrorCode`, `GestureAction`, `CaptureType`, `Finger` or `Link`. They are value
   classes, not enums, because they grow.
 - Treat a `null` field as "not known". Most fields are null when the glasses are not connected.
-- Check `visor.supports(...)` before using a method added after the kit version you require of Visor.
+- Check `visor.supports(...)` before using a method added after the VDK version you require of Visor.
 
 ## How it is enforced
 
