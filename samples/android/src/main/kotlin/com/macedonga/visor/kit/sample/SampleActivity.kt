@@ -115,7 +115,7 @@ private fun Sample() {
                     is VisorState.Closed -> "Closed: ${s.error?.message}"
                 },
             )
-            Button({ ask.launch(setOf(Scope.STATE, Scope.INPUTS, Scope.CAMERA, Scope.BAND, Scope.DISPLAY)) }) { Text("Grant access") }
+            Button({ ask.launch(setOf(Scope.STATE, Scope.INPUTS, Scope.MICROPHONE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY)) }) { Text("Grant access") }
 
             val glasses by remember(v, grants) { v.glasses.status.logged(log, "glasses") }.collectAsState(null)
             Text("Glasses: ${glasses ?: "-"}", style = MaterialTheme.typography.bodySmall)
@@ -149,6 +149,17 @@ private fun Sample() {
             if (touches) {
                 LaunchedEffect(v, grants) {
                     v.glasses.inputs.logged(log, "inputs").collect { log.add(0, "input: ${it.source} ${it.action}") }
+                }
+            }
+
+            var hearing by remember { mutableStateOf(false) }
+            FlowRow(verticalArrangement = Arrangement.Center, itemVerticalAlignment = Alignment.CenterVertically) {
+                Switch(hearing, { hearing = it })
+                Text("  What the glasses hear")
+            }
+            if (hearing) {
+                LaunchedEffect(v, grants) {
+                    v.voice.transcripts().logged(log, "transcripts").collect { log.add(0, "heard: ${it.text}") }
                 }
             }
 

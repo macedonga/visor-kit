@@ -6,9 +6,12 @@ import com.macedonga.visor.kit.protocol.Notice
 import com.macedonga.visor.kit.protocol.ToolAnswer
 import com.macedonga.visor.kit.protocol.ToolCall
 import com.macedonga.visor.kit.protocol.ToolSpec
+import com.macedonga.visor.kit.protocol.Transcript
+import com.macedonga.visor.kit.protocol.TranscriptRequest
 import com.macedonga.visor.kit.protocol.VoiceReply
 import com.macedonga.visor.kit.protocol.VoiceRequest
 import com.macedonga.visor.kit.server.Phrases
+import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicInteger
@@ -16,10 +19,15 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.JsonObject
 
@@ -60,6 +68,24 @@ public class FakeVoice internal constructor() {
     internal fun replied(reply: VoiceReply) {
         waiting[reply.request]?.complete(reply)
             ?: throw KitException(ErrorCode.INVALID_PARAMS, "No question ${reply.request} is waiting.", reason = "expired")
+    }
+
+    private val heard = MutableSharedFlow<String>(extraBufferCapacity = 64)
+    private val _listening = MutableStateFlow(0)
+
+    /** How many apps collect transcripts now. Wait for one before [say], as a transcript nobody hears is lost. */
+    public val listening: StateFlow<Int> = _listening.asStateFlow()
+
+    /** The glasses hear [text], as one utterance, and every app that collects transcripts gets it. */
+    public fun say(text: String) {
+        heard.tryEmit(text)
+    }
+
+    internal fun transcripts(request: TranscriptRequest): Flow<Transcript> {
+        val language = request.language ?: Locale.getDefault().toLanguageTag()
+        return heard.map { Transcript(it, language, System.currentTimeMillis()) }
+            .onStart { _listening.update { it + 1 } }
+            .onCompletion { _listening.update { it - 1 } }
     }
 }
 

@@ -736,6 +736,34 @@
             "x-since": 1
         },
         {
+            "name": "voice.transcripts",
+            "summary": "What the glasses' microphones hear, as text, one utterance at a time.",
+            "params": [
+                {
+                    "name": "language",
+                    "required": false,
+                    "schema": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/Transcript"
+                }
+            },
+            "x-scope": "microphone",
+            "x-since": 1
+        },
+        {
             "name": "assistant.tools",
             "summary": "Offers the assistant's model the app's tools, and brings each call of one.",
             "params": [
@@ -1634,6 +1662,25 @@
                     "kind",
                     "name",
                     "id"
+                ]
+            },
+            "Transcript": {
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string"
+                    },
+                    "language": {
+                        "type": "string"
+                    },
+                    "time": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "text",
+                    "language",
+                    "time"
                 ]
             },
             "VoiceRequest": {

@@ -52,7 +52,7 @@ import kotlinx.coroutines.flow.onStart
  */
 public class FakeVisor {
     /** The scopes the fake person granted: all of them at first. Taking one back ends the streams that need it. */
-    public var granted: Set<Scope> by Delegates.observable(setOf(Scope.STATE, Scope.PAIRS, Scope.INPUTS, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.VOICE, Scope.ASSISTANT, Scope.NOTIFY)) { _, _, _ ->
+    public var granted: Set<Scope> by Delegates.observable(setOf(Scope.STATE, Scope.PAIRS, Scope.INPUTS, Scope.MICROPHONE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.VOICE, Scope.ASSISTANT, Scope.NOTIFY)) { _, _, _ ->
         dispatcher.recheck()
     }
 
@@ -177,6 +177,7 @@ public class FakeVisor {
         }
 
         stream(Topics.VOICE_REQUESTS) { _, offer -> voice.offer(offer.phrases) }
+        stream(Topics.VOICE_TRANSCRIPTS) { _, request -> voice.transcripts(request) }
         answer(Methods.VOICE_REPLY) { _, reply ->
             called(Methods.VOICE_REPLY.name)
             voice.replied(reply)

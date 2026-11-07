@@ -22,6 +22,9 @@ public value class Scope(public val id: String) {
         /** Taps and swipes on the glasses' touchpad, and presses of their buttons. */
         public val INPUTS: Scope = Scope("inputs")
 
+        /** What the glasses' microphones hear, as text. */
+        public val MICROPHONE: Scope = Scope("microphone")
+
         /** Photos, videos, and the captures on the glasses. */
         public val CAMERA: Scope = Scope("camera")
 

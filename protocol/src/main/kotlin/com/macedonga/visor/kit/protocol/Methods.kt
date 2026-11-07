@@ -257,6 +257,21 @@ public object Topics {
     )
 
     /**
+     * What the glasses' microphones hear, as text, one utterance at a time, while subscribed. Visor records the glasses
+     * as a Bluetooth headset, never the phone, and the phone's speech recogniser makes the text. Meanwhile the glasses
+     * act as a call headset, so music pauses. Visor records only while it may use the microphone: while an app that
+     * subscribes is on screen, or Visor is. Ends with [ErrorCode.UNSUPPORTED] and the reason `no_recognizer` (Android
+     * 12 or a phone without speech recognition) or `no_permission` (Visor may not record), [ErrorCode.NOT_CONNECTED],
+     * [ErrorCode.BUSY] while another app hears in another language, or [ErrorCode.FAILED] with `no_headset` or
+     * `recognizer_failed`.
+     */
+    public val VOICE_TRANSCRIPTS: Topic<TranscriptRequest, Transcript> = Topic(
+        "voice.transcripts", Scope.MICROPHONE, 1,
+        "What the glasses' microphones hear, as text, one utterance at a time.",
+        TranscriptRequest.serializer(), Transcript.serializer(),
+    )
+
+    /**
      * While the app subscribes, the assistant's model may use its [ToolsOffer.tools], and each call comes here. Each
      * needs a [Methods.ASSISTANT_TOOLS_ANSWER] within 15 seconds. Ends with [ErrorCode.INVALID_PARAMS] when a tool's
      * name or schema does not fit.
@@ -279,7 +294,7 @@ public object Topics {
         GLASSES_STATUS, GLASSES_PAIRS, GLASSES_INPUTS,
         CAPTURES_AVAILABLE, CAPTURES_PROGRESS, CAPTURES_IMPORTED, CAPTURES_FAILED,
         BAND_STATUS, BAND_GESTURES,
-        VOICE_REQUESTS,
+        VOICE_REQUESTS, VOICE_TRANSCRIPTS,
         ASSISTANT_TOOLS,
         RAW_MESSAGES,
     )

@@ -149,6 +149,7 @@ What the fake offers:
 | `fake.glasses` | `paired`, `connected`, `display`, `model`, `battery`, `charging`, `worn`, `folded`: each change reaches `glasses.status`. `add(type)` puts a capture on the fake glasses. `input(source, action)` sends a touch or a press. |
 | `fake.band` | `paired`, `battery`, `charging`, `leftHanded`; `gesture(...)` sends a gesture; `buzzes` lists the buzzes asked for. |
 | `fake.display` | `prompter`: the script on the teleprompter, null while closed. |
+| `fake.voice` | `ask(question)` asks as the wearer would and returns the app's reply; `say(text)` is an utterance the glasses hear, for `voice.transcripts`; `listening` counts the apps that collect transcripts. |
 | `fake.live` | `watching` and `config` while the app collects `camera.live`; `sendVideoConfig`, `sendVideo`, `sendAudioConfig`, `sendAudio` send samples; `stop()` ends it as the person would; `photos` counts live photos. |
 | `fake.calls` | The name of every method the app called, in order. |
 

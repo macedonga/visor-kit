@@ -50,7 +50,7 @@ The glasses' own safeguards stay in place: the capture light turns on for every 
 | [Captures](camera-and-captures.md) | `captures.list`, `captures.import`, `captures.available`, `captures.progress`, `captures.imported`, `captures.failed` | All |
 | [Neural Band](neural-band.md) | `band.status`, `band.gestures`, `band.buzz` | Meta Ray-Ban Display with a Neural Band |
 | [Display](display.md) | `display.prompter.show`, `display.prompter.close` | Meta Ray-Ban Display |
-| [Voice](voice-and-assistant.md) | `voice.requests`, `voice.reply` | All |
+| [Voice](voice-and-assistant.md) | `voice.requests`, `voice.reply`, `voice.transcripts` | All |
 | [Assistant](voice-and-assistant.md) | `assistant.tools`, `assistant.tools.answer` | All |
 | [Notifications](voice-and-assistant.md) | `notify.post`, `notify.remove` | Meta Ray-Ban Display |
 

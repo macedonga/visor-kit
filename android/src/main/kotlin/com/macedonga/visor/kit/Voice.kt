@@ -9,12 +9,17 @@ import com.macedonga.visor.kit.protocol.ToolCall
 import com.macedonga.visor.kit.protocol.ToolSpec
 import com.macedonga.visor.kit.protocol.ToolsOffer
 import com.macedonga.visor.kit.protocol.Topics
+import com.macedonga.visor.kit.protocol.Transcript
+import com.macedonga.visor.kit.protocol.TranscriptRequest
 import com.macedonga.visor.kit.protocol.VoiceOffer
 import com.macedonga.visor.kit.protocol.VoiceReply
 import com.macedonga.visor.kit.protocol.VoiceRequest
 import kotlinx.coroutines.flow.Flow
 
-/** The wearer's questions that name the app, answered in the glasses' own voice. Needs [Scope.VOICE]. */
+/**
+ * The wearer's questions that name the app, answered in the glasses' own voice, with [Scope.VOICE]; and what the
+ * glasses hear, as text, with [Scope.MICROPHONE].
+ */
 public class Voice internal constructor(private val visor: Visor) {
     /**
      * The questions that hold one of [phrases], while collected: "Hey Meta, ask the garage to close" comes here for
@@ -23,6 +28,15 @@ public class Voice internal constructor(private val visor: Visor) {
      */
     public fun requests(phrases: List<String>): Flow<VoiceRequest> =
         visor.subscribe(Topics.VOICE_REQUESTS, VoiceOffer(phrases))
+
+    /**
+     * What the glasses' microphones hear, as text, one finished utterance at a time, while collected. Visor records
+     * only while it may use the microphone: while your app, or Visor, is on screen. Needs [Scope.MICROPHONE].
+     */
+    public fun transcripts(request: TranscriptRequest): Flow<Transcript> = visor.subscribe(Topics.VOICE_TRANSCRIPTS, request)
+
+    /** [transcripts] in the phone's language. */
+    public fun transcripts(): Flow<Transcript> = transcripts(TranscriptRequest {})
 
     /** The glasses say [text] to the wearer, and the turn ends. */
     public suspend fun reply(request: VoiceRequest, text: String): Unit = reply(request, text, listen = false)

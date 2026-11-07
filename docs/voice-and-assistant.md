@@ -42,6 +42,40 @@ A `VoiceRequest`:
 
 A reply that comes too late fails with `invalid_params` and reason `expired`.
 
+## What the glasses hear
+
+Scope: `microphone`. All glasses, on Android 13 or later.
+
+```kotlin
+visor.voice.transcripts(TranscriptRequest { language = "en-US" }).collect { transcript ->
+    println(transcript.text)
+}
+```
+
+`transcripts` turns what the glasses' microphones hear into text, one finished utterance at a time, while you
+collect it. Visor records the glasses as a Bluetooth headset, never the phone's own microphone, and the phone's
+speech recogniser makes the text: on the phone when it holds the language, otherwise as the phone's recogniser
+does it. Without a `language`, Visor hears in the phone's language.
+
+While transcripts run, the glasses act as a call headset, so music pauses as in a call. Android lets Visor record
+only while it may use the microphone: while your app is on screen, or Visor is. The VDK lends Visor your app's
+access when it binds, so keep collecting from a visible screen. From a computer, keep Visor on screen.
+
+Each `Transcript` has the `text`, the `language` it was heard in, and the `time` the utterance ended. Several apps
+can listen at once, in one language: an app that asks for another language meanwhile fails with `busy`.
+
+The stream ends with:
+
+| Code | Reason | Why |
+|---|---|---|
+| `unsupported` | `no_recognizer` | Android 12, or a phone without speech recognition. |
+| `unsupported` | `no_permission` | Visor may not record. The person allows the microphone in Visor's settings. |
+| `not_connected` | | The glasses are not connected over Bluetooth. |
+| `busy` | | Another app hears in another language. |
+| `invalid_params` | | `language` is not a BCP 47 tag. |
+| `failed` | `no_headset` | The glasses are no headset to the phone, or the recording stopped. |
+| `failed` | `recognizer_failed` | The phone's recogniser stopped, for example for a language it lacks. |
+
 ## Tools for the model
 
 Scope: `assistant`. All glasses.
@@ -93,6 +127,7 @@ there `post` fails with `unsupported`.
 |---|---|---|---|
 | Topic | `voice.requests` | `phrases` | `VoiceRequest` |
 | Method | `voice.reply` | `request`, `text`, `listen` (default false) | `{}` |
+| Topic | `voice.transcripts` | `language` (optional) | `Transcript` |
 | Topic | `assistant.tools` | `tools`: a list of `{name, description, schema}` | `ToolCall` |
 | Method | `assistant.tools.answer` | `call`, `text`, `error` (default false) | `{}` |
 | Method | `notify.post` | `id`, `title`, `text` | `{}` |

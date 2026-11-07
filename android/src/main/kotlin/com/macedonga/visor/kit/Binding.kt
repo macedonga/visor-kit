@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Build
 import android.os.IBinder
 import com.macedonga.visor.kit.ipc.IKitService
 import com.macedonga.visor.kit.protocol.ErrorCode
@@ -43,7 +44,7 @@ internal class AndroidBinding(private val context: Context) : Binding {
         }
         val intent = Intent(KitProtocol.ACTION_BIND).setPackage(KitProtocol.VISOR_PACKAGE)
         this.connection = connection
-        if (!context.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
+        if (!context.bindService(intent, connection, FLAGS)) {
             stop()
             val error = if (Visor.isInstalled(context)) {
                 KitException(ErrorCode.VISOR_TOO_OLD, "This Visor has no VDK service. Update Visor.")
@@ -52,6 +53,11 @@ internal class AndroidBinding(private val context: Context) : Binding {
             }
             onDead(error)
         }
+    }
+
+    private companion object {
+        // While the app is on screen, Visor may use the microphone for it, as for voice.transcripts.
+        val FLAGS = Context.BIND_AUTO_CREATE or (if (Build.VERSION.SDK_INT >= 29) Context.BIND_INCLUDE_CAPABILITIES else 0)
     }
 
     // Also after bindService returned false: Android keeps the connection registered until it is unbound.

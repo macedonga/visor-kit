@@ -106,7 +106,7 @@ maps all of it. Status:
 | Camera stream: quality, frame rate, HEVC or decoded | `camera.live`, `LiveVideoDecoder` | built, not tried on glasses |
 | Stream audio (PCM) | `camera.live` audio, `LiveAudioDecoder` | built, not tried on glasses |
 | Photo during a stream; `PhotoResolution`, `PhotoQuality` | `camera.live.photo` (HEIC, full size) | built, not tried on glasses |
-| Speech: on-device transcription | `voice.transcripts` | to build: headset mic and the phone's recogniser |
+| Speech: on-device transcription | `voice.transcripts` | built: headset mic into the phone's recogniser; not tried on glasses |
 | Voice invocations (`LaunchApp`) | `voice.requests` | done |
 | Motion: accelerometer, gyroscope, magnetometer, orientation | | research: no live IMU source known yet |
 | Inputs: nav, select, back, button, capture, drag | `glasses.inputs`, `band.gestures` | built from svc28's touch and button pushes; not tried on glasses |

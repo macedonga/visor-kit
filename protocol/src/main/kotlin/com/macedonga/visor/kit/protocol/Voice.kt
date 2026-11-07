@@ -29,6 +29,35 @@ public class VoiceRequest @KitInternal constructor(
     public val intent: String? = null,
 )
 
+/** The params of [Topics.VOICE_TRANSCRIPTS]. Build one with [TranscriptRequest]. */
+@Poko
+@Serializable
+public class TranscriptRequest @KitInternal constructor(
+    /** The language to hear, as a BCP 47 tag such as `en-US`; null for the phone's language. */
+    public val language: String? = null,
+) {
+    public class Builder {
+        public var language: String? = null
+
+        public fun build(): TranscriptRequest = TranscriptRequest(language)
+    }
+}
+
+/** A [TranscriptRequest], for example `TranscriptRequest { language = "it-IT" }`. */
+public fun TranscriptRequest(block: TranscriptRequest.Builder.() -> Unit): TranscriptRequest =
+    TranscriptRequest.Builder().apply(block).build()
+
+/** One finished utterance, from [Topics.VOICE_TRANSCRIPTS]. */
+@Poko
+@Serializable
+public class Transcript @KitInternal constructor(
+    public val text: String,
+    /** The language it was heard in, as a BCP 47 tag. */
+    public val language: String,
+    /** When the utterance ended, in milliseconds since 1970. */
+    public val time: Long,
+)
+
 /** The params of [Methods.VOICE_REPLY]. */
 @Poko
 @Serializable

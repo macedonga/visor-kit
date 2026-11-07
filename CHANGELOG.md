@@ -9,6 +9,8 @@
   the Neural Band's status, gestures and vibration, and the Display's teleprompter. `RequestScopes` asks the
   person for scopes on Visor's consent screen.
 - `glasses.inputs`, with the `inputs` scope: each touch of the touchpad and each press of a button.
+- `voice.transcripts`, with the `microphone` scope: what the glasses hear, as text, from the phone's recogniser.
+  The client binds with `BIND_INCLUDE_CAPABILITIES`, so Visor may record while the app is on screen.
 - Feeds, streams of binary records, over a socket for apps and as Base64 events over JSON-RPC. `camera.live`
   streams the glasses' camera, encoded, with their microphones when asked; `LiveVideoDecoder` and
   `LiveAudioDecoder` decode it to a Surface, to images or to PCM. `camera.live.photo` takes a photo meanwhile.
