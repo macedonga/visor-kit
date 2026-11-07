@@ -49,6 +49,9 @@ The glasses' own safeguards stay in place: the capture light turns on for every 
 | [Captures](camera-and-captures.md) | `captures.list`, `captures.import`, `captures.available`, `captures.progress`, `captures.imported`, `captures.failed` | All |
 | [Neural Band](neural-band.md) | `band.status`, `band.gestures`, `band.buzz` | Meta Ray-Ban Display with a Neural Band |
 | [Display](display.md) | `display.prompter.show`, `display.prompter.close` | Meta Ray-Ban Display |
+| [Voice](voice-and-assistant.md) | `voice.requests`, `voice.reply` | All |
+| [Assistant](voice-and-assistant.md) | `assistant.tools`, `assistant.tools.answer` | All |
+| [Notifications](voice-and-assistant.md) | `notify.post`, `notify.remove` | Meta Ray-Ban Display |
 
 ## Compared with Meta's Wearables Device Access Toolkit
 
@@ -62,6 +65,7 @@ Visor instead, so the trade-offs differ:
 | Telemetry | Crash reports and analytics on by default | None |
 | Camera | A video stream up to 720p over Bluetooth | Photos and videos, imported over Wi-Fi Direct |
 | Neural Band | Navigation events only | Every gesture as the band reports it, and vibration |
+| Voice | "Hey Meta" can open an app | Questions that name an app go to it, answered in the glasses' own voice; tools for the model |
 | Display | Layouts of text, images, buttons and video | The teleprompter today; more on the roadmap |
 | From a computer | No | Yes, through adb |
 

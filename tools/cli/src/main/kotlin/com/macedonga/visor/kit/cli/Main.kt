@@ -42,8 +42,9 @@ Commands:
   methods                   The methods and topics this Visor answers.
   call METHOD [JSON]        Runs a method and prints its result.
                               visor call camera.photo '{"import":false}'
-  watch TOPIC...            Prints each event as it comes, until Ctrl+C.
+  watch TOPIC [JSON]...     Prints each event as it comes, until Ctrl+C. JSON after a topic is its params.
                               visor watch band.gestures glasses.status
+                              visor watch voice.requests '{"phrases":["the garage"]}'
   trace                     Prints every call, answer and event between the apps and Visor.
   simulate TOPIC...         While it runs, apps get only the events you type, one per line, and no
                             glasses or band are used. For band.gestures type FINGER ACTION, for
@@ -195,10 +196,20 @@ private class Commands(private val session: Session, private val json: Boolean) 
         println(if (json) result.toString() else pretty.encodeToString(JsonElement.serializer(), result))
     }
 
-    private fun watch(topics: List<String>) {
+    /** Each word is a topic, and a JSON object after one is that topic's params. */
+    private fun watch(words: List<String>) {
+        val topics = LinkedHashMap<String, JsonElement?>()
+        for (word in words) {
+            if (word.startsWith("{")) {
+                val last = topics.keys.lastOrNull() ?: usage("Name a topic before its params.")
+                topics[last] = parse(word)
+            } else {
+                topics[word] = null
+            }
+        }
         val open = CountDownLatch(topics.size)
-        for (topic in topics) {
-            rpc.subscribe(topic, null, object : Rpc.Listener {
+        for ((topic, params) in topics) {
+            rpc.subscribe(topic, params, object : Rpc.Listener {
                 override fun event(event: JsonElement) = println(
                     if (json) buildJsonObject { put("topic", topic); put("event", event) }.toString()
                     else "${clock.format(Instant.now())}  $topic  $event",
@@ -214,7 +225,7 @@ private class Commands(private val session: Session, private val json: Boolean) 
     }
 
     private fun trace() {
-        System.err.println("Tracing the VDK. Ctrl+C stops.")
+        System.err.println("Tracing the kit. Ctrl+C stops.")
         val over = CountDownLatch(1)
         rpc.subscribe(Shell.TRACE.name, null, object : Rpc.Listener {
             override fun event(event: JsonElement) {

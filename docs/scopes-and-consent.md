@@ -12,6 +12,9 @@ Developer mode.
 | `camera` | Take photos and videos, and copy them to the phone | `camera.*`, `captures.*` |
 | `band` | Read the Neural Band's gestures and make it vibrate | `band.*` |
 | `display` | Show text on the Display | `display.*` |
+| `voice` | Answer the questions the wearer asks that name the app | `voice.*` |
+| `assistant` | Give the assistant tools it can use while it answers | `assistant.*` |
+| `notify` | Show notifications on the Display | `notify.*` |
 
 `kit.hello` needs no scope. Later releases add scopes; an app built against an older VDK never sees them unless
 it asks for them by id.

@@ -17,10 +17,11 @@ runs them. It needs no Meta account, no Meta AI app and no developer review, and
 | **Camera** | Take a photo and get it in the phone's gallery. Start and stop videos and hyperlapses. |
 | **Captures** | List what is on the glasses, import it over Wi-Fi Direct, and follow each import. |
 | **Neural Band** | Receive every gesture: finger, action and the band's own reading of it. Make the band vibrate. |
-| **Display** | Put a script on the Ray-Ban Display's teleprompter. |
+| **Display** | Put a script on the Ray-Ban Display's teleprompter, and notifications on the Display. |
+| **Voice** | Answer the questions the wearer asks that name your app, in the glasses' own voice. |
+| **Assistant** | Give the assistant's model your app's tools, which it calls while it answers the wearer. |
 
-Coming next: voice commands and tools for the assistant, notifications, a network API with an MCP server, and
-JavaScript for the Display's web apps. See the [roadmap](docs/overview.md#roadmap).
+Coming next: a network API with an MCP server, and JavaScript for the Display's web apps. See the [roadmap](docs/overview.md#roadmap).
 
 ## How it works
 
@@ -85,7 +86,7 @@ For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [T
 - [Scopes and consent](docs/scopes-and-consent.md)
 - [The connection](docs/connection.md)
 - [Glasses](docs/glasses.md), [Camera and captures](docs/camera-and-captures.md), [Neural Band](docs/neural-band.md),
-  [Display](docs/display.md)
+  [Display](docs/display.md), [Voice and the assistant](docs/voice-and-assistant.md)
 - [Errors](docs/errors.md)
 - [Testing](docs/testing.md)
 - [JSON-RPC](docs/json-rpc.md): the VDK from any language

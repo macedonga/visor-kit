@@ -11,6 +11,7 @@ Start with the overview, then getting started. The rest is reference.
    - [Camera and captures](camera-and-captures.md): photos, videos, imports.
    - [Neural Band](neural-band.md): gestures, status, vibration.
    - [Display](display.md): the teleprompter.
+   - [Voice and the assistant](voice-and-assistant.md): questions for the app, tools for the model, notifications.
 6. [Errors](errors.md): every code, and what to do about it.
 7. [Testing](testing.md): the `visor` command and FakeVisor.
 8. [JSON-RPC](json-rpc.md): the VDK from any language.
