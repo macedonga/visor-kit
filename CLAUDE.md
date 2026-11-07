@@ -99,7 +99,7 @@ Status as of 2026-11-07: phases 1 to 3 are built and checked, not yet tried with
    adb socket; the `visor` command; FakeVisor; the sample app.
 2. Done: voice requests and replies in the glasses' own voice, tools for the user's model, notifications on the
    Display.
-3. Done except webhooks: JSON-RPC over WebSocket and MCP on 127.0.0.1:7333 (LAN opt-in) with per-client tokens, the
+3. Done: JSON-RPC over WebSocket, MCP and webhooks on 127.0.0.1:7333 (LAN opt-in) with per-client tokens, the
    raw scope (Developer mode only; 36, 54, 79 and 29 refused), Python and TypeScript clients in `clients/`.
 4. The Display: `visor.js` for web apps through Visor's tunnel, Briefing cards, the band without glasses.
 5. Research: the DWA broker protocol (services 6500 to 6504), for DAT's display components without Meta AI.

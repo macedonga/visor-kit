@@ -39,6 +39,27 @@ claude mcp add --transport http visor http://127.0.0.1:7333/mcp --header "Author
 Give an agent's client only the scopes it needs. An agent with `camera` takes photos when it decides to; the
 glasses' capture light still turns on for each one.
 
+## Webhooks
+
+For a service that cannot hold a connection open, such as a home automation hub, Visor can post events instead. When
+you add a client, give it a **webhook URL** and pick its topics: those its scopes allow, without params. While the
+network door is open, Visor subscribes as that client and posts each event, in order, as JSON:
+
+```json
+{"client": "home", "topic": "glasses.status", "event": {"paired": true, "link": "connected"}, "time": 1794072397747}
+```
+
+Each post carries `X-Visor-Signature: sha256=<hex>`, the HMAC-SHA256 of the body. The key is the hex SHA-256 of the
+client's token, which Visor keeps instead of the token:
+
+```python
+key = hashlib.sha256(token.encode()).hexdigest().encode()
+valid = hmac.compare_digest("sha256=" + hmac.new(key, body, hashlib.sha256).hexdigest(), signature)
+```
+
+Visor waits 5 seconds for an answer and does not retry. When the receiver keeps failing, Visor's event log says so
+once a minute.
+
 ## Clients for other languages
 
 - **Python:** [`clients/python`](../clients/python). `connect_adb()` or `connect_network(url, token)`, then
