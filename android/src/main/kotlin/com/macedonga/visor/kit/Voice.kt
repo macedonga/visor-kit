@@ -1,5 +1,7 @@
 package com.macedonga.visor.kit
 
+import com.macedonga.visor.kit.protocol.AssistantTurn
+import com.macedonga.visor.kit.protocol.HistoryQuery
 import com.macedonga.visor.kit.protocol.Methods
 import com.macedonga.visor.kit.protocol.Notice
 import com.macedonga.visor.kit.protocol.NoticeRemoval
@@ -60,6 +62,17 @@ public class Assistant internal constructor(private val visor: Visor) {
     /** The tool failed; [message] tells the model why. */
     public suspend fun fail(call: ToolCall, message: String): Unit =
         visor.call(Methods.ASSISTANT_TOOLS_ANSWER, ToolAnswer(call.id, message, error = true))
+
+    /** Each question asked of the assistant with its answer, as it is answered. Needs [Scope.CONVERSATIONS]. */
+    public val turns: Flow<AssistantTurn>
+        get() = visor.subscribe(Topics.ASSISTANT_TURNS, Unit)
+
+    /** The last [HistoryQuery.DEFAULT_LIMIT] turns kept on the phone, newest first. Needs [Scope.CONVERSATIONS]. */
+    public suspend fun history(): List<AssistantTurn> = visor.call(Methods.ASSISTANT_HISTORY, HistoryQuery())
+
+    /** At most [limit] turns asked after [since], in milliseconds since the epoch, newest first. */
+    public suspend fun history(since: Long, limit: Int): List<AssistantTurn> =
+        visor.call(Methods.ASSISTANT_HISTORY, HistoryQuery(since, limit))
 }
 
 /** Notifications on the Meta Ray-Ban Display. Needs [Scope.NOTIFY]; glasses without a display show none. */

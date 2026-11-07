@@ -1,6 +1,8 @@
 public final class com/macedonga/visor/kit/testing/FakeAssistant {
 	public final fun call (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getHistory ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getTools ()Ljava/util/List;
+	public final fun turn (Ljava/lang/String;Ljava/lang/String;)Lcom/macedonga/visor/kit/protocol/AssistantTurn;
 }
 
 public final class com/macedonga/visor/kit/testing/FakeBand {

@@ -109,6 +109,32 @@ to the wearer from it, so say what happened, not how to say it.
 - **Descriptions** are what the model goes by to choose a tool. Say what it does and when it applies.
 - Visor's diary records each call with the app's name and whether it worked.
 
+## The conversations
+
+Visor keeps what the wearer asks the assistant, and its answers, on the phone until the person deletes them. With
+the `conversations` scope an app can read them, and get each new one as it is answered: a journal, a search over
+everything asked, a sync to the person's own notes.
+
+```kotlin
+visor.assistant.turns.collect { turn -> println("${turn.question} -> ${turn.answer}") }
+val lastWeek = visor.assistant.history(since = System.currentTimeMillis() - 7 * 86_400_000L, limit = 500)
+```
+
+An `AssistantTurn`:
+
+| Field | Type | Meaning |
+|---|---|---|
+| `id` | `String` | Stable: a turn asked again comes again with the same id and the new answer. |
+| `time` | `Long` | When it was asked, in milliseconds since the epoch. |
+| `question`, `answer` | `String` | The answer is empty when the turn failed. |
+| `failure` | `String` | Why it failed, for a log; empty when it did not. |
+| `source` | `TurnSource` | `glasses`, `phone` (Visor's Meta AI page) or `live_ai`. |
+| `conversation` | `String` | Turns asked close together share one, as do the turns of one Live AI session. |
+| `photo` | `Boolean` | True when the glasses sent a photo with the question. The photo stays in Visor. |
+| `tools` | `List<ToolUse>` | What the assistant did with the person's tools: `server`, `what`, `ok`. |
+
+`history` returns the newest turns first, at most `limit` (1 to 500, 50 by default).
+
 ## Notifications on the Display
 
 Scope: `notify`. The Meta Ray-Ban Display.
@@ -130,6 +156,8 @@ there `post` fails with `unsupported`.
 | Topic | `voice.transcripts` | `language` (optional) | `Transcript` |
 | Topic | `assistant.tools` | `tools`: a list of `{name, description, schema}` | `ToolCall` |
 | Method | `assistant.tools.answer` | `call`, `text`, `error` (default false) | `{}` |
+| Topic | `assistant.turns` | none | `AssistantTurn` |
+| Method | `assistant.history` | `since` (optional), `limit` (default 50) | a list of `AssistantTurn` |
 | Method | `notify.post` | `id`, `title`, `text` | `{}` |
 | Method | `notify.remove` | `id` | `{}` |
 

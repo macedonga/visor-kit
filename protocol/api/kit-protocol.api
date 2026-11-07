@@ -32,6 +32,38 @@ public final class com/macedonga/visor/kit/protocol/AppInfo$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/macedonga/visor/kit/protocol/AssistantTurn {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/AssistantTurn$Companion;
+	public synthetic fun <init> (Ljava/lang/String;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAnswer ()Ljava/lang/String;
+	public final fun getConversation ()Ljava/lang/String;
+	public final fun getFailure ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/String;
+	public final fun getPhoto ()Z
+	public final fun getQuestion ()Ljava/lang/String;
+	public final fun getSource-up6uWQU ()Ljava/lang/String;
+	public final fun getTime ()J
+	public final fun getTools ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/AssistantTurn$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/AssistantTurn$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/AssistantTurn;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/AssistantTurn;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/AssistantTurn$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class com/macedonga/visor/kit/protocol/BandStatus {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/BandStatus$Companion;
 	public synthetic fun <init> (ZLjava/lang/String;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;ZLjava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -670,6 +702,32 @@ public final class com/macedonga/visor/kit/protocol/Hello$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/macedonga/visor/kit/protocol/HistoryQuery {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/HistoryQuery$Companion;
+	public static final field DEFAULT_LIMIT I
+	public static final field MAX_LIMIT I
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLimit ()I
+	public final fun getSince ()Ljava/lang/Long;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/HistoryQuery$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/HistoryQuery$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/HistoryQuery;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/HistoryQuery;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/HistoryQuery$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class com/macedonga/visor/kit/protocol/ImportRequest {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/ImportRequest$Companion;
 	public fun equals (Ljava/lang/Object;)Z
@@ -1267,6 +1325,7 @@ public final class com/macedonga/visor/kit/protocol/Method {
 
 public final class com/macedonga/visor/kit/protocol/Methods {
 	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/Methods;
+	public final fun getASSISTANT_HISTORY ()Lcom/macedonga/visor/kit/protocol/Method;
 	public final fun getASSISTANT_TOOLS_ANSWER ()Lcom/macedonga/visor/kit/protocol/Method;
 	public final fun getAll ()Ljava/util/List;
 	public final fun getBAND_BUZZ ()Lcom/macedonga/visor/kit/protocol/Method;
@@ -1634,6 +1693,7 @@ public final class com/macedonga/visor/kit/protocol/Scope$Companion {
 	public final fun getASSISTANT-iB3VXpI ()Ljava/lang/String;
 	public final fun getBAND-iB3VXpI ()Ljava/lang/String;
 	public final fun getCAMERA-iB3VXpI ()Ljava/lang/String;
+	public final fun getCONVERSATIONS-iB3VXpI ()Ljava/lang/String;
 	public final fun getDISPLAY-iB3VXpI ()Ljava/lang/String;
 	public final fun getINPUTS-iB3VXpI ()Ljava/lang/String;
 	public final fun getMICROPHONE-iB3VXpI ()Ljava/lang/String;
@@ -2007,6 +2067,31 @@ public final class com/macedonga/visor/kit/protocol/ToolSpec$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/macedonga/visor/kit/protocol/ToolUse {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/ToolUse$Companion;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getOk ()Z
+	public final fun getServer ()Ljava/lang/String;
+	public final fun getWhat ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/ToolUse$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/ToolUse$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/ToolUse;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/ToolUse;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/ToolUse$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class com/macedonga/visor/kit/protocol/ToolsKt {
 	public static final fun ToolSpec (Lkotlin/jvm/functions/Function1;)Lcom/macedonga/visor/kit/protocol/ToolSpec;
 }
@@ -2047,6 +2132,7 @@ public final class com/macedonga/visor/kit/protocol/Topic {
 public final class com/macedonga/visor/kit/protocol/Topics {
 	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/Topics;
 	public final fun getASSISTANT_TOOLS ()Lcom/macedonga/visor/kit/protocol/Topic;
+	public final fun getASSISTANT_TURNS ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getAll ()Ljava/util/List;
 	public final fun getBAND_GESTURES ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getBAND_STATUS ()Lcom/macedonga/visor/kit/protocol/Topic;
@@ -2183,6 +2269,39 @@ public final class com/macedonga/visor/kit/protocol/TranscriptRequest$Builder {
 }
 
 public final class com/macedonga/visor/kit/protocol/TranscriptRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/TurnSource {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/TurnSource$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/macedonga/visor/kit/protocol/TurnSource;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/TurnSource$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/TurnSource$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-usRnbrs (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-CO3gKb0 (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/TurnSource$Companion {
+	public final fun getGLASSES-up6uWQU ()Ljava/lang/String;
+	public final fun getLIVE_AI-up6uWQU ()Ljava/lang/String;
+	public final fun getPHONE-up6uWQU ()Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 

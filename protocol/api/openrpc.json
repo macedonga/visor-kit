@@ -394,6 +394,45 @@
             "x-since": 1
         },
         {
+            "name": "assistant.history",
+            "summary": "Returns the questions asked of the assistant and its answers, newest first.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "since",
+                    "required": false,
+                    "schema": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "limit",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/AssistantTurn"
+                    }
+                }
+            },
+            "x-scope": "conversations",
+            "x-since": 1
+        },
+        {
             "name": "notify.post",
             "summary": "Shows a notification on the Display, or replaces the app's one with the same id.",
             "paramStructure": "by-name",
@@ -930,6 +969,19 @@
             "x-since": 1
         },
         {
+            "name": "assistant.turns",
+            "summary": "Brings each question asked of the assistant with its answer, as it is answered.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/AssistantTurn"
+                }
+            },
+            "x-scope": "conversations",
+            "x-since": 1
+        },
+        {
             "name": "settings.changes",
             "summary": "Brings each change of the glasses' settings, whoever made it.",
             "params": [
@@ -1083,6 +1135,47 @@
                     "packageName",
                     "granted",
                     "connected"
+                ]
+            },
+            "AssistantTurn": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "time": {
+                        "type": "integer"
+                    },
+                    "question": {
+                        "type": "string"
+                    },
+                    "answer": {
+                        "type": "string"
+                    },
+                    "failure": {
+                        "type": "string"
+                    },
+                    "source": {
+                        "type": "string",
+                        "title": "TurnSource"
+                    },
+                    "conversation": {
+                        "type": "string"
+                    },
+                    "photo": {
+                        "type": "boolean"
+                    },
+                    "tools": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ToolUse"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "time",
+                    "question"
                 ]
             },
             "BandStatus": {
@@ -2074,6 +2167,25 @@
                 "required": [
                     "name",
                     "description"
+                ]
+            },
+            "ToolUse": {
+                "type": "object",
+                "properties": {
+                    "server": {
+                        "type": "string"
+                    },
+                    "what": {
+                        "type": "string"
+                    },
+                    "ok": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "server",
+                    "what",
+                    "ok"
                 ]
             },
             "TraceRecord": {

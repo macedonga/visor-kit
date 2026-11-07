@@ -1,6 +1,9 @@
 public final class com/macedonga/visor/kit/Assistant {
 	public final fun answer (Lcom/macedonga/visor/kit/protocol/ToolCall;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun fail (Lcom/macedonga/visor/kit/protocol/ToolCall;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getTurns ()Lkotlinx/coroutines/flow/Flow;
+	public final fun history (JILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun history (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun tools (Ljava/util/List;)Lkotlinx/coroutines/flow/Flow;
 }
 

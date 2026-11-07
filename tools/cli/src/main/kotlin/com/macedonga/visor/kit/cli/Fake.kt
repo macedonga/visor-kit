@@ -60,6 +60,7 @@ Type here to play the glasses:
   ask QUESTION              The wearer asks; the app whose phrase the question holds answers.
   say TEXT                  The glasses hear TEXT, for voice.transcripts.
   tool NAME [JSON]          The assistant calls an app's tool with JSON arguments.
+  turn QUESTION / ANSWER    The wearer asks the assistant QUESTION and it answers ANSWER.
   click ID                  A tap on an element of the layout on the Display.
   grant|revoke SCOPE...     Changes the scopes the fake person granted.
   quit
@@ -187,6 +188,10 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
                     val answer = fake.assistant.call(name, arguments)
                     say(if (answer == null) "Assistant: no app answered $name" else "Assistant: $name answered \"${answer.text}\"" + if (answer.error) " (an error)" else "")
                 }
+            }
+            "turn" -> {
+                val (question, answer) = rest.split(" / ", limit = 2).takeIf { it.size == 2 } ?: throw CliError("Type turn QUESTION / ANSWER.")
+                fake.assistant.turn(question.trim(), answer.trim())
             }
             "click" -> fake.display.click(words.getOrNull(1) ?: throw CliError("click needs an element id."))
             "grant" -> fake.granted = fake.granted + scopes(words)

@@ -25,5 +25,7 @@
 - `kit-fake`: FakeVisor in plain Kotlin, and `kit-server`: the server engine, both for the JVM.
 - `settings.list`, `settings.get`, `settings.set` and `settings.changes`, with the `settings` scope: the glasses'
   settings with their labels, choices and ranges, and changes to the everyday ones.
+- `assistant.turns` and `assistant.history`, with the `conversations` scope: what the wearer asks the assistant
+  and its answers, as they come and from the history Visor keeps on the phone.
 - `visor record` saves topics' events as JSON lines, and `visor replay` plays them into the apps at their pace,
   on a phone or on `visor fake`.

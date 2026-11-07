@@ -157,6 +157,16 @@ public object Methods {
         ToolAnswer.serializer(), Unit.serializer(),
     )
 
+    /**
+     * The turns kept on the phone, newest first. Visor keeps them until the person deletes them. Fails with
+     * [ErrorCode.INVALID_PARAMS] for a limit outside 1 to [HistoryQuery.MAX_LIMIT].
+     */
+    public val ASSISTANT_HISTORY: Method<HistoryQuery, List<AssistantTurn>> = Method(
+        "assistant.history", Scope.CONVERSATIONS, 1,
+        "Returns the questions asked of the assistant and its answers, newest first.",
+        HistoryQuery.serializer(), ListSerializer(AssistantTurn.serializer()),
+    )
+
     /** Fails with [ErrorCode.UNSUPPORTED] on glasses without a display, which show no notifications of apps. */
     public val NOTIFY_POST: Method<Notice, Unit> = Method(
         "notify.post", Scope.NOTIFY, 1,
@@ -214,7 +224,7 @@ public object Methods {
         BAND_STATUS, BAND_BUZZ,
         DISPLAY_PROMPTER_SHOW, DISPLAY_PROMPTER_CLOSE, DISPLAY_LAYOUT_SHOW, DISPLAY_LAYOUT_CLOSE,
         VOICE_REPLY,
-        ASSISTANT_TOOLS_ANSWER,
+        ASSISTANT_TOOLS_ANSWER, ASSISTANT_HISTORY,
         NOTIFY_POST, NOTIFY_REMOVE,
         SETTINGS_LIST, SETTINGS_GET, SETTINGS_SET,
         RAW_SEND,
@@ -336,6 +346,13 @@ public object Topics {
         ToolsOffer.serializer(), ToolCall.serializer(),
     )
 
+    /** Each turn once the assistant has answered it or failed, and again if it is asked again. */
+    public val ASSISTANT_TURNS: Topic<Unit, AssistantTurn> = Topic(
+        "assistant.turns", Scope.CONVERSATIONS, 1,
+        "Brings each question asked of the assistant with its answer, as it is answered.",
+        Unit.serializer(), AssistantTurn.serializer(),
+    )
+
     /** Each setting the query names, every time its value or its pending state changes. */
     public val SETTINGS_CHANGES: Topic<SettingsQuery, GlassesSetting> = Topic(
         "settings.changes", Scope.SETTINGS, 1,
@@ -357,7 +374,7 @@ public object Topics {
         BAND_STATUS, BAND_GESTURES,
         DISPLAY_LAYOUT_CLICKS,
         VOICE_REQUESTS, VOICE_TRANSCRIPTS,
-        ASSISTANT_TOOLS,
+        ASSISTANT_TOOLS, ASSISTANT_TURNS,
         SETTINGS_CHANGES,
         RAW_MESSAGES,
     )

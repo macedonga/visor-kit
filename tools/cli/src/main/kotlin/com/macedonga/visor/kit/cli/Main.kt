@@ -82,7 +82,8 @@ Commands:
   fake [--port N] [--lan]   Runs FakeVisor on this computer, for building without a phone or glasses.
                             visor fake --help says more.
 
-Scopes: state, pairs, inputs, microphone, camera, band, display, voice, assistant, notify, settings, raw.
+Scopes: state, pairs, inputs, microphone, camera, band, display, voice, assistant, notify, settings,
+conversations, raw.
 
 Options:
   -s SERIAL                 The device, as for adb -s.

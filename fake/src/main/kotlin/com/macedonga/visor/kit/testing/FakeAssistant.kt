@@ -1,7 +1,9 @@
 package com.macedonga.visor.kit.testing
 
 import com.macedonga.visor.kit.KitException
+import com.macedonga.visor.kit.protocol.AssistantTurn
 import com.macedonga.visor.kit.protocol.ErrorCode
+import com.macedonga.visor.kit.protocol.HistoryQuery
 import com.macedonga.visor.kit.protocol.Notice
 import com.macedonga.visor.kit.protocol.ToolAnswer
 import com.macedonga.visor.kit.protocol.ToolCall
@@ -99,6 +101,30 @@ public class FakeAssistant internal constructor() {
 
     /** Every tool the app offers now. */
     public val tools: List<ToolSpec> get() = offers.flatMap { it.tools }
+
+    private val _history = MutableStateFlow<List<AssistantTurn>>(emptyList())
+
+    /** Every turn [turn] made, oldest first. */
+    public val history: StateFlow<List<AssistantTurn>> = _history.asStateFlow()
+    private val answeredTurns = MutableSharedFlow<AssistantTurn>(extraBufferCapacity = 64)
+
+    /** The wearer asks [question] and the assistant answers [answer]: apps that watch the turns get it. */
+    public fun turn(question: String, answer: String): AssistantTurn {
+        val turn = AssistantTurn("turn-${ids.incrementAndGet()}", System.currentTimeMillis(), question, answer, conversation = "fake")
+        _history.update { it + turn }
+        answeredTurns.tryEmit(turn)
+        return turn
+    }
+
+    internal fun turns(): Flow<AssistantTurn> = answeredTurns
+
+    internal fun history(query: HistoryQuery): List<AssistantTurn> {
+        if (query.limit !in 1..HistoryQuery.MAX_LIMIT) {
+            throw KitException(ErrorCode.INVALID_PARAMS, "The limit must be 1 to ${HistoryQuery.MAX_LIMIT}.")
+        }
+        val since = query.since
+        return _history.value.asReversed().filter { since == null || it.time > since }.take(query.limit)
+    }
 
     /**
      * Calls [tool] with [arguments] as the model would, and returns the app's answer. Null when no app offers the tool,

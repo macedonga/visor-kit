@@ -19,6 +19,7 @@ Developer mode.
 | `assistant` | Give the assistant tools it can use while it answers | `assistant.*` |
 | `notify` | Show notifications on the Display | `notify.*` |
 | `settings` | Read the glasses' settings and change the everyday ones | `settings.*` |
+| `conversations` | Read what the wearer asks the assistant and what it answers | `assistant.turns`, `assistant.history` |
 | `raw` | Send and read the glasses' own protocol messages, for research; only with Developer mode on | `raw.*` |
 
 `kit.hello` needs no scope. Later releases add scopes; an app built against an older VDK never sees them unless
