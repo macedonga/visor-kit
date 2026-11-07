@@ -1,7 +1,7 @@
 # JSON-RPC
 
-The VDK speaks JSON-RPC 2.0, so any language can use it. Today the JSON-RPC door is Visor's adb socket, for
-programs on a computer; a network door on the phone is on the [roadmap](overview.md#roadmap).
+The VDK speaks JSON-RPC 2.0, so any language can use it, through two doors: Visor's adb socket, described here,
+and [the network door](network.md), a WebSocket with the same messages.
 
 ## Reaching the socket
 

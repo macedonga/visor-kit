@@ -20,6 +20,7 @@ Central, no tags. Then the history is reset to one commit and the documentation 
 Apps need only the scopes the person grants on the consent screen. Visor's Developer mode opens nothing for apps:
 it only opens the adb socket, for the computer-side tools.
 - `tools/contract` (not published): writes `protocol/api/openrpc.json` and checks it against the last release.
+- `clients/python`, `clients/typescript` (not published yet): JSON-RPC clients, over adb or the network door.
 
 Maven group `com.macedonga.visor`, namespace `com.macedonga` proven by a TXT record on macedonga.com.
 
@@ -89,7 +90,7 @@ Library versions are semver. `KitProtocol.VERSION` counts separately and only go
 
 ## Roadmap
 
-Status as of 2026-11-07: phases 1 and 2 are built and checked, not yet tried with glasses.
+Status as of 2026-11-07: phases 1 to 3 are built and checked, not yet tried with glasses.
 
 0. Measure on the glasses: band gestures while the Display keeps the band (RELAY lease); whether a Display web
    app's requests take the IP tunnel or the svc41111 HTTP relay; a Visor-made svc9002 card; touchpad and capture
@@ -98,8 +99,8 @@ Status as of 2026-11-07: phases 1 and 2 are built and checked, not yet tried wit
    adb socket; the `visor` command; FakeVisor; the sample app.
 2. Done: voice requests and replies in the glasses' own voice, tools for the user's model, notifications on the
    Display.
-3. The network door: JSON-RPC over WebSocket and an MCP server on 127.0.0.1 (LAN opt-in) with per-client tokens,
-   webhooks, the raw scope (with svc36, change owner and OTA denied), Python and TypeScript clients, samples.
+3. Done except webhooks: JSON-RPC over WebSocket and MCP on 127.0.0.1:7333 (LAN opt-in) with per-client tokens, the
+   raw scope (Developer mode only; 36, 54, 79 and 29 refused), Python and TypeScript clients in `clients/`.
 4. The Display: `visor.js` for web apps through Visor's tunnel, Briefing cards, the band without glasses.
 5. Research: the DWA broker protocol (services 6500 to 6504), for DAT's display components without Meta AI.
    Meta's DAT docs: https://wearables.developer.meta.com/docs/develop/dat/getting-started-toolkit

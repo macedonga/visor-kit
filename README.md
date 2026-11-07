@@ -21,7 +21,9 @@ runs them. It needs no Meta account, no Meta AI app and no developer review, and
 | **Voice** | Answer the questions the wearer asks that name your app, in the glasses' own voice. |
 | **Assistant** | Give the assistant's model your app's tools, which it calls while it answers the wearer. |
 
-Coming next: a network API with an MCP server, and JavaScript for the Display's web apps. See the [roadmap](docs/overview.md#roadmap).
+Programs and AI agents can reach the glasses over the network too, through JSON-RPC or MCP, with a token the
+person makes for them. Coming next: JavaScript for the Display's web apps. See the
+[roadmap](docs/overview.md#roadmap).
 
 ## How it works
 
@@ -90,6 +92,7 @@ For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [T
 - [Errors](docs/errors.md)
 - [Testing](docs/testing.md)
 - [JSON-RPC](docs/json-rpc.md): the VDK from any language
+- [The network door](docs/network.md): WebSocket, MCP for AI agents, Python and TypeScript
 - [Compatibility](docs/compatibility.md)
 
 ## Modules
@@ -100,6 +103,7 @@ For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [T
 | `com.macedonga.visor:kit-testing` | `FakeVisor`, for tests. |
 | `com.macedonga.visor:kit-protocol` | The wire contract, for JVM tools and for Visor itself. |
 | `visor` | The command for your computer, on the [releases](https://github.com/macedonga/visor-kit/releases) page. |
+| `visor-kit` for Python and TypeScript | Clients for other languages, in [`clients/`](clients). |
 
 ## Compatibility
 

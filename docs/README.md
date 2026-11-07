@@ -15,4 +15,6 @@ Start with the overview, then getting started. The rest is reference.
 6. [Errors](errors.md): every code, and what to do about it.
 7. [Testing](testing.md): the `visor` command and FakeVisor.
 8. [JSON-RPC](json-rpc.md): the VDK from any language.
-9. [Compatibility](compatibility.md): what never breaks, and how the build makes sure.
+9. [The network door](network.md): JSON-RPC over WebSocket, MCP for AI agents, the Python and TypeScript clients,
+   raw access.
+10. [Compatibility](compatibility.md): what never breaks, and how the build makes sure.
