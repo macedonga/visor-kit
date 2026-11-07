@@ -109,7 +109,7 @@ maps all of it. Status:
 | Speech: on-device transcription | `voice.transcripts` | to build: headset mic and the phone's recogniser |
 | Voice invocations (`LaunchApp`) | `voice.requests` | done |
 | Motion: accelerometer, gyroscope, magnetometer, orientation | | research: no live IMU source known yet |
-| Inputs: nav, select, back, button, capture, drag | `band.gestures` | research: touchpad and capture button on the phone |
+| Inputs: nav, select, back, button, capture, drag | `glasses.inputs`, `band.gestures` | built from svc28's touch and button pushes; not tried on glasses |
 | Display: FlexBox, Text, Image, Button, Icon, Video, taps back | `display.prompter` | research: the DWA broker, or a web app Visor serves |
 | `MockDeviceKit` | `FakeVisor` | done; add the new capabilities as they come |
 

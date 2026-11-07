@@ -19,6 +19,9 @@ public value class Scope(public val id: String) {
         /** Every pair of glasses set up in Visor, with its name and looks, and the choice of the one Visor connects to. */
         public val PAIRS: Scope = Scope("pairs")
 
+        /** Taps and swipes on the glasses' touchpad, and presses of their buttons. */
+        public val INPUTS: Scope = Scope("inputs")
+
         /** Photos, videos, and the captures on the glasses. */
         public val CAMERA: Scope = Scope("camera")
 

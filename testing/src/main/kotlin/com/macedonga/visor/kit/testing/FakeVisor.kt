@@ -11,9 +11,12 @@ import com.macedonga.visor.kit.protocol.Feeds
 import com.macedonga.visor.kit.protocol.Finger
 import com.macedonga.visor.kit.protocol.Gesture
 import com.macedonga.visor.kit.protocol.GestureAction
+import com.macedonga.visor.kit.protocol.GlassesInput
 import com.macedonga.visor.kit.protocol.GlassesPair
 import com.macedonga.visor.kit.protocol.GlassesStatus
 import com.macedonga.visor.kit.protocol.Hello
+import com.macedonga.visor.kit.protocol.InputAction
+import com.macedonga.visor.kit.protocol.InputSource
 import com.macedonga.visor.kit.protocol.Link
 import com.macedonga.visor.kit.protocol.Methods
 import com.macedonga.visor.kit.protocol.PrompterStyle
@@ -49,7 +52,7 @@ import kotlinx.coroutines.flow.onStart
  */
 public class FakeVisor {
     /** The scopes the fake person granted: all of them at first. Taking one back ends the streams that need it. */
-    public var granted: Set<Scope> by Delegates.observable(setOf(Scope.STATE, Scope.PAIRS, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.VOICE, Scope.ASSISTANT, Scope.NOTIFY)) { _, _, _ ->
+    public var granted: Set<Scope> by Delegates.observable(setOf(Scope.STATE, Scope.PAIRS, Scope.INPUTS, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.VOICE, Scope.ASSISTANT, Scope.NOTIFY)) { _, _, _ ->
         dispatcher.recheck()
     }
 
@@ -106,6 +109,7 @@ public class FakeVisor {
             pairs.now()
         }
         stream(Topics.GLASSES_PAIRS) { _, _ -> pairs.list }
+        stream(Topics.GLASSES_INPUTS) { _, _ -> glasses.inputs }
         answer(Methods.GLASSES_SELECT) { _, selection ->
             called(Methods.GLASSES_SELECT.name)
             pairs.select(selection.serial)
@@ -228,8 +232,14 @@ public class FakeGlasses internal constructor() {
     private val captures = LinkedHashMap<String, Capture>()
     private var next = 0
     internal val available = MutableSharedFlow<Capture>(extraBufferCapacity = 64)
+    internal val inputs = MutableSharedFlow<GlassesInput>(extraBufferCapacity = 64)
     internal val progress = MutableSharedFlow<CaptureProgress>(extraBufferCapacity = 64)
     internal val imported = MutableSharedFlow<Capture>(extraBufferCapacity = 64)
+
+    /** Sends a touch or a press to every app that collects inputs now, for example `input(TOUCHPAD, TAP)`. */
+    public fun input(source: InputSource, action: InputAction) {
+        inputs.tryEmit(GlassesInput(source, action, System.currentTimeMillis()))
+    }
 
     /** Puts a capture of [type] on the fake glasses, as if their button took it, and returns it. */
     public fun add(type: CaptureType): Capture = synchronized(captures) {

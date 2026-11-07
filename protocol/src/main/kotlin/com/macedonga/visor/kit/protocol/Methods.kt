@@ -190,6 +190,16 @@ public object Topics {
         Unit.serializer(), ListSerializer(GlassesPair.serializer()),
     )
 
+    /**
+     * Each touch of the touchpad and each press of a button, as the glasses report it to the phone. The glasses still
+     * act on it as they always do: a tap still pauses the music.
+     */
+    public val GLASSES_INPUTS: Topic<Unit, GlassesInput> = Topic(
+        "glasses.inputs", Scope.INPUTS, 1,
+        "Each touch of the glasses' touchpad and each press of their buttons.",
+        Unit.serializer(), GlassesInput.serializer(),
+    )
+
     /** Sends each capture once. After Visor restarts, it sends again the ones still waiting. */
     public val CAPTURES_AVAILABLE: Topic<Unit, Capture> = Topic(
         "captures.available", Scope.CAMERA, 1,
@@ -266,7 +276,7 @@ public object Topics {
 
     /** Every topic, in the order of the reference. */
     public val all: List<Topic<*, *>> = listOf(
-        GLASSES_STATUS, GLASSES_PAIRS,
+        GLASSES_STATUS, GLASSES_PAIRS, GLASSES_INPUTS,
         CAPTURES_AVAILABLE, CAPTURES_PROGRESS, CAPTURES_IMPORTED, CAPTURES_FAILED,
         BAND_STATUS, BAND_GESTURES,
         VOICE_REQUESTS,

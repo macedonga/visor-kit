@@ -64,14 +64,15 @@ Commands:
   trace                     Prints every call, answer and event between the apps and Visor.
   simulate TOPIC...         While it runs, apps get only the events you type, one per line, and no
                             glasses or band are used. For band.gestures type FINGER ACTION, for
-                            example "index double_tap"; for other topics, the event's JSON.
+                            example "index double_tap"; for glasses.inputs SOURCE ACTION, for
+                            example "touchpad swipe_forward"; for other topics, the event's JSON.
   inject TOPIC EVENT        Sends one made-up event to the apps subscribed to TOPIC.
                               visor inject band.gestures middle hold
   apps                      The apps that use the VDK, with their scopes.
   grant PACKAGE SCOPE...    Grants scopes without the consent screen.
   revoke PACKAGE SCOPE...   Takes scopes back.
 
-Scopes: state, pairs, camera, band, display, voice, assistant, notify, raw.
+Scopes: state, pairs, inputs, camera, band, display, voice, assistant, notify, raw.
 
 Options:
   -s SERIAL                 The device, as for adb -s.
@@ -326,7 +327,12 @@ private class Commands(private val session: Session, private val json: Boolean) 
     }
 
     private fun inject(topic: String, words: List<String>) {
-        val event = if (topic == Topics.BAND_GESTURES.name && !words.first().startsWith("{")) gesture(words) else parse(words.joinToString(" "))
+        val event = when {
+            words.first().startsWith("{") -> parse(words.joinToString(" "))
+            topic == Topics.BAND_GESTURES.name -> gesture(words)
+            topic == Topics.GLASSES_INPUTS.name -> input(words)
+            else -> parse(words.joinToString(" "))
+        }
         rpc.call(Shell.INJECT.name, KitJson.encodeToJsonElement(InjectRequest.serializer(), InjectRequest(topic, event)))
     }
 
@@ -343,6 +349,16 @@ private class Commands(private val session: Session, private val json: Boolean) 
         val request = KitJson.encodeToJsonElement(GrantRequest.serializer(), GrantRequest(app, scopes))
         val info = decode(AppInfo.serializer(), rpc.call(method, request))
         println(if (json) KitJson.encodeToString(AppInfo.serializer(), info) else describe(info))
+    }
+
+    /** A touch or a press from words: SOURCE ACTION. */
+    private fun input(words: List<String>): JsonElement {
+        if (words.size != 2) usage("An input is SOURCE ACTION, for example: touchpad double_tap")
+        return buildJsonObject {
+            put("source", words[0])
+            put("action", words[1])
+            put("time", System.currentTimeMillis())
+        }
     }
 
     /** A gesture from words: FINGER ACTION, and the band's DERIVED action when it differs. */

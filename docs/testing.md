@@ -84,7 +84,8 @@ thumb up
 ```
 
 For `band.gestures`, a line is `FINGER ACTION`, or `FINGER ACTION DERIVED` when the band's reading should differ
-from the action. For any other topic, a line is the event's JSON:
+from the action. For `glasses.inputs`, a line is `SOURCE ACTION`, such as `touchpad swipe_forward`. For any other
+topic, a line is the event's JSON:
 
 ```
 $ visor simulate glasses.status
@@ -145,7 +146,7 @@ What the fake offers:
 | | |
 |---|---|
 | `fake.granted` | The scopes the fake person granted; all at first. Taking one back ends the streams that need it. |
-| `fake.glasses` | `paired`, `connected`, `display`, `model`, `battery`, `charging`, `worn`, `folded`: each change reaches `glasses.status`. `add(type)` puts a capture on the fake glasses. |
+| `fake.glasses` | `paired`, `connected`, `display`, `model`, `battery`, `charging`, `worn`, `folded`: each change reaches `glasses.status`. `add(type)` puts a capture on the fake glasses. `input(source, action)` sends a touch or a press. |
 | `fake.band` | `paired`, `battery`, `charging`, `leftHanded`; `gesture(...)` sends a gesture; `buzzes` lists the buzzes asked for. |
 | `fake.display` | `prompter`: the script on the teleprompter, null while closed. |
 | `fake.live` | `watching` and `config` while the app collects `camera.live`; `sendVideoConfig`, `sendVideo`, `sendAudioConfig`, `sendAudio` send samples; `stop()` ends it as the person would; `photos` counts live photos. |

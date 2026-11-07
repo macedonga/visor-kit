@@ -115,7 +115,7 @@ private fun Sample() {
                     is VisorState.Closed -> "Closed: ${s.error?.message}"
                 },
             )
-            Button({ ask.launch(setOf(Scope.STATE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY)) }) { Text("Grant access") }
+            Button({ ask.launch(setOf(Scope.STATE, Scope.INPUTS, Scope.CAMERA, Scope.BAND, Scope.DISPLAY)) }) { Text("Grant access") }
 
             val glasses by remember(v, grants) { v.glasses.status.logged(log, "glasses") }.collectAsState(null)
             Text("Glasses: ${glasses ?: "-"}", style = MaterialTheme.typography.bodySmall)
@@ -138,6 +138,17 @@ private fun Sample() {
             if (listening) {
                 LaunchedEffect(v, grants) {
                     v.band.gestures.logged(log, "gestures").collect { log.add(0, "gesture: ${it.finger} ${it.action} ${it.derived ?: ""}") }
+                }
+            }
+
+            var touches by remember { mutableStateOf(false) }
+            FlowRow(verticalArrangement = Arrangement.Center, itemVerticalAlignment = Alignment.CenterVertically) {
+                Switch(touches, { touches = it })
+                Text("  Touchpad and buttons")
+            }
+            if (touches) {
+                LaunchedEffect(v, grants) {
+                    v.glasses.inputs.logged(log, "inputs").collect { log.add(0, "input: ${it.source} ${it.action}") }
                 }
             }
 

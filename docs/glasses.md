@@ -64,6 +64,31 @@ A `GlassesPair`:
 | `lastSeen` | `Long?` | When Visor last heard from the pair, in milliseconds since 1970. |
 | `band` | `String?` | The serial of the Neural Band paired with it. |
 
+## Touches and presses
+
+Scope: `inputs`. All glasses.
+
+```kotlin
+visor.glasses.inputs.collect { input ->
+    if (input.source == InputSource.TOUCHPAD && input.action == InputAction.SWIPE_FORWARD) nextPage()
+}
+```
+
+Each `GlassesInput` is one touch of the touchpad or one press of a button, as the glasses report it to the phone.
+The glasses still act on it as they always do: a tap still pauses the music, and the capture button still takes a
+photo. The VDK cannot keep an input from them.
+
+| `source` | Actions |
+|---|---|
+| `touchpad` | `tap`, `double_tap`, `triple_tap`, `tap_hold`, `swipe_forward`, `swipe_backward`, `slide_forward`, `slide_backward`, `touch`, `release`, `palm_tap`, `palm_hold` |
+| `capture_button` | `press`, `release`, `long_press`, `very_long_press`, `very_very_long_press`, `extremely_long_press`, `very_very_long_release`, `double_press` |
+| `action_button` | `press`, `release`, `long_release` |
+
+A swipe goes `forward` towards the lenses. `touch` and `release` tell when a finger rests on the touchpad and when
+it leaves; `slide_*` is a finger that moves while it rests there. `time` is when Visor heard the input. Which
+actions a pair reports depends on its model and firmware: treat an action you do not know as unknown, and a source
+you do not know too.
+
 ## JSON-RPC
 
 | | Name | Params | Answer |
@@ -73,6 +98,7 @@ A `GlassesPair`:
 | Method | `glasses.pairs` | none | a list of `GlassesPair` |
 | Topic | `glasses.pairs` | none | the list now, then on each change |
 | Method | `glasses.select` | `serial` | the new active `GlassesPair` |
+| Topic | `glasses.inputs` | none | a `GlassesInput` for each touch or press |
 
 ```
 $ visor call glasses.status
