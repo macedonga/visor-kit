@@ -452,6 +452,99 @@
             "x-since": 1
         },
         {
+            "name": "settings.list",
+            "summary": "Lists the glasses' settings with their values, labels, choices and whether apps may change them.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "keys",
+                    "required": false,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                {
+                    "name": "group",
+                    "required": false,
+                    "schema": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/components/schemas/GlassesSetting"
+                    }
+                }
+            },
+            "x-scope": "settings",
+            "x-since": 1
+        },
+        {
+            "name": "settings.get",
+            "summary": "Returns one of the glasses' settings.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "key",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "$ref": "#/components/schemas/GlassesSetting"
+                }
+            },
+            "x-scope": "settings",
+            "x-since": 1
+        },
+        {
+            "name": "settings.set",
+            "summary": "Changes one of the glasses' settings.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "key",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "value",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "$ref": "#/components/schemas/GlassesSetting"
+                }
+            },
+            "x-scope": "settings",
+            "x-since": 1
+        },
+        {
             "name": "raw.send",
             "summary": "Sends one message to a service of the glasses, as it is.",
             "paramStructure": "by-name",
@@ -834,6 +927,44 @@
                 }
             },
             "x-scope": "assistant",
+            "x-since": 1
+        },
+        {
+            "name": "settings.changes",
+            "summary": "Brings each change of the glasses' settings, whoever made it.",
+            "params": [
+                {
+                    "name": "keys",
+                    "required": false,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                {
+                    "name": "group",
+                    "required": false,
+                    "schema": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/GlassesSetting"
+                }
+            },
+            "x-scope": "settings",
             "x-since": 1
         },
         {
@@ -1359,6 +1490,84 @@
                     "link"
                 ]
             },
+            "GlassesSetting": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "kind": {
+                        "type": "string",
+                        "title": "SettingKind"
+                    },
+                    "value": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "default": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "label": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "group": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "options": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SettingOption"
+                        }
+                    },
+                    "range": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/SettingRange"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "writable": {
+                        "type": "boolean"
+                    },
+                    "pending": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "key",
+                    "kind"
+                ]
+            },
             "GlassesStatus": {
                 "type": "object",
                 "properties": {
@@ -1779,6 +1988,60 @@
                     "payload",
                     "time"
                 ]
+            },
+            "SettingOption": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string"
+                    },
+                    "label": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "value",
+                    "label"
+                ]
+            },
+            "SettingRange": {
+                "type": "object",
+                "properties": {
+                    "min": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "max": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "step": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "unit": {
+                        "type": "string"
+                    }
+                },
+                "required": []
             },
             "ToolCall": {
                 "type": "object",

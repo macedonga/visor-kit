@@ -38,6 +38,7 @@ public class Visor internal constructor(private val client: KitClient) : AutoClo
     public val voice: Voice = Voice(this)
     public val assistant: Assistant = Assistant(this)
     public val notify: Notify = Notify(this)
+    public val settings: Settings = Settings(this)
 
     /** True when this Visor answers [method]. False for a method newer than the Visor installed. */
     public fun supports(method: Method<*, *>): Boolean = welcome()?.methods?.contains(method.name) == true

@@ -43,6 +43,9 @@ public value class Scope(public val id: String) {
         /** Notifications on the glasses. */
         public val NOTIFY: Scope = Scope("notify")
 
+        /** The glasses' settings: reading them, and changing the ones apps may change. */
+        public val SETTINGS: Scope = Scope("settings")
+
         /**
          * The glasses' own protocol messages, sent and read as they are, for research. Visor answers only while its
          * Developer mode is on, and never for the services of the glasses' identity, ownership and updates.

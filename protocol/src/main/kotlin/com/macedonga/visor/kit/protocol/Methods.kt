@@ -170,6 +170,31 @@ public object Methods {
         NoticeRemoval.serializer(), Unit.serializer(),
     )
 
+    /** The settings Visor knows, as last read from the glasses, in the order of their groups. */
+    public val SETTINGS_LIST: Method<SettingsQuery, List<GlassesSetting>> = Method(
+        "settings.list", Scope.SETTINGS, 1,
+        "Lists the glasses' settings with their values, labels, choices and whether apps may change them.",
+        SettingsQuery.serializer(), ListSerializer(GlassesSetting.serializer()),
+    )
+
+    /** Fails with [ErrorCode.INVALID_PARAMS], reason `unknown_key`, for a key Visor does not know. */
+    public val SETTINGS_GET: Method<SettingKey, GlassesSetting> = Method(
+        "settings.get", Scope.SETTINGS, 1,
+        "Returns one of the glasses' settings.",
+        SettingKey.serializer(), GlassesSetting.serializer(),
+    )
+
+    /**
+     * Returns the setting with [GlassesSetting.pending] true: the glasses report it again within seconds, on
+     * [Topics.SETTINGS_CHANGES]. Fails with [ErrorCode.INVALID_PARAMS], reason `unknown_key` or `invalid_value`, and
+     * with [ErrorCode.REFUSED], reason `read_only`, for a setting apps may not change.
+     */
+    public val SETTINGS_SET: Method<SettingWrite, GlassesSetting> = Method(
+        "settings.set", Scope.SETTINGS, 1,
+        "Changes one of the glasses' settings.",
+        SettingWrite.serializer(), GlassesSetting.serializer(),
+    )
+
     /**
      * Fails with [ErrorCode.UNSUPPORTED] while Developer mode is off in Visor, and with [ErrorCode.REFUSED] for the
      * services Visor keeps to itself: identity and ownership (36), the link's authentication (54 and 79), updates (29).
@@ -191,6 +216,7 @@ public object Methods {
         VOICE_REPLY,
         ASSISTANT_TOOLS_ANSWER,
         NOTIFY_POST, NOTIFY_REMOVE,
+        SETTINGS_LIST, SETTINGS_GET, SETTINGS_SET,
         RAW_SEND,
     )
 }
@@ -310,6 +336,13 @@ public object Topics {
         ToolsOffer.serializer(), ToolCall.serializer(),
     )
 
+    /** Each setting the query names, every time its value or its pending state changes. */
+    public val SETTINGS_CHANGES: Topic<SettingsQuery, GlassesSetting> = Topic(
+        "settings.changes", Scope.SETTINGS, 1,
+        "Brings each change of the glasses' settings, whoever made it.",
+        SettingsQuery.serializer(), GlassesSetting.serializer(),
+    )
+
     /** Ends with the same failures as [Methods.RAW_SEND]. */
     public val RAW_MESSAGES: Topic<RawFilter, RawMessage> = Topic(
         "raw.messages", Scope.RAW, 1,
@@ -325,6 +358,7 @@ public object Topics {
         DISPLAY_LAYOUT_CLICKS,
         VOICE_REQUESTS, VOICE_TRANSCRIPTS,
         ASSISTANT_TOOLS,
+        SETTINGS_CHANGES,
         RAW_MESSAGES,
     )
 }

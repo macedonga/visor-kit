@@ -56,7 +56,7 @@ import kotlinx.coroutines.flow.onStart
  */
 public class FakeVisor {
     /** The scopes the fake person granted: all of them at first. Taking one back ends the streams that need it. */
-    public var granted: Set<Scope> by Delegates.observable(setOf(Scope.STATE, Scope.PAIRS, Scope.INPUTS, Scope.MICROPHONE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.VOICE, Scope.ASSISTANT, Scope.NOTIFY)) { _, _, _ ->
+    public var granted: Set<Scope> by Delegates.observable(setOf(Scope.STATE, Scope.PAIRS, Scope.INPUTS, Scope.MICROPHONE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.VOICE, Scope.ASSISTANT, Scope.NOTIFY, Scope.SETTINGS)) { _, _, _ ->
         dispatcher.recheck()
     }
 
@@ -70,6 +70,7 @@ public class FakeVisor {
     public val voice: FakeVoice = FakeVoice()
     public val assistant: FakeAssistant = FakeAssistant()
     public val notify: FakeNotify = FakeNotify()
+    public val settings: FakeSettings = FakeSettings()
 
     private val _calls = Collections.synchronizedList(mutableListOf<String>())
 
@@ -215,6 +216,19 @@ public class FakeVisor {
             glasses.withDisplay()
             notify.removed(removal.id)
         }
+        answer(Methods.SETTINGS_LIST) { _, query ->
+            called(Methods.SETTINGS_LIST.name)
+            settings.list(query)
+        }
+        answer(Methods.SETTINGS_GET) { _, request ->
+            called(Methods.SETTINGS_GET.name)
+            settings.get(request.key)
+        }
+        answer(Methods.SETTINGS_SET) { _, write ->
+            called(Methods.SETTINGS_SET.name)
+            settings.set(write.key, write.value)
+        }
+        stream(Topics.SETTINGS_CHANGES) { _, query -> settings.changes(query) }
     }
 
     private fun called(name: String) {

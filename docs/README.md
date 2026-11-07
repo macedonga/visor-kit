@@ -13,8 +13,9 @@ Start with the overview, then getting started. The rest is reference.
    - [Display](display.md): the teleprompter.
    - [Voice and the assistant](voice-and-assistant.md): questions for the app, transcripts, tools for the model,
      notifications.
+   - [Settings](settings.md): reading and changing the glasses' settings.
 6. [Errors](errors.md): every code, and what to do about it.
-7. [Testing](testing.md): the `visor` command and FakeVisor.
+7. [Testing](testing.md): the `visor` command, FakeVisor, `visor fake`, recordings.
 8. [JSON-RPC](json-rpc.md): the VDK from any language.
 9. [The network door](network.md): JSON-RPC over WebSocket, MCP for AI agents, the Python and TypeScript clients,
    raw access.

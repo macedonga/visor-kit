@@ -76,6 +76,11 @@ public final class com/macedonga/visor/kit/testing/FakePairs {
 	public final fun add (Ljava/lang/String;Ljava/lang/String;Z)V
 }
 
+public final class com/macedonga/visor/kit/testing/FakeSettings {
+	public final fun change (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun getAll ()Lkotlinx/coroutines/flow/StateFlow;
+}
+
 public final class com/macedonga/visor/kit/testing/FakeVisor {
 	public fun <init> ()V
 	public final fun close ()V
@@ -88,6 +93,7 @@ public final class com/macedonga/visor/kit/testing/FakeVisor {
 	public final fun getLive ()Lcom/macedonga/visor/kit/testing/FakeLive;
 	public final fun getNotify ()Lcom/macedonga/visor/kit/testing/FakeNotify;
 	public final fun getPairs ()Lcom/macedonga/visor/kit/testing/FakePairs;
+	public final fun getSettings ()Lcom/macedonga/visor/kit/testing/FakeSettings;
 	public final fun getVoice ()Lcom/macedonga/visor/kit/testing/FakeVoice;
 	public final fun setGranted (Ljava/util/Set;)V
 }

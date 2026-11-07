@@ -22,6 +22,7 @@ import com.macedonga.visor.kit.protocol.TraceRecord
 import com.macedonga.visor.kit.protocol.Welcome
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.io.OutputStream
 import java.net.ConnectException
 import java.net.InetAddress
@@ -39,8 +40,10 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.longOrNull
 import kotlinx.serialization.json.put
 
 private val USAGE = """
@@ -79,7 +82,7 @@ Commands:
   fake [--port N] [--lan]   Runs FakeVisor on this computer, for building without a phone or glasses.
                             visor fake --help says more.
 
-Scopes: state, pairs, inputs, camera, band, display, voice, assistant, notify, raw.
+Scopes: state, pairs, inputs, microphone, camera, band, display, voice, assistant, notify, settings, raw.
 
 Options:
   -s SERIAL                 The device, as for adb -s.
@@ -136,6 +139,7 @@ private fun run(args: List<String>) {
 private fun usage(problem: String): Nothing = throw CliError("$problem\n\n$USAGE", exitCode = 2)
 
 private const val FAKE_PORT = 7333
+private const val NANOS_PER_MS = 1_000_000L
 
 private fun runFake(args: List<String>) {
     var port = FAKE_PORT

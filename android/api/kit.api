@@ -87,6 +87,17 @@ public final class com/macedonga/visor/kit/RequestScopes : androidx/activity/res
 	public fun parseResult (ILandroid/content/Intent;)Ljava/util/Set;
 }
 
+public final class com/macedonga/visor/kit/Settings {
+	public final fun changes (Ljava/util/List;)Lkotlinx/coroutines/flow/Flow;
+	public final fun get (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getChanges ()Lkotlinx/coroutines/flow/Flow;
+	public final fun list (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun list (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun set (Ljava/lang/String;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun set (Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun set (Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
 public final class com/macedonga/visor/kit/Visor : java/lang/AutoCloseable {
 	public static final field Companion Lcom/macedonga/visor/kit/Visor$Companion;
 	public fun close ()V
@@ -97,6 +108,7 @@ public final class com/macedonga/visor/kit/Visor : java/lang/AutoCloseable {
 	public final fun getDisplay ()Lcom/macedonga/visor/kit/Display;
 	public final fun getGlasses ()Lcom/macedonga/visor/kit/Glasses;
 	public final fun getNotify ()Lcom/macedonga/visor/kit/Notify;
+	public final fun getSettings ()Lcom/macedonga/visor/kit/Settings;
 	public final fun getState ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getVoice ()Lcom/macedonga/visor/kit/Voice;
 	public final fun scopes (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

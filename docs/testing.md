@@ -175,6 +175,7 @@ What the fake offers:
 | `fake.band` | `paired`, `battery`, `charging`, `leftHanded`; `gesture(...)` sends a gesture; `buzzes` lists the buzzes asked for. |
 | `fake.display` | `prompter`: the script on the teleprompter, null while closed; `layout`: the layout shown; `click(id)` taps one of its elements. |
 | `fake.notify` | `shown`: the app's notifications on the Display, by id. |
+| `fake.settings` | `all`: five sample settings by key; `change(key, value)` changes one as the wearer would. |
 | `fake.assistant` | `tools` the app offers; `call(tool, arguments)` calls one as the model would and returns the answer. |
 | `fake.voice` | `ask(question)` asks as the wearer would and returns the app's reply; `say(text)` is an utterance the glasses hear, for `voice.transcripts`; `listening` counts the apps that collect transcripts. |
 | `fake.live` | `watching` and `config` while the app collects `camera.live`; `sendVideoConfig`, `sendVideo`, `sendAudioConfig`, `sendAudio` send samples; `stop()` ends it as the person would; `photos` counts live photos. |
