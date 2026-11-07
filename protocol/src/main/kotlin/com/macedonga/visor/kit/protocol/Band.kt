@@ -18,6 +18,11 @@ public class BandStatus @KitInternal constructor(
     public val leftHanded: Boolean? = null,
     /** True while the phone holds the band: its gestures come to the phone and the Display does not get them. */
     public val borrowed: Boolean = false,
+    /**
+     * True when Visor holds the band's keys, so the phone can borrow it for gestures and buzzes. False for a band only
+     * the Display holds: the person sets it up in Visor's band settings first. Null when no band is paired.
+     */
+    public val held: Boolean? = null,
 )
 
 /** A finger the band reads. */

@@ -98,7 +98,10 @@ public object Methods {
         Unit.serializer(), BandStatus.serializer(),
     )
 
-    /** Borrows the band for the moment it takes. Fails with [ErrorCode.UNSUPPORTED] when no band is paired. */
+    /**
+     * Borrows the band for the moment it takes. Fails with [ErrorCode.UNSUPPORTED] when no band is paired, and with
+     * the reason `not_set_up` when only the Display holds it ([BandStatus.held] false).
+     */
     public val BAND_BUZZ: Method<BuzzRequest, Unit> = Method(
         "band.buzz", Scope.BAND, 1,
         "Vibrates the Neural Band.",
@@ -262,7 +265,7 @@ public object Topics {
     /**
      * While any app subscribes, the phone borrows the band: its gestures come here and no longer reach the Display.
      * The band goes back to the Display when the last subscriber leaves. Ends with [ErrorCode.UNSUPPORTED] when no
-     * band is paired.
+     * band is paired, and with the reason `not_set_up` when only the Display holds it ([BandStatus.held] false).
      */
     public val BAND_GESTURES: Topic<Unit, Gesture> = Topic(
         "band.gestures", Scope.BAND, 1,

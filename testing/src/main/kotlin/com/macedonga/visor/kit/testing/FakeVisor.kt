@@ -323,6 +323,9 @@ public class FakeBand internal constructor() {
     public var charging: Boolean? by published(false)
     public var leftHanded: Boolean? by published(false)
 
+    /** False for a band only the fake Display holds: its status shows, but gestures and buzzes fail. */
+    public var held: Boolean by published(true)
+
     private var borrowers = 0
     private val gestures = MutableSharedFlow<Gesture>(extraBufferCapacity = 64)
     internal val status: MutableStateFlow<BandStatus> = MutableStateFlow(build())
@@ -346,6 +349,7 @@ public class FakeBand internal constructor() {
 
     internal fun paired() {
         if (!paired) throw KitException(ErrorCode.UNSUPPORTED, "No fake band is paired.")
+        if (!held) throw KitException(ErrorCode.UNSUPPORTED, "Only the fake Display holds the band.", reason = "not_set_up")
     }
 
     internal fun buzzed(duration: Duration) {
@@ -374,6 +378,7 @@ public class FakeBand internal constructor() {
             charging = charging,
             leftHanded = leftHanded,
             borrowed = borrowed,
+            held = held,
         )
     }
 

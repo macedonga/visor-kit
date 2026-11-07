@@ -996,6 +996,16 @@
                     },
                     "borrowed": {
                         "type": "boolean"
+                    },
+                    "held": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 },
                 "required": [

@@ -27,11 +27,12 @@ public final class com/macedonga/visor/kit/protocol/AppInfo$Companion {
 
 public final class com/macedonga/visor/kit/protocol/BandStatus {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/BandStatus$Companion;
-	public synthetic fun <init> (ZLjava/lang/String;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (ZLjava/lang/String;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Boolean;ZLjava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBattery ()Ljava/lang/Integer;
 	public final fun getBorrowed ()Z
 	public final fun getCharging ()Ljava/lang/Boolean;
+	public final fun getHeld ()Ljava/lang/Boolean;
 	public final fun getLeftHanded ()Ljava/lang/Boolean;
 	public final fun getLink--9ygyzg ()Ljava/lang/String;
 	public final fun getPaired ()Z

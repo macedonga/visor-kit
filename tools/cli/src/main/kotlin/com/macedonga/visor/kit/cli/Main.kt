@@ -388,7 +388,11 @@ private class Commands(private val session: Session, private val json: Boolean) 
     private fun describe(b: BandStatus): String {
         if (!b.paired) return "none paired"
         return listOfNotNull(
-            if (b.borrowed) "borrowed by the phone" else "with the Display",
+            when {
+                b.borrowed -> "borrowed by the phone"
+                b.held == false -> "with the Display, not set up in Visor"
+                else -> "with the Display"
+            },
             b.battery?.let { "battery $it%" + if (b.charging == true) ", charging" else "" },
             b.leftHanded?.let { if (it) "left wrist" else "right wrist" },
         ).joinToString("  ")
