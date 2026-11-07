@@ -89,14 +89,17 @@ Library versions are semver. `KitProtocol.VERSION` counts separately and only go
 
 ## Roadmap
 
+Status as of 2026-11-07: phases 1 and 2 are built and checked, not yet tried with glasses.
+
 0. Measure on the glasses: band gestures while the Display keeps the band (RELAY lease); whether a Display web
    app's requests take the IP tunnel or the svc41111 HTTP relay; a Visor-made svc9002 card; touchpad and capture
    button events on glasses without a display; whether the Display carries a DWA broker.
-1. VDK 0.1 (this): glasses status, camera, captures, band, the Display's prompter; Visor's VDK service, consent
-   screen and shell socket; the `visor` command; FakeVisor.
-2. Voice and assistant hooks: phrases routed to apps, tools for the user's model, answers in the glasses' own
-   voice; notifications on the glasses.
-3. The network door: JSON-RPC over WebSocket and an MCP server on 127.0.0.1 (LAN opt-in), webhooks, the raw
-   scope (with svc36, change owner and OTA denied), Python and TypeScript clients, samples.
+1. Done: glasses status, camera, captures, band, the Display's prompter; Visor's kit service, consent screen and
+   adb socket; the `visor` command; FakeVisor; the sample app.
+2. Done: voice requests and replies in the glasses' own voice, tools for the user's model, notifications on the
+   Display.
+3. The network door: JSON-RPC over WebSocket and an MCP server on 127.0.0.1 (LAN opt-in) with per-client tokens,
+   webhooks, the raw scope (with svc36, change owner and OTA denied), Python and TypeScript clients, samples.
 4. The Display: `visor.js` for web apps through Visor's tunnel, Briefing cards, the band without glasses.
 5. Research: the DWA broker protocol (services 6500 to 6504), for DAT's display components without Meta AI.
+   Meta's DAT docs: https://wearables.developer.meta.com/docs/develop/dat/getting-started-toolkit
