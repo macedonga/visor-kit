@@ -28,7 +28,7 @@ The two kits differ in shape more than in reach:
 | `Wearables.RequestPermissionContract()`, `Permission.CAMERA` | `RequestScopes()` with `Scope.CAMERA` |
 | `Permission.MICROPHONE` | `Scope.MICROPHONE` for transcripts; the camera's live audio needs `Scope.CAMERA` only |
 | `Wearables.checkPermissionStatus(permission)` | `visor.scopes()` |
-| `Wearables.openFirmwareUpdate(activity)` | Nothing: Visor updates the glasses' firmware from its own settings |
+| `Wearables.openFirmwareUpdate(activity)` | No equivalent |
 
 ```kotlin
 // DAT
