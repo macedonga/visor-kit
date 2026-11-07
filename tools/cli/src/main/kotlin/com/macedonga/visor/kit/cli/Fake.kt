@@ -77,6 +77,12 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
 
     fun run() {
         val host = if (lan) "0.0.0.0" else "127.0.0.1"
+        // Ktor reports a taken port from a worker thread after start returns, so the port is tried first.
+        try {
+            ServerSocket(port, 1, InetAddress.getByName(host)).close()
+        } catch (e: IOException) {
+            throw CliError("Port $port is taken, by another visor fake or another program. Pick one with --port.")
+        }
         embeddedServer(CIO, port = port, host = host) {
             install(WebSockets)
             routing {
