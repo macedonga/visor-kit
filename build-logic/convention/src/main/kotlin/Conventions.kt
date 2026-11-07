@@ -15,11 +15,11 @@ internal fun VersionCatalog.int(alias: String): Int =
         .toInt()
 
 /** The opt-in marker for declarations only Visor and the VDK's own modules may use. */
-internal const val VDK_INTERNAL = "com.macedonga.visor.vdk.protocol.VdkInternal"
+internal const val KIT_INTERNAL = "com.macedonga.visor.kit.protocol.KitInternal"
 
 /**
  * The rules every published module follows: explicit API mode, and an ABI dump in `api/` that `check` compares the
- * build against. Declarations marked [VDK_INTERNAL] stay out of the dump: they carry no compatibility promise.
+ * build against. Declarations marked [KIT_INTERNAL] stay out of the dump: they carry no compatibility promise.
  * Returns the dump task, for the module type's convention to feed its classes.
  */
 internal fun Project.publicApiRules(): TaskProvider<DumpAbi> {

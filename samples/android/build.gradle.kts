@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.macedonga.visor.vdk.sample"
+    namespace = "com.macedonga.visor.kit.sample"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.macedonga.visor.vdk.sample"
+        applicationId = "com.macedonga.visor.kit.sample"
         minSdk = libs.versions.sampleMinSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
@@ -24,7 +24,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":vdk"))
+    implementation(project(":kit"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.activity.compose)

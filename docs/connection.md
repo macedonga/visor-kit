@@ -10,7 +10,7 @@ val visor = Visor.connect(context)
 ```
 
 `connect` binds to Visor's VDK service, says hello, and returns once Visor answered. It fails with a
-`VdkException`:
+`KitException`:
 
 | Code | Why |
 |---|---|
@@ -43,11 +43,11 @@ visor.state.collect { state ->
 
 ## Calls and streams
 
-Every call is a suspending function, safe from the main thread, and fails with a `VdkException`. Cancelling the
+Every call is a suspending function, safe from the main thread, and fails with a `KitException`. Cancelling the
 coroutine cancels the call in Visor too.
 
 Every stream is a cold `Flow`: collecting it subscribes, and stopping the collection unsubscribes. Streams of
-state, like `glasses.status`, send the current value first. A stream ends with a `VdkException` when Visor ends
+state, like `glasses.status`, send the current value first. A stream ends with a `KitException` when Visor ends
 it, for example when a scope is taken back.
 
 ## Versions

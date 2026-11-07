@@ -206,7 +206,7 @@ internal fun Project.abiTasks(): TaskProvider<DumpAbi> {
     val update = "$path:updateAbi"
     val dump = tasks.register<DumpAbi>("dumpAbi") {
         this.tools.from(tools)
-        excludedAnnotations.add(VDK_INTERNAL)
+        excludedAnnotations.add(KIT_INTERNAL)
         this.dump.set(layout.buildDirectory.file("abi/$name.api"))
     }
     tasks.register("updateAbi") {

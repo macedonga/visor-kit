@@ -1,6 +1,6 @@
 # Overview
 
-The VDK is how other software uses Meta's glasses through Visor. Visor is an Android app that replaces the
+The Visor Development Kit (VDK) is how other software uses Meta's glasses through Visor. Visor is an Android app that replaces the
 Meta AI app as the phone side of Ray-Ban Meta glasses, the Meta Ray-Ban Display and the Meta Neural Band: it
 holds their Bluetooth and Wi-Fi links and speaks their protocol. The VDK gives that link to your code.
 
@@ -21,15 +21,15 @@ your computer  --(adb, JSON-RPC)--------+
 
 Everything the VDK does is a **method** (a request with one answer, like `camera.photo`) or a **topic** (a
 stream of events, like `band.gestures`). Both have a name, a scope, and the protocol version that added them.
-The [vdk-protocol](../protocol) module defines all of them, and
+The [kit-protocol](../protocol) module defines all of them, and
 [`protocol/api/openrpc.json`](../protocol/api/openrpc.json) describes them for any language.
 
 There are two ways in today:
 
-- **The Android library** (`com.macedonga.visor:vdk`). Your app binds to Visor's VDK service. Visor knows which
+- **The Android library** (`com.macedonga.visor:kit`). Your app binds to Visor's VDK service. Visor knows which
   app is calling from Android itself, by its package and its signing certificate, so nothing can pretend to be
   your app.
-- **The adb socket.** Visor listens on a local socket that only adb's shell user may use. The `vdk` command on
+- **The adb socket.** Visor listens on a local socket that only adb's shell user may use. The `visor` command on
   your computer, or any program that speaks [JSON-RPC](json-rpc.md), reaches it with `adb forward`.
 
 The person stays in charge:

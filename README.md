@@ -1,8 +1,8 @@
-# VDK
+# Visor Development Kit
 
 Build your own apps and tools for Meta's smart glasses.
 
-The VDK lets an Android app, or a script on your computer, use Ray-Ban Meta glasses, the Meta Ray-Ban
+The Visor Development Kit (VDK) lets an Android app, or a script on your computer, use Ray-Ban Meta glasses, the Meta Ray-Ban
 Display and the Meta Neural Band through [Visor](https://github.com/macedonga/visor), the open Android app that
 runs them. It needs no Meta account, no Meta AI app and no developer review, and it sends nothing anywhere.
 
@@ -43,7 +43,7 @@ Visor's settings. Nothing else needs turning on.
 
    ```kotlin
    dependencies {
-       implementation("com.macedonga.visor:vdk:0.1.0")
+       implementation("com.macedonga.visor:kit:0.1.0")
    }
    ```
 
@@ -65,15 +65,15 @@ The [getting started guide](docs/getting-started.md) goes through it step by ste
 
 ## Test from your computer
 
-The `vdk` command reaches Visor on the phone through adb, over USB or wireless debugging, once Developer mode
+The `visor` command reaches Visor on the phone through adb, over USB or wireless debugging, once Developer mode
 is on in Visor. You can call any method, watch any stream, see your app's traffic, and stand in for the glasses or
 the band:
 
 ```
-vdk status                              # Visor, the glasses, the band, the apps that use the VDK
-vdk trace                               # every call and event between your app and Visor
-vdk simulate band.gestures              # no band needed: type "index double_tap", your app gets it
-vdk grant com.example.app camera band   # skip the consent screen while you develop
+visor status                              # Visor, the glasses, the band, the apps that use the VDK
+visor trace                               # every call and event between your app and Visor
+visor simulate band.gestures              # no band needed: type "index double_tap", your app gets it
+visor grant com.example.app camera band   # skip the consent screen while you develop
 ```
 
 For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [Testing](docs/testing.md).
@@ -95,9 +95,9 @@ For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [T
 
 | Artifact | What it is |
 |---|---|
-| `com.macedonga.visor:vdk` | The Android library. |
-| `com.macedonga.visor:vdk-testing` | `FakeVisor`, for tests. |
-| `com.macedonga.visor:vdk-protocol` | The wire contract, for JVM tools and for Visor itself. |
+| `com.macedonga.visor:kit` | The Android library. |
+| `com.macedonga.visor:kit-testing` | `FakeVisor`, for tests. |
+| `com.macedonga.visor:kit-protocol` | The wire contract, for JVM tools and for Visor itself. |
 | `visor` | The command for your computer, on the [releases](https://github.com/macedonga/visor-kit/releases) page. |
 
 ## Compatibility

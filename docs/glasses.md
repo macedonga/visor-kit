@@ -37,7 +37,7 @@ never by `model`, whose wording can change.
 | Topic | `glasses.status` | none | a `GlassesStatus` now, then on each change |
 
 ```
-$ vdk call glasses.status
+$ visor call glasses.status
 {
     "paired": true,
     "link": "connected",

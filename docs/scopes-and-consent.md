@@ -13,7 +13,7 @@ Developer mode.
 | `band` | Read the Neural Band's gestures and make it vibrate | `band.*` |
 | `display` | Show text on the Display | `display.*` |
 
-`vdk.hello` needs no scope. Later releases add scopes; an app built against an older VDK never sees them unless
+`kit.hello` needs no scope. Later releases add scopes; an app built against an older VDK never sees them unless
 it asks for them by id.
 
 ## Asking
@@ -34,11 +34,11 @@ first.
 
 ## When a scope is missing
 
-A call that needs a scope the app does not hold fails with `scope_denied`, and `VdkException.scope` names the
+A call that needs a scope the app does not hold fails with `scope_denied`, and `KitException.scope` names the
 scope:
 
 ```kotlin
-catch (e: VdkException) {
+catch (e: KitException) {
     if (e.code == ErrorCode.SCOPE_DENIED) ask.launch(setOf(e.scope!!))
 }
 ```
@@ -64,12 +64,12 @@ asks for its own grant.
 
 ## While you develop
 
-`vdk grant` and `vdk revoke` set an app's scopes from your computer, without the consent screen:
+`visor grant` and `visor revoke` set an app's scopes from your computer, without the consent screen:
 
 ```
-vdk grant com.example.app camera band
-vdk revoke com.example.app band
-vdk apps
+visor grant com.example.app camera band
+visor revoke com.example.app band
+visor apps
 ```
 
 See [Testing](testing.md).

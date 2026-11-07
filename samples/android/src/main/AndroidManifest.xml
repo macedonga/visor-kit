@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:label="VDK sample"
+        android:label="Visor Development Kit sample"
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity
             android:name=".SampleActivity"

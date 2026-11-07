@@ -9,7 +9,7 @@ Visor listens on the abstract Unix socket `visor-kit` while Developer mode is on
 user. Forward a port to it:
 
 ```
-adb forward tcp:7333 localabstract:visor-vdk
+adb forward tcp:7333 localabstract:visor-kit
 ```
 
 Then connect to `127.0.0.1:7333`. Remove the forward when done: `adb forward --remove tcp:7333`. If nothing
@@ -25,13 +25,13 @@ One JSON object per line, UTF-8, ending in `\n`, both ways. Requests carry an `i
 same `id`. Several requests can be in flight at once.
 
 ```
--> {"jsonrpc":"2.0","id":1,"method":"vdk.hello","params":{"protocol":1,"vdk":"my-script 1.0"}}
+-> {"jsonrpc":"2.0","id":1,"method":"kit.hello","params":{"protocol":1,"kit":"my-script 1.0"}}
 <- {"jsonrpc":"2.0","id":1,"result":{"protocol":1,"visor":"2.4.0","granted":["state","camera","band","display"],"methods":[...],"topics":[...]}}
 -> {"jsonrpc":"2.0","id":2,"method":"glasses.status"}
 <- {"jsonrpc":"2.0","id":2,"result":{"paired":true,"link":"connected","battery":82,"worn":true}}
 ```
 
-Say `vdk.hello` first. Params are by name, as an object; a method without params takes `{}` or none.
+Say `kit.hello` first. Params are by name, as an object; a method without params takes `{}` or none.
 
 ## Errors
 
@@ -49,19 +49,19 @@ JSON-RPC has no streams, so the VDK adds three methods and two notifications:
 
 | | Name | Params | Answer |
 |---|---|---|---|
-| Method | `vdk.subscribe` | `topic`, `params` (optional) | `{"subscription": ID}`, where ID is the request's own id |
-| Method | `vdk.unsubscribe` | `subscription` | `{}` |
-| Method | `vdk.cancel` | `id` of a running call | `{}` |
-| Notification | `vdk.event` | `subscription`, `event` | |
-| Notification | `vdk.ended` | `subscription`, `failure` (absent when the stream simply ended) | |
+| Method | `kit.subscribe` | `topic`, `params` (optional) | `{"subscription": ID}`, where ID is the request's own id |
+| Method | `kit.unsubscribe` | `subscription` | `{}` |
+| Method | `kit.cancel` | `id` of a running call | `{}` |
+| Notification | `kit.event` | `subscription`, `event` | |
+| Notification | `kit.ended` | `subscription`, `failure` (absent when the stream simply ended) | |
 
 ```
--> {"jsonrpc":"2.0","id":4,"method":"vdk.subscribe","params":{"topic":"band.gestures"}}
+-> {"jsonrpc":"2.0","id":4,"method":"kit.subscribe","params":{"topic":"band.gestures"}}
 <- {"jsonrpc":"2.0","id":4,"result":{"subscription":4}}
-<- {"jsonrpc":"2.0","method":"vdk.event","params":{"subscription":4,"event":{"finger":"index","action":"tap","derived":"tap","time":1793111111111}}}
+<- {"jsonrpc":"2.0","method":"kit.event","params":{"subscription":4,"event":{"finger":"index","action":"tap","derived":"tap","time":1793111111111}}}
 ```
 
-The answer to `vdk.subscribe` always comes before the subscription's first event.
+The answer to `kit.subscribe` always comes before the subscription's first event.
 
 ## The contract
 
@@ -81,7 +81,7 @@ it is always exact.
 ```python
 import json, socket, subprocess
 
-subprocess.run(["adb", "forward", "tcp:7333", "localabstract:visor-vdk"], check=True)
+subprocess.run(["adb", "forward", "tcp:7333", "localabstract:visor-kit"], check=True)
 sock = socket.create_connection(("127.0.0.1", 7333))
 lines = sock.makefile("r", encoding="utf-8")
 
@@ -92,11 +92,11 @@ def call(id, method, params=None):
         if message.get("id") == id:
             return message
 
-call(1, "vdk.hello", {"protocol": 1, "vdk": "python-example"})
+call(1, "kit.hello", {"protocol": 1, "kit": "python-example"})
 print(call(2, "glasses.status")["result"])
-call(3, "vdk.subscribe", {"topic": "band.gestures"})
+call(3, "kit.subscribe", {"topic": "band.gestures"})
 for line in lines:
     message = json.loads(line)
-    if message.get("method") == "vdk.event":
+    if message.get("method") == "kit.event":
         print(message["params"]["event"])
 ```

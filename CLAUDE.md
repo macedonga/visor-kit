@@ -1,4 +1,4 @@
-# VDK, the Visor Development Kit
+# Visor Development Kit (VDK)
 
 The developer kit for Visor, the Android app that runs Meta's glasses. Apps and computers use the glasses through
 Visor: their state, camera and captures, the Neural Band, and the Display. Visor itself lives in `../visor`
@@ -9,13 +9,13 @@ Central, no tags. Then the history is reset to one commit and the documentation 
 
 ## Modules
 
-- `protocol` (`vdk-protocol`, JVM): the wire contract. Every method, topic, type and error code, in
+- `protocol` (`kit-protocol`, JVM): the wire contract. Every method, topic, type and error code, in
   `Methods`, `Topics`, `Shell` and `JsonRpc`. Both sides compile against it.
-- `android` (`vdk`, AAR): the client apps use (`Visor`, `RequestScopes`), the frozen AIDL, and the server engine
-  (`server/`: `Dispatcher`, `VdkServer` for binder, `ShellServer` for adb) that Visor and FakeVisor share.
-- `testing` (`vdk-testing`, AAR): `FakeVisor`, Visor in the app's own process, for tests.
-- `tools/cli` (not published): the `vdk` command. It reaches Visor through `adb forward` to the abstract socket
-  `visor-vdk`, which only the shell uid may use, and speaks JSON-RPC lines.
+- `android` (`kit`, AAR): the client apps use (`Visor`, `RequestScopes`), the frozen AIDL, and the server engine
+  (`server/`: `Dispatcher`, `KitServer` for binder, `ShellServer` for adb) that Visor and FakeVisor share.
+- `testing` (`kit-testing`, AAR): `FakeVisor`, Visor in the app's own process, for tests.
+- `tools/cli` (not published): the `visor` command. It reaches Visor through `adb forward` to the abstract socket
+  `visor-kit`, which only the shell uid may use, and speaks JSON-RPC lines.
 
 Apps need only the scopes the person grants on the consent screen. Visor's Developer mode opens nothing for apps:
 it only opens the adb socket, for the computer-side tools.
@@ -36,7 +36,7 @@ The wire, checked by `:contract:checkContract` against the last `v*` tag:
 3. A new field is optional and has a default, so a peer that does not know it still works.
 4. A set of values that can grow (scopes, error codes, kinds, gesture actions) is a string value class with the
    known values in its companion. Never an enum: an older app must not crash on a newer value.
-5. Anything new raises `VdkProtocol.VERSION` by one, and a new method or topic has `since` equal to it.
+5. Anything new raises `KitProtocol.VERSION` by one, and a new method or topic has `since` equal to it.
 6. Meaning is part of the contract. A method keeps doing what it did; new behavior is a new method or an
    optional field that asks for it.
 7. A new failure uses an existing `ErrorCode` when one fits. Clients treat unknown codes as `failed`.
@@ -52,9 +52,9 @@ Kotlin API, checked by `checkAbi` (the dump in each module's `api/`) and `checkA
 9. Explicit API mode. Every change to public API shows in `api/*.api`: run `./gradlew updateAbi`, read the diff,
    commit it. A line that disappears since the last release fails the build.
 10. No data classes in public API. Public value types use `@Poko`, so a new field breaks no `copy` or `componentN`.
-11. No default arguments in public functions or constructors: add an overload. Only `@VdkInternal` constructors
+11. No default arguments in public functions or constructors: add an overload. Only `@KitInternal` constructors
     have defaults, which is why the ABI checks may skip their bridges.
-12. Constructors of wire types are `@VdkInternal`. A type that apps build gets a `Builder` and a factory function,
+12. Constructors of wire types are `@KitInternal`. A type that apps build gets a `Builder` and a factory function,
     as `PrompterStyle` does.
 13. Removing public API takes three releases: deprecated in a minor (warning), error in the next minor, gone in
     the next major.
@@ -72,8 +72,8 @@ Visor's side, in the Visor repo:
 - A change starts in `protocol`, then the client, then FakeVisor, then Visor.
 - `./gradlew check` runs every guard. After a deliberate change: `./gradlew updateAbi :contract:updateContract`.
 - Visor builds the VDK from source through `includeBuild("../visor-kit")` while this folder sits next to it.
-- On the phone: `./gradlew :cli:installDist`, then `tools/cli/build/install/vdk/bin/vdk status`.
-- No test suites, as in Visor: the glasses, FakeVisor and the `vdk` command are the check.
+- On the phone: `./gradlew :cli:installDist`, then `tools/cli/build/install/visor/bin/visor status`.
+- No test suites, as in Visor: the glasses, FakeVisor and the `visor` command are the check.
 - Short comments that say why. One name for one thing. Versions only in `gradle/libs.versions.toml`, stable and at
   least two weeks old.
 - The release key and tokens never go in the repo.
@@ -82,10 +82,10 @@ Visor's side, in the Visor repo:
 
 1. Move `## Unreleased` in `CHANGELOG.md` under `## X.Y.Z` (Added, Changed, Fixed).
 2. Tag `vX.Y.Z` and push it. `release.yml` runs every check against the tag before it, publishes the libraries
-   to Maven Central signed, and puts the `vdk` command's zip on the GitHub release. Run it by hand for a dry run.
+   to Maven Central signed, and puts the `visor` command's zip on the GitHub release. Run it by hand for a dry run.
 3. Bump the VDK in Visor's `gradle/libs.versions.toml` and release Visor.
 
-Library versions are semver. `VdkProtocol.VERSION` counts separately and only goes up.
+Library versions are semver. `KitProtocol.VERSION` counts separately and only goes up.
 
 ## Roadmap
 
@@ -93,7 +93,7 @@ Library versions are semver. `VdkProtocol.VERSION` counts separately and only go
    app's requests take the IP tunnel or the svc41111 HTTP relay; a Visor-made svc9002 card; touchpad and capture
    button events on glasses without a display; whether the Display carries a DWA broker.
 1. VDK 0.1 (this): glasses status, camera, captures, band, the Display's prompter; Visor's VDK service, consent
-   screen and shell socket; the `vdk` command; FakeVisor.
+   screen and shell socket; the `visor` command; FakeVisor.
 2. Voice and assistant hooks: phrases routed to apps, tools for the user's model, answers in the glasses' own
    voice; notifications on the glasses.
 3. The network door: JSON-RPC over WebSocket and an MCP server on 127.0.0.1 (LAN opt-in), webhooks, the raw

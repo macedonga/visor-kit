@@ -35,7 +35,7 @@ opening on the Display also take its place.
 | Method | `display.prompter.close` | none | `{}` |
 
 ```
-vdk call display.prompter.show '{"text":"Hello","style":{"paged":true}}'
+visor call display.prompter.show '{"text":"Hello","style":{"paged":true}}'
 ```
 
 More of the Display (cards on its home, web apps that reach the VDK) is on the [roadmap](overview.md#roadmap).

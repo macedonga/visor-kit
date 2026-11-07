@@ -1,0 +1,69 @@
+public final class com/macedonga/visor/kit/testing/FakeAssistant {
+	public final fun call (Ljava/lang/String;Lkotlinx/serialization/json/JsonObject;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getTools ()Ljava/util/List;
+}
+
+public final class com/macedonga/visor/kit/testing/FakeBand {
+	public final fun gesture-1oXo3Gw (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun gesture-YM0_fy4 (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun getBattery ()Ljava/lang/Integer;
+	public final fun getBorrowed ()Z
+	public final fun getBuzzes ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getCharging ()Ljava/lang/Boolean;
+	public final fun getLeftHanded ()Ljava/lang/Boolean;
+	public final fun getPaired ()Z
+	public final fun setBattery (Ljava/lang/Integer;)V
+	public final fun setCharging (Ljava/lang/Boolean;)V
+	public final fun setLeftHanded (Ljava/lang/Boolean;)V
+	public final fun setPaired (Z)V
+}
+
+public final class com/macedonga/visor/kit/testing/FakeDisplay {
+	public final fun getPrompter ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getPrompterStyle ()Lcom/macedonga/visor/kit/protocol/PrompterStyle;
+}
+
+public final class com/macedonga/visor/kit/testing/FakeGlasses {
+	public final fun add-xT_bGyA (Ljava/lang/String;)Lcom/macedonga/visor/kit/protocol/Capture;
+	public final fun getBattery ()Ljava/lang/Integer;
+	public final fun getCharging ()Ljava/lang/Boolean;
+	public final fun getConnected ()Z
+	public final fun getDisplay ()Z
+	public final fun getFolded ()Ljava/lang/Boolean;
+	public final fun getModel ()Ljava/lang/String;
+	public final fun getPaired ()Z
+	public final fun getRecording ()Z
+	public final fun getWorn ()Ljava/lang/Boolean;
+	public final fun setBattery (Ljava/lang/Integer;)V
+	public final fun setCharging (Ljava/lang/Boolean;)V
+	public final fun setConnected (Z)V
+	public final fun setDisplay (Z)V
+	public final fun setFolded (Ljava/lang/Boolean;)V
+	public final fun setModel (Ljava/lang/String;)V
+	public final fun setPaired (Z)V
+	public final fun setWorn (Ljava/lang/Boolean;)V
+}
+
+public final class com/macedonga/visor/kit/testing/FakeNotify {
+	public final fun getShown ()Lkotlinx/coroutines/flow/StateFlow;
+}
+
+public final class com/macedonga/visor/kit/testing/FakeVisor {
+	public fun <init> ()V
+	public final fun close ()V
+	public final fun connect (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun getAssistant ()Lcom/macedonga/visor/kit/testing/FakeAssistant;
+	public final fun getBand ()Lcom/macedonga/visor/kit/testing/FakeBand;
+	public final fun getCalls ()Ljava/util/List;
+	public final fun getDisplay ()Lcom/macedonga/visor/kit/testing/FakeDisplay;
+	public final fun getGlasses ()Lcom/macedonga/visor/kit/testing/FakeGlasses;
+	public final fun getGranted ()Ljava/util/Set;
+	public final fun getNotify ()Lcom/macedonga/visor/kit/testing/FakeNotify;
+	public final fun getVoice ()Lcom/macedonga/visor/kit/testing/FakeVoice;
+	public final fun setGranted (Ljava/util/Set;)V
+}
+
+public final class com/macedonga/visor/kit/testing/FakeVoice {
+	public final fun ask (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+

@@ -1,6 +1,6 @@
 plugins {
-    id("vdk.jvm.library")
-    id("vdk.publish")
+    id("kit.jvm.library")
+    id("kit.publish")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.poko)
 }
@@ -11,7 +11,7 @@ dependencies {
     api(libs.kotlinx.serialization.json)
 }
 
-// The module that declares VdkInternal uses it everywhere.
+// The module that declares KitInternal uses it everywhere.
 kotlin {
-    compilerOptions { optIn.add("com.macedonga.visor.vdk.protocol.VdkInternal") }
+    compilerOptions { optIn.add("com.macedonga.visor.kit.protocol.KitInternal") }
 }

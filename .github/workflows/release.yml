@@ -58,11 +58,11 @@ jobs:
       - name: Check
         run: |
           git tag -d "$GITHUB_REF_NAME" 2>/dev/null || true
-          ./gradlew check -PvdkVersion="${{ steps.version.outputs.name }}"
+          ./gradlew check -PkitVersion="${{ steps.version.outputs.name }}"
 
       - name: Dry run
         if: github.event_name != 'push'
-        run: ./gradlew publishToMavenLocal :cli:distZip -PvdkVersion="${{ steps.version.outputs.name }}"
+        run: ./gradlew publishToMavenLocal :cli:distZip -PkitVersion="${{ steps.version.outputs.name }}"
 
       - name: Publish to Maven Central
         if: github.event_name == 'push'
@@ -78,7 +78,7 @@ jobs:
               exit 1
             fi
           done
-          ./gradlew publishToMavenCentral :cli:distZip -PvdkVersion="${{ steps.version.outputs.name }}"
+          ./gradlew publishToMavenCentral :cli:distZip -PkitVersion="${{ steps.version.outputs.name }}"
 
       - name: Publish the release
         if: github.event_name == 'push'
@@ -92,6 +92,6 @@ jobs:
             echo "error: CHANGELOG.md has no section '## $NAME'" >&2
             exit 1
           fi
-          flags=(--title "VDK $NAME" --notes-file notes.md)
+          flags=(--title "Visor Development Kit $NAME" --notes-file notes.md)
           if [[ "$NAME" == *-* ]]; then flags+=(--prerelease); fi
-          gh release create "v$NAME" "tools/cli/build/distributions/vdk-$NAME.zip" "${flags[@]}"
+          gh release create "v$NAME" "tools/cli/build/distributions/visor-$NAME.zip" "${flags[@]}"

@@ -1,18 +1,18 @@
 plugins {
-    id("vdk.android.library")
-    id("vdk.publish")
+    id("kit.android.library")
+    id("kit.publish")
 }
 
 description = "FakeVisor: Visor inside an app's own process, for tests and for building without glasses."
 
 android {
-    namespace = "com.macedonga.visor.vdk.testing"
+    namespace = "com.macedonga.visor.kit.testing"
 }
 
 kotlin {
-    compilerOptions { optIn.add("com.macedonga.visor.vdk.protocol.VdkInternal") }
+    compilerOptions { optIn.add("com.macedonga.visor.kit.protocol.KitInternal") }
 }
 
 dependencies {
-    api(project(":vdk"))
+    api(project(":kit"))
 }

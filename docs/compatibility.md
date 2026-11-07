@@ -13,8 +13,8 @@ People update Visor and your app at different times, so the VDK promises that ei
 
 ## Versions
 
-- **Library versions** (`vdk`, `vdk-protocol`, `vdk-testing`) follow semantic versioning.
-- **The protocol version** (`VdkProtocol.VERSION`) is one number that each release adding a method, topic or field
+- **Library versions** (`kit`, `kit-protocol`, `kit-testing`) follow semantic versioning.
+- **The protocol version** (`KitProtocol.VERSION`) is one number that each release adding a method, topic or field
   raises by one. It only goes up. Each method and topic records the version that added it in `since`.
 
 ## What changes, and how

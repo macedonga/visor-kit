@@ -2,7 +2,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "com.macedonga.visor.vdk.buildlogic"
+group = "com.macedonga.visor.kit.buildlogic"
 
 dependencies {
     compileOnly(libs.android.gradle.plugin)
