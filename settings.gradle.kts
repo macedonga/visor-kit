@@ -39,8 +39,11 @@ include(":kit")
 project(":kit").projectDir = file("android")
 include(":kit-testing")
 project(":kit-testing").projectDir = file("testing")
-// Not published: the `visor` command for a computer, and the checks that keep the wire contract compatible.
+// Not published: the `visor` command for a computer, the checks that keep the wire contract compatible, and
+// the sample app.
 include(":cli")
 project(":cli").projectDir = file("tools/cli")
 include(":contract")
 project(":contract").projectDir = file("tools/contract")
+include(":sample")
+project(":sample").projectDir = file("samples/android")
