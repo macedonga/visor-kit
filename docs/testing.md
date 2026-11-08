@@ -202,6 +202,20 @@ fake.live.sendVideo(keyframe, ptsUs = 0, key = true)
 `FakeVisor` itself is plain Kotlin, in `com.macedonga.visor:kit-fake`: a JVM test or tool can drive it without
 Android. `kit-testing` adds `connect()`, which needs the Android library.
 
+### Recorded feeds
+
+DAT's mock plays a video file as the camera and a CSV as the motion sensors; FakeVisor does both:
+
+```kotlin
+launch { File("walk.csv").reader().use { fake.glasses.playMotion(it, loop = true) } }
+launch { File("street.h265").inputStream().use { fake.live.play(it, "video/hevc", 504, 896, 24, loop = true) } }
+```
+
+The CSV is DAT's: no header, 14 numbers a row, the time in nanoseconds, the accelerometer, gyroscope and
+magnetometer as x, y, z, and the orientation as w, x, y, z. The camera takes an Annex-B H.264 or H.265 stream;
+ffmpeg makes one from any clip without re-encoding: `ffmpeg -i clip.mp4 -c:v copy -bsf:v hevc_mp4toannexb
+street.h265` (`h264_mp4toannexb` for H.264). It starts once an app watches the live camera.
+
 ## Without a phone: visor fake
 
 `visor fake` runs FakeVisor on your computer, behind the doors Visor opens on a phone:
@@ -232,6 +246,8 @@ ask what is on the calendar today
 | `thermal LEVEL` | `normal`, `light`, `moderate`, `severe` or `critical`. |
 | `input SOURCE ACTION` | A touch or a press for `glasses.inputs`, such as `touchpad tap`. |
 | `motion AX AY AZ` | An accelerometer reading in m/s² for `glasses.motion`, such as `motion 0 9.8 0`. |
+| `motion-csv FILE` | DAT's 14-column motion CSV, played over and over at the pace of its timestamps. |
+| `camera FILE WIDTHxHEIGHT FPS`, `camera off` | A recorded `.h264` or `.h265` stream as the live camera, looped. |
 | `gesture FINGER ACTION` | A band gesture for `band.gestures`, such as `index double_tap`. |
 | `photo`, `video` | A new capture on the glasses. |
 | `ask QUESTION` | The wearer asks; the app whose phrase the question holds answers. |

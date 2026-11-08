@@ -32,6 +32,8 @@
   with a console that plays the glasses. The Python client's `connect_fake()` and the TypeScript client's
   `Visor.connectFake()` reach it.
 - `kit-fake`: FakeVisor in plain Kotlin, and `kit-server`: the server engine, both for the JVM.
+- FakeVisor plays DAT's motion CSV (`playMotion`) and a recorded H.264 or H.265 stream as the live camera
+  (`FakeLive.play`); `visor fake` has `motion-csv` and `camera` for them.
 - `settings.list`, `settings.get`, `settings.set` and `settings.changes`, with the `settings` scope: the glasses'
   settings with their labels, choices and ranges, and changes to the everyday ones.
 - `assistant.turns` and `assistant.history`, with the `conversations` scope: what the wearer asks the assistant

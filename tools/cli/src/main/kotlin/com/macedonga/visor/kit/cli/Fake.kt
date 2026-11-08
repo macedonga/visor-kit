@@ -16,6 +16,8 @@ import com.macedonga.visor.kit.server.Caller
 import com.macedonga.visor.kit.server.JsonRpcSession
 import com.macedonga.visor.kit.server.McpAdapter
 import com.macedonga.visor.kit.testing.FakeVisor
+import com.macedonga.visor.kit.testing.play
+import com.macedonga.visor.kit.testing.playMotion
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.install
@@ -32,14 +34,17 @@ import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
+import java.io.File
 import java.io.IOException
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.Socket
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.combine
@@ -69,6 +74,8 @@ Type here to play the glasses:
   input SOURCE ACTION X Y DX DY   A drag step: band drag_move 120 40 6 0.
   gesture FINGER ACTION     A band gesture: index tap, middle double_tap, ...
   motion AX AY AZ           An accelerometer reading in m/s², for glasses.motion: motion 0 9.8 0.
+  motion-csv FILE           DAT's 14-column motion CSV, played over and over at its own pace.
+  camera FILE WxH FPS       A recorded .h264 or .h265 stream as the live camera, looped; camera off stops it.
   photo|video               A new capture on the glasses.
   ask QUESTION              The wearer asks; the app whose phrase the question holds answers.
   say TEXT                  The glasses hear TEXT, for voice.transcripts.
@@ -211,6 +218,17 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
                 }
             }
             "gesture" -> pair(words, "gesture FINGER ACTION").let { (a, b) -> fake.band.gesture(Finger(a), GestureAction(b)) }
+            "camera" -> camera(words.drop(1).joinToString(" ").split(Regex("\\s+")))
+            "motion-csv" -> {
+                val file = File(rest.trim())
+                if (!file.isFile) throw CliError("No file $file.")
+                motionFeed?.cancel()
+                motionFeed = scope.launch {
+                    runCatching { file.reader().use { glasses.playMotion(it, loop = true) } }
+                        .onFailure { if (it !is CancellationException) say("Motion: ${it.message}") }
+                }
+                say("Motion: playing $file, over and over")
+            }
             "motion" -> {
                 val axes = words.drop(1).joinToString(" ").split(Regex("\\s+")).mapNotNull(String::toFloatOrNull)
                 if (axes.size != 3) throw CliError("Type motion AX AY AZ, in m/s².")
@@ -310,6 +328,30 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
         } finally {
             updates.cancel()
         }
+    }
+
+    private var cameraFeed: Job? = null
+    private var motionFeed: Job? = null
+
+    /** `camera FILE WIDTHxHEIGHT FPS`, or `camera off`: a recorded H.264 or H.265 stream as the live camera, looped. */
+    private fun camera(args: List<String>) {
+        cameraFeed?.cancel()
+        if (args.firstOrNull() == "off") return say("Camera: the recording stopped")
+        val (path, size, fps) = args.takeIf { it.size == 3 } ?: throw CliError("Type camera FILE WIDTHxHEIGHT FPS, or camera off.")
+        val file = File(path)
+        if (!file.isFile) throw CliError("No file $file.")
+        val (width, height) = size.split('x').mapNotNull(String::toIntOrNull).takeIf { it.size == 2 } ?: throw CliError("The size is WIDTHxHEIGHT, such as 504x896.")
+        val codec = when (file.extension.lowercase()) {
+            "h264", "264", "avc" -> "video/avc"
+            "h265", "265", "hevc" -> "video/hevc"
+            else -> throw CliError("Name the file .h264 or .h265, an Annex-B stream.")
+        }
+        val rate = fps.toIntOrNull() ?: throw CliError("FPS is a number.")
+        cameraFeed = scope.launch {
+            runCatching { file.inputStream().use { fake.live.play(it, codec, width, height, rate, loop = true) } }
+                .onFailure { if (it !is CancellationException) say("Camera: ${it.message}") }
+        }
+        say("Camera: $file plays once an app watches the live camera, over and over")
     }
 
     private fun simulatorFile(name: String): String =
