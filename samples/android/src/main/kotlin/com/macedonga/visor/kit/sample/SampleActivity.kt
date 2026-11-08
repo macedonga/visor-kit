@@ -115,7 +115,7 @@ private fun Sample() {
                     is VisorState.Closed -> "Closed: ${s.error?.message}"
                 },
             )
-            Button({ ask.launch(setOf(Scope.STATE, Scope.INPUTS, Scope.MICROPHONE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY)) }) { Text("Grant access") }
+            Button({ ask.launch(setOf(Scope.STATE, Scope.INPUTS, Scope.MICROPHONE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.SETTINGS, Scope.CONVERSATIONS)) }) { Text("Grant access") }
 
             val glasses by remember(v, grants) { v.glasses.status.logged(log, "glasses") }.collectAsState(null)
             Text("Glasses: ${glasses ?: "-"}", style = MaterialTheme.typography.bodySmall)
@@ -128,6 +128,8 @@ private fun Sample() {
                 OutlinedButton({ run("stop") { it.camera.stopVideo() } }) { Text("Stop") }
                 OutlinedButton({ run("captures") { it.captures.list() } }) { Text("Captures") }
                 OutlinedButton({ run("buzz") { it.band.buzz() } }) { Text("Buzz") }
+                OutlinedButton({ run("sound") { it.settings.list("Sound").map { s -> "${s.label ?: s.key} = ${s.value}" } } }) { Text("Sound settings") }
+                OutlinedButton({ run("history") { it.assistant.history().take(3).map { t -> t.question } } }) { Text("Last questions") }
             }
 
             var listening by remember { mutableStateOf(false) }
@@ -160,6 +162,17 @@ private fun Sample() {
             if (hearing) {
                 LaunchedEffect(v, grants) {
                     v.voice.transcripts().logged(log, "transcripts").collect { log.add(0, "heard: ${it.text}") }
+                }
+            }
+
+            var asking by remember { mutableStateOf(false) }
+            FlowRow(verticalArrangement = Arrangement.Center, itemVerticalAlignment = Alignment.CenterVertically) {
+                Switch(asking, { asking = it })
+                Text("  What the wearer asks the assistant")
+            }
+            if (asking) {
+                LaunchedEffect(v, grants) {
+                    v.assistant.turns.logged(log, "turns").collect { log.add(0, "asked: ${it.question} -> ${it.answer.ifEmpty { it.failure }}") }
                 }
             }
 
