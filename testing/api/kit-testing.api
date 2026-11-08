@@ -14,6 +14,7 @@ public final class com/macedonga/visor/kit/testing/FakeFilesProvider : android/c
 }
 
 public final class com/macedonga/visor/kit/testing/PreviewKt {
+	public static final fun briefingPreview (Lcom/macedonga/visor/kit/testing/FakeDisplay;Landroid/content/Context;)Landroid/view/View;
 	public static final fun preview (Lcom/macedonga/visor/kit/testing/FakeDisplay;Landroid/content/Context;)Landroid/view/View;
 }
 

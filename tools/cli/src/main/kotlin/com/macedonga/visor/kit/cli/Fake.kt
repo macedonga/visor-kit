@@ -1,5 +1,6 @@
 package com.macedonga.visor.kit.cli
 
+import com.macedonga.visor.kit.protocol.BriefingCard
 import com.macedonga.visor.kit.protocol.CaptureType
 import com.macedonga.visor.kit.protocol.Finger
 import com.macedonga.visor.kit.protocol.GestureAction
@@ -50,6 +51,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
@@ -62,8 +64,9 @@ Usage: visor fake [--port PORT] [--lan]
 
 FakeVisor on this computer, for building without a phone or glasses. Apps and scripts reach it as they reach
 Visor's network door: JSON-RPC over WebSocket on ws://127.0.0.1:PORT/rpc and MCP on http://127.0.0.1:PORT/mcp
-(7333 by default; no token). The visor command reaches it with --fake, for example: visor --fake watch
-band.gestures. The Display simulator is at http://127.0.0.1:PORT/display. Every scope is granted; grant and
+(7333 by default; no token). The visor command reaches it with --fake, or --fake=PORT for another port, for
+example: visor --fake watch band.gestures. The Display simulator is at http://127.0.0.1:PORT/display, with the
+app's layout and the Briefing with its cards. Every scope is granted; grant and
 revoke below change that.
 
 Type here to play the glasses:
@@ -304,10 +307,11 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
     /** The Display simulator's page: the fake Display's layout as it changes, and the wearer's clicks, back and video back. */
     private suspend fun simulator(socket: DefaultWebSocketServerSession) {
         val updates = socket.launch {
-            combine(fake.display.layout, fake.display.state) { layout, state ->
+            combine(fake.display.layout, fake.display.state, fake.display.cards) { layout, state, cards ->
                 buildJsonObject {
                     put("layout", layout?.let { KitJson.encodeToJsonElement(Layout.serializer(), it) } ?: JsonNull)
                     put("state", KitJson.encodeToJsonElement(LayoutState.serializer(), state))
+                    put("cards", KitJson.encodeToJsonElement(ListSerializer(BriefingCard.serializer()), cards))
                 }.toString()
             }.collect { socket.outgoing.send(Frame.Text(it)) }
         }
@@ -319,6 +323,11 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
                     message["click"]?.jsonPrimitive?.contentOrNull?.let(fake.display::click)
                     message["input"]?.jsonPrimitive?.contentOrNull?.let { fake.glasses.input(InputSource.TOUCHPAD, InputAction(it)) }
                     if (message["back"] != null) fake.display.back()
+                    message["cardClick"]?.jsonObject?.let { click ->
+                        val card = click["card"]?.jsonPrimitive?.contentOrNull ?: return@let
+                        val id = click["id"]?.jsonPrimitive?.contentOrNull ?: return@let
+                        fake.display.clickCard(card, id)
+                    }
                     message["video"]?.jsonObject?.let { video ->
                         val state = video["state"]?.jsonPrimitive?.contentOrNull ?: return@let
                         fake.display.video(LayoutVideoState(state), video["error"]?.jsonPrimitive?.contentOrNull)

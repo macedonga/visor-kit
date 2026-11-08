@@ -278,13 +278,22 @@ at 600 by 600, by the same rules Visor uses to send it to the glasses, and it pl
   daylight, a night street, or your webcam) with a brightness slider;
 - a checkbox makes it dim and sleep after 20 and 25 seconds, as the Display does;
 - a video plays, and its pauses, end and failures reach the app on `display.video`;
-- Screenshot and Record save the display as a PNG or a WebM (Chrome crops them to the display).
+- Screenshot and Record save the display as a PNG or a WebM (Chrome crops them to the display);
+- Screen switches to the Briefing: the app's cards in the panel's material, one under another. Enter or a click opens
+  a card's detail, its pages swipe with the arrows, its buttons click as on the glasses (the app gets them on
+  `display.cards.clicks`, and an element's `toast` shows), and Backspace closes it.
 
-Icons are drawn with the nearest Material Symbol; the Display draws its own glyphs. Check a layout on the glasses
-before you ship it.
+DAT's icons are drawn with the nearest Material Symbol; the Briefing glyphs and the weather illustrations come from
+Meta's own icon CDN, as the Display fetches them. Check a layout on the glasses before you ship it.
+
+`visor --fake card card.json` puts a card on the fake Briefing from a file, as `visor card` does on a phone, and
+`visor --fake call METHOD @params.json` takes any method's params from a file. With `visor fake --port 7400`, give
+the same port to the command: `visor --fake=7400 status`.
 
 In the app itself, `fake.display.preview(context)` from `kit-testing` is a view with the same renderer: it draws
 what the fake Display shows and clicks what you tap, as DAT's `createPreviewView()` does.
+`fake.display.briefingPreview(context)` draws the Briefing with the app's cards: a tap opens a card's detail, a tap
+there clicks, and a double tap goes back.
 
 ## The sample app
 

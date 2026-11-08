@@ -374,5 +374,101 @@ const VisorDisplay = (() => {
     };
   }
 
-  return { render, glyphs: GLYPHS };
+  const NOTHING = { click() {}, back() {}, video() {} };
+
+  function padded(root) {
+    const own = root.padding != null || root.paddingTop != null || root.paddingBottom != null || root.paddingStart != null || root.paddingEnd != null;
+    return own ? root : { ...root, padding: 24 };
+  }
+
+  function find(node, id) {
+    if (!node) return null;
+    if (node.id === id) return node;
+    for (const child of node.children || []) {
+      const hit = find(child, id);
+      if (hit) return hit;
+    }
+    return null;
+  }
+
+  // The Display home's Briefing with the app's cards, as Visor serves them: each card in the panel's material, padded
+  // 24 px unless it pads itself. Select opens a card's detail full screen, padded as a card unless it is pages alone;
+  // back closes it. [on] takes cardClick(card, id), and back() when the wearer leaves the Briefing.
+  function briefing(cards, host, on) {
+    let focused = 0;
+    let open = null;
+    let detail = null;
+
+    function list() {
+      open = null;
+      detail = null;
+      host.replaceChildren();
+      const strip = el("div", "vd-briefing");
+      if (!cards.length) {
+        const empty = el("div", "vd-text vd-empty");
+        empty.textContent = "The app has no cards on the Briefing.";
+        strip.append(empty);
+      }
+      cards.forEach((card, i) => {
+        const frame = el("div", "vd-briefing-card");
+        render({ root: padded(card.layout.root) }, frame, NOTHING);
+        frame.title = card.detail ? `${card.name}: select to open` : card.name;
+        frame.addEventListener("click", () => { focused = i; openCard(); });
+        strip.append(frame);
+      });
+      host.append(strip);
+      focused = Math.min(focused, Math.max(0, cards.length - 1));
+      mark();
+    }
+
+    function mark() {
+      const frames = host.querySelectorAll(".vd-briefing-card");
+      frames.forEach((frame, i) => frame.classList.toggle("vd-focused", i === focused));
+      frames[focused]?.scrollIntoView({ block: "nearest" });
+    }
+
+    function toast(text) {
+      const note = el("div", "vd-toast");
+      note.textContent = text;
+      host.append(note);
+      setTimeout(() => note.remove(), 2000);
+    }
+
+    function openCard() {
+      const card = cards[focused];
+      if (!card?.detail) return;
+      open = card;
+      const root = card.detail.root;
+      const pages = (root.children || []).length === 1 && root.children[0].type === "pager";
+      detail = render({ root: pages ? root : padded(root) }, host, {
+        click(id) {
+          on.cardClick(card.id, id);
+          const element = find(card.detail.root, id);
+          if (element?.toast) toast(element.toast);
+        },
+        back() { list(); },
+        video() {},
+      });
+    }
+
+    list();
+    return {
+      move(direction) {
+        if (detail) { detail.move(direction); return; }
+        if (direction === "up" && focused > 0) focused--;
+        else if (direction === "down" && focused < cards.length - 1) focused++;
+        mark();
+      },
+      select() { if (detail) detail.select(); else openCard(); },
+      back() { if (detail) list(); else on.back(); },
+      // The cards changed: the list shows them at once; an open detail stays until the wearer leaves it.
+      update(next) {
+        cards = next;
+        if (!detail) list();
+        else if (!cards.some((c) => c.id === open.id)) list();
+      },
+    };
+  }
+
+  return { render, briefing, glyphs: GLYPHS };
 })();

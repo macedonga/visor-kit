@@ -120,6 +120,14 @@
     <div class="status" id="status">Connecting to visor fake...</div>
   </section>
   <section>
+    <h2>Screen</h2>
+    <div class="row" role="radiogroup" aria-label="Screen">
+      <label><input type="radio" name="screen" value="layout" checked> The app's layout</label>
+      <label><input type="radio" name="screen" value="briefing"> The Briefing</label>
+    </div>
+    <div class="keys" id="cardsLine">No cards on the Briefing.</div>
+  </section>
+  <section>
     <h2>Touchpad and band</h2>
     <div class="pad">
       <span></span><button data-move="up" aria-label="Up">Up</button><span></span>
@@ -128,7 +136,7 @@
       <button data-move="right" aria-label="Right">Right</button>
       <span></span><button data-move="down" aria-label="Down">Down</button><button id="back">Back</button>
     </div>
-    <div class="keys">Keys: arrows to move, Enter to select, Backspace or Esc to go back. A click on an element selects it.</div>
+    <div class="keys">Keys: arrows to move, Enter to select, Backspace or Esc to go back. A click on an element selects it. On the Briefing, select opens a card's detail.</div>
   </section>
   <section>
     <h2>View</h2>
@@ -167,6 +175,12 @@ const statusLine = document.getElementById("status");
 const logBox = document.getElementById("log");
 let socket = null;
 let view = null;
+// What the stage shows: the app's layout, or the Briefing with the app's cards.
+let mode = "layout";
+let layoutNow = null;
+let cardsNow = [];
+let layoutJson = "null";
+let cardsJson = "[]";
 
 function log(text) {
   const line = document.createElement("div");
@@ -185,10 +199,33 @@ const on = {
   video(state, error) { log(`video ${state}${error ? " " + error : ""}`); send({ video: { state, error: error || null } }); },
 };
 
+const onBriefing = {
+  cardClick(card, id) { wake(); log(`click ${id} on card ${card}`); send({ cardClick: { card, id } }); },
+  back() { log("back to the home"); },
+};
+
 function show(layout) {
-  view = VisorDisplay.render(layout, screen, on);
+  layoutNow = layout;
+  if (mode === "layout") view = VisorDisplay.render(layout, screen, on);
   wake();
 }
+
+function showCards(cards) {
+  cardsNow = cards;
+  document.getElementById("cardsLine").textContent = cards.length
+    ? `${cards.length} card${cards.length > 1 ? "s" : ""} on the Briefing: ${cards.map((c) => c.name).join(", ")}.`
+    : "No cards on the Briefing.";
+  if (mode !== "briefing") return;
+  if (view?.update) view.update(cards);
+  else view = VisorDisplay.briefing(cards, screen, onBriefing);
+}
+
+function switchTo(next) {
+  mode = next;
+  view = mode === "briefing" ? VisorDisplay.briefing(cardsNow, screen, onBriefing) : VisorDisplay.render(layoutNow, screen, on);
+  wake();
+}
+document.querySelectorAll("input[name=screen]").forEach((r) => r.addEventListener("change", () => switchTo(r.value)));
 
 function connect() {
   socket = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/display/ws`);
@@ -200,9 +237,18 @@ function connect() {
   };
   socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
-    if ("layout" in message) {
+    // Each update carries everything; only what changed is drawn again, so the focus stays put.
+    const layout = JSON.stringify(message.layout ?? null);
+    if (layout !== layoutJson) {
+      layoutJson = layout;
       show(message.layout);
       log(message.layout ? "layout shown" : `layout gone${message.state?.reason ? " (" + message.state.reason + ")" : ""}`);
+    }
+    const cards = JSON.stringify(message.cards ?? []);
+    if (cards !== cardsJson) {
+      cardsJson = cards;
+      showCards(message.cards ?? []);
+      log("cards changed");
     }
   };
 }
@@ -228,7 +274,7 @@ document.querySelectorAll("[data-move]").forEach((b) => b.addEventListener("clic
 document.getElementById("select").addEventListener("click", select);
 document.getElementById("back").addEventListener("click", back);
 document.addEventListener("keydown", (event) => {
-  if (event.target.closest("select, input")) return;
+  if (event.target instanceof Element && event.target.closest("select, input")) return;
   const direction = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" }[event.key];
   if (direction) { move(direction); event.preventDefault(); }
   else if (event.key === "Enter" || event.key === " ") { select(); event.preventDefault(); }

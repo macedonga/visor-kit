@@ -2,6 +2,7 @@ package com.macedonga.visor.kit.cli
 
 import com.macedonga.visor.kit.protocol.AppInfo
 import com.macedonga.visor.kit.protocol.BandStatus
+import com.macedonga.visor.kit.protocol.BriefingCard
 import com.macedonga.visor.kit.protocol.Failure
 import com.macedonga.visor.kit.protocol.Feeds
 import com.macedonga.visor.kit.protocol.GlassesStatus
@@ -20,6 +21,7 @@ import com.macedonga.visor.kit.protocol.SimulateRequest
 import com.macedonga.visor.kit.protocol.Topics
 import com.macedonga.visor.kit.protocol.TraceRecord
 import com.macedonga.visor.kit.protocol.Welcome
+import com.macedonga.visor.kit.protocol.problem
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -47,7 +49,7 @@ import kotlinx.serialization.json.longOrNull
 import kotlinx.serialization.json.put
 
 private val USAGE = """
-Usage: visor [-s SERIAL | --fake] [--json] COMMAND
+Usage: visor [-s SERIAL | --fake[=PORT]] [--json] COMMAND
 
 The Visor Development Kit (VDK) from a computer, through adb. The phone needs Visor with Developer mode on.
 
@@ -58,8 +60,12 @@ Commands:
                             assistant: claude mcp add vdk-docs -- visor docs-mcp
   agents                    Prints guidance for coding assistants, to save as AGENTS.md in your app.
   methods                   The methods and topics this Visor answers.
-  call METHOD [JSON]        Runs a method and prints its result.
+  call METHOD [JSON]        Runs a method and prints its result. JSON is the params, @FILE reads them from a file
+                            and - from standard input, for params past the command line's length.
                               visor call camera.photo '{"import":false}'
+                              visor call display.cards.set @card.json
+  card FILE                 Puts the card in FILE (a BriefingCard's JSON; - for standard input) on the Display's
+                            Briefing, checked first as Visor checks it.
   watch TOPIC [JSON]...     Prints each event as it comes, until Ctrl+C. JSON after a topic is its params.
                               visor watch band.gestures glasses.status
                               visor watch voice.requests '{"phrases":["the garage"]}'
@@ -91,12 +97,13 @@ conversations, raw.
 
 Options:
   -s SERIAL                 The device, as for adb -s.
-  --fake                    The FakeVisor that visor fake runs on this computer, instead of a phone.
+  --fake[=PORT]             The FakeVisor that visor fake runs on this computer, instead of a phone. PORT is
+                            the one visor fake was given, 7333 unless set.
   --json                    JSON only, one value per line.
 """.trim()
 
 private val COMMANDS = setOf(
-    "status", "methods", "call", "watch", "live", "live-photo", "trace", "simulate", "inject", "record", "replay", "apps", "grant", "revoke",
+    "status", "methods", "call", "card", "watch", "live", "live-photo", "trace", "simulate", "inject", "record", "replay", "apps", "grant", "revoke",
     "fake", "docs", "docs-mcp", "agents",
 )
 
@@ -119,17 +126,21 @@ fun main(args: Array<String>) {
 private fun run(args: List<String>) {
     var serial: String? = null
     var json = false
-    var fake = false
+    var fake: Int? = null
     val words = mutableListOf<String>()
     val it = args.iterator()
     while (it.hasNext()) {
         when (val word = it.next()) {
             "-s" -> serial = if (it.hasNext()) it.next() else usage("-s needs a device serial.")
             "--json" -> json = true
-            "--fake" -> fake = true
+            "--fake" -> fake = FAKE_PORT
             "-h", "--help", "help" -> return println(if (words.firstOrNull() == "fake") FAKE_USAGE else USAGE)
             "--version" -> return println("visor $VERSION, protocol ${KitProtocol.VERSION}")
-            else -> words += word
+            else -> if (word.startsWith("--fake=")) {
+                fake = word.removePrefix("--fake=").toIntOrNull() ?: usage("--fake=PORT takes a port number.")
+            } else {
+                words += word
+            }
         }
     }
     val command = words.firstOrNull() ?: usage("Name a command.")
@@ -139,7 +150,7 @@ private fun run(args: List<String>) {
     if (command == "docs") return printDocs(words.drop(1))
     if (command == "docs-mcp") return serveDocsMcp(VERSION)
     if (command == "agents") return println(Docs.page("for-agents.md"))
-    val session = if (fake) Session.fake(FAKE_PORT) else Session.open(serial)
+    val session = fake?.let(Session::fake) ?: Session.open(serial)
     // Ctrl+C ends watch, trace and simulate: the forward goes with the session, and with it any simulation.
     Runtime.getRuntime().addShutdownHook(Thread(session::close))
     Commands(session, json).run(command, words.drop(1))
@@ -192,7 +203,7 @@ internal class Session private constructor(private val adb: Adb?, private val po
         fun fake(port: Int): Session = try {
             greet(null, fakeShellPort(port))
         } catch (e: ConnectException) {
-            throw CliError("No visor fake runs on this computer. Start one with: visor fake")
+            throw CliError("No visor fake answers on port ${fakeShellPort(port)} (${e.message}). Start one with: visor fake")
         }
 
         private fun greet(adb: Adb?, port: Int): Session {
@@ -213,6 +224,7 @@ private class Commands(private val session: Session, private val json: Boolean) 
         "status" -> status()
         "methods" -> methods()
         "call" -> call(args.getOrNull(0) ?: usage("call needs a method."), args.getOrNull(1))
+        "card" -> card(args.getOrNull(0) ?: usage("card needs a file, or - for standard input."))
         "watch" -> watch(args.ifEmpty { usage("watch needs a topic.") })
         "live" -> live(args.getOrNull(0) ?: usage("live needs a file, or - for standard output."), args.getOrNull(1))
         "live-photo" -> livePhoto(args.getOrNull(0) ?: usage("live-photo needs a file."))
@@ -276,8 +288,23 @@ private class Commands(private val session: Session, private val json: Boolean) 
     }
 
     private fun call(method: String, params: String?) {
-        val result = rpc.call(method, params?.let(::parse))
+        val result = rpc.call(method, params?.let { parse(read(it)) })
         println(if (json) result.toString() else pretty.encodeToString(JsonElement.serializer(), result))
+    }
+
+    /** JSON as given, from a file for @FILE, or from standard input for -. */
+    private fun read(text: String): String = when {
+        text == "-" -> System.`in`.readBytes().decodeToString()
+        text.startsWith("@") -> File(text.drop(1)).takeIf { it.isFile }?.readText() ?: usage("No file ${text.drop(1)}.")
+        else -> text
+    }
+
+    private fun card(source: String) {
+        val element = parse(read(if (source == "-" || source.startsWith("@")) source else "@$source"))
+        val card = decode(BriefingCard.serializer(), element)
+        card.problem()?.let { throw CliError(it) }
+        rpc.call(Methods.DISPLAY_CARDS_SET.name, element)
+        println(if (json) "{}" else "Card ${card.id} is on the Briefing; the Display shows it within seconds while the Briefing is open.")
     }
 
     /** Each word is a topic, and a JSON object after one is that topic's params. */

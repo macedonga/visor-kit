@@ -164,3 +164,53 @@
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
 }
+
+/* The Briefing: the app's cards in the panel's material, one under another. */
+.vd-briefing {
+  box-sizing: border-box;
+  width: 600px;
+  height: 600px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.vd-briefing::-webkit-scrollbar { display: none; }
+
+.vd-briefing-card {
+  flex: none;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+}
+
+.vd-briefing-card .vd-root {
+  width: auto;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+}
+
+.vd-empty {
+  color: #cfd3d9;
+  font-size: 22px;
+  line-height: 28px;
+  text-align: center;
+  margin-top: 260px;
+}
+
+.vd-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.24);
+  font-size: 24px;
+  line-height: 32px;
+  white-space: nowrap;
+}
