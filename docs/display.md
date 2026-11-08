@@ -30,8 +30,9 @@ opening on the Display also take its place.
 ## Layouts
 
 > [!NOTE]
-> Visor does not show layouts yet: it will once it can open a session with the Display's toolkit app, the way Meta's
-> Device Access Toolkit does. FakeVisor serves them now, so an app can be built and tested against them.
+> Visor shows layouts through Meta's toolkit app on the Display, as Meta's Device Access Toolkit does. The first
+> time an app shows one, Visor asks the person once to set the glasses up for apps, and installs the toolkit app.
+> Visor does not play videos yet; FakeVisor does.
 
 ```kotlin
 visor.display.layout.show(Layout {

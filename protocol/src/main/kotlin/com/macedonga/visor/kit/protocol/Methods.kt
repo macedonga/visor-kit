@@ -258,8 +258,8 @@ public object Topics {
     )
 
     /**
-     * The glasses' motion sensors at the rate asked for, while collected. Ends with [ErrorCode.INVALID_PARAMS] for a
-     * rate not in [MotionRequest.RATES], and with [ErrorCode.UNSUPPORTED] on glasses whose toolkit app is missing.
+     * The glasses' motion sensors at the rate asked for, while collected, with nothing on their screen. Ends with
+     * [ErrorCode.INVALID_PARAMS] for a rate not in [MotionRequest.RATES].
      */
     public val GLASSES_MOTION: Topic<MotionRequest, MotionSample> = Topic(
         "glasses.motion", Scope.MOTION, 1,
@@ -326,13 +326,12 @@ public object Topics {
     )
 
     /**
-     * While any app subscribes, the phone borrows the band: its gestures come here and no longer reach the Display.
-     * The band goes back to the Display when the last subscriber leaves. Ends with [ErrorCode.UNSUPPORTED] when no
-     * band is paired, and with the reason `not_set_up` when only the Display holds it ([BandStatus.held] false).
+     * The band's gestures, through a session with the Display: the band stays with the Display, which acts on each
+     * gesture too, and nothing shows on its screen. Ends with [ErrorCode.UNSUPPORTED] when no band is paired.
      */
     public val BAND_GESTURES: Topic<Unit, Gesture> = Topic(
         "band.gestures", Scope.BAND, 1,
-        "Every gesture the Neural Band reads, while the phone borrows it from the Display.",
+        "Every gesture the Neural Band reads, with the band left on the Display.",
         Unit.serializer(), Gesture.serializer(),
     )
 

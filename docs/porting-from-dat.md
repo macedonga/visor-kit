@@ -183,8 +183,9 @@ gives the assistant's model tools to call while it answers.
 | `MotionSource.GLASSES`, `NEURAL_BAND` | `MotionSource.GLASSES`, `BAND` |
 | `MotionError.SENSOR_UNAVAILABLE` | the stream ends with `unsupported` |
 
-> On the glasses, Visor serves motion once it opens the Display's toolkit session, as DAT does. FakeVisor serves it
-> now: `fake.glasses.motion(...)`, or DAT's motion CSV with `fake.glasses.playMotion(...)`.
+> On the glasses, Visor reads motion from their own sensor service, with nothing on the screen, where DAT opens
+> its toolkit app. `orientation` is null and every sample comes from the glasses. FakeVisor serves all the fields:
+> `fake.glasses.motion(...)`, or DAT's motion CSV with `fake.glasses.playMotion(...)`.
 
 ## Display
 
@@ -205,9 +206,10 @@ gives the assistant's model tools to call while it answers.
 | `display.state`, back ending the display | `visor.display.layout.state`, with `reason` `back` |
 | `display.clearDisplay()` | `visor.display.layout.close()` |
 
-On the glasses, Visor shows layouts once it opens the Display's toolkit session, as DAT does, and draws them with
-the same rules as DAT's own builder. FakeVisor, `visor fake` and its Display simulator serve them now. Meanwhile the
-VDK shows text on the teleprompter (`visor.display.prompter`) and notifications (`visor.notify`).
+On the glasses, Visor shows layouts through the Display's toolkit session, as DAT does, and draws them with the
+same rules as DAT's own builder. Videos are not played yet. FakeVisor, `visor fake` and its Display simulator serve
+everything. The VDK also shows text on the teleprompter (`visor.display.prompter`) and notifications
+(`visor.notify`).
 
 ## Testing
 

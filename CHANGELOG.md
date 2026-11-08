@@ -12,11 +12,14 @@
   Display DAT's navigation (nav, select, back, drags) from the touchpad and the band, with a sources filter and
   `keepBack`.
 - `glasses.motion`, with the `motion` scope: the accelerometer, gyroscope, magnetometer and orientation at 5 to 60
-  samples a second, as Meta's toolkit gives them. FakeVisor serves it; Visor does not yet.
+  samples a second. Visor reads the first three from the glasses' own sensor service, with nothing on their screen;
+  FakeVisor serves every field.
+- `band.gestures` leaves the band on the Display: the gestures come through a session with it, and `derived` carries
+  the same gesture as `action`.
 - `display.layout.show`, `display.layout.close` and `display.layout.clicks`: layouts with DAT's elements (columns
   and rows, text, images, the Display's own icons, buttons, button bars and a video) and their styles, with clicks
-  back. `display.layout.state` says when the layout goes and why, and `display.video` follows the video. FakeVisor
-  serves them; Visor does not yet.
+  back. `display.layout.state` says when the layout goes and why, and `display.video` follows the video. Visor
+  shows them through Meta's toolkit app on the Display, videos aside; FakeVisor serves everything.
 - `VoiceLaunch`: an app that is not running is started by a phrase its activity declares, as DAT's voice
   invocations start one, and answers with `voice.reply`.
 - `voice.transcripts`, with the `microphone` scope: what the glasses hear, as text, from the phone's recogniser,

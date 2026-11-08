@@ -107,8 +107,9 @@ visor.glasses.motion.collect { sample -> }          // 30 samples a second
 visor.glasses.motion(rateHz = 60).collect { sample -> }
 ```
 
-> Visor does not serve motion yet: it will once it can open a session with the Display's toolkit app, the way
-> Meta's toolkit does. Until then the stream ends with `unknown_method`; FakeVisor serves it now.
+> On the glasses, Visor reads motion from their own sensor service, with nothing on the screen and no toolkit app.
+> It gives the accelerometer, the gyroscope and the magnetometer: `orientation` is null and `source` is `glasses`.
+> FakeVisor also serves orientation and the band's motion.
 
 Motion needs the `motion` scope. The rate is one of 5, 10, 15, 24, 30 or 60 samples a second. A `MotionSample`:
 

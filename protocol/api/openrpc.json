@@ -915,7 +915,7 @@
         },
         {
             "name": "band.gestures",
-            "summary": "Every gesture the Neural Band reads, while the phone borrows it from the Display.",
+            "summary": "Every gesture the Neural Band reads, with the band left on the Display.",
             "params": [],
             "event": {
                 "name": "event",
