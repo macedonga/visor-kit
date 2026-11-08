@@ -42,6 +42,35 @@ A `VoiceRequest`:
 
 A reply that comes too late fails with `invalid_params` and reason `expired`.
 
+### Started by voice
+
+An app that is not running can be started by its phrase, as DAT's voice invocations start one. Declare an activity
+with the VDK's voice action and a string array of phrases:
+
+```xml
+<activity android:name=".GarageActivity" android:exported="true">
+    <intent-filter>
+        <action android:name="com.macedonga.visor.kit.action.VOICE" />
+        <category android:name="android.intent.category.DEFAULT" />
+    </intent-filter>
+    <meta-data android:name="com.macedonga.visor.kit.VOICE_PHRASES" android:resource="@array/garage_phrases" />
+</activity>
+```
+
+When a question holds one of these phrases and no running app holds it, Visor starts the activity with the
+question. Read it with `VoiceLaunch.request(intent)` in `onCreate` and `onNewIntent`, and reply as above, within
+about 20 seconds:
+
+```kotlin
+VoiceLaunch.request(intent)?.let { request ->
+    lifecycleScope.launch { Visor.connect(this@GarageActivity).voice.reply(request, "The garage is closed.") }
+}
+```
+
+Visor starts only apps the person granted the `voice` scope, so ask for it once, at setup. While the app collects
+`requests`, its running offer answers instead and nothing is started. Visor reads the declared phrases again every
+30 seconds, so a newly installed app is heard within half a minute.
+
 ## What the glasses hear
 
 Scope: `microphone`. All glasses, on Android 13 or later.

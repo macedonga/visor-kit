@@ -156,6 +156,14 @@ public final class com/macedonga/visor/kit/Voice {
 	public final fun transcripts (Lcom/macedonga/visor/kit/protocol/TranscriptRequest;)Lkotlinx/coroutines/flow/Flow;
 }
 
+public final class com/macedonga/visor/kit/VoiceLaunch {
+	public static final field ACTION Ljava/lang/String;
+	public static final field EXTRA_REQUEST Ljava/lang/String;
+	public static final field INSTANCE Lcom/macedonga/visor/kit/VoiceLaunch;
+	public static final field PHRASES Ljava/lang/String;
+	public final fun request (Landroid/content/Intent;)Lcom/macedonga/visor/kit/protocol/VoiceRequest;
+}
+
 public abstract interface class com/macedonga/visor/kit/ipc/IKitClient : android/os/IInterface {
 	public static final field DESCRIPTOR Ljava/lang/String;
 	public abstract fun ended (JLjava/lang/String;)V
