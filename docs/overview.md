@@ -95,4 +95,4 @@ and the touchpad's gestures from a session without the toolkit app, so neither p
    clients, and raw access to the glasses' services for research.
 4. **The Display:** a JavaScript library for the Display's web apps, cards on the Display's home, and the Neural
    Band as an input device without glasses.
-5. **The Display's toolkit session:** videos in layouts and the Display's own speech recognition.
+5. **The Display's toolkit session:** the Display's own speech recognition.

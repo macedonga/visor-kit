@@ -208,7 +208,7 @@ gives the assistant's model tools to call while it answers.
 | `display.clearDisplay()` | `visor.display.layout.close()` |
 
 On the glasses, Visor shows layouts through the Display's toolkit session, as DAT does, and draws them with the
-same rules as DAT's own builder. Videos are not played yet. FakeVisor, `visor fake` and its Display simulator serve
+same rules as DAT's own builder, videos included. FakeVisor, `visor fake` and its Display simulator serve
 everything. The VDK also shows text on the teleprompter (`visor.display.prompter`) and notifications
 (`visor.notify`).
 

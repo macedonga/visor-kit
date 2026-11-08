@@ -32,7 +32,8 @@ opening on the Display also take its place.
 > [!NOTE]
 > Visor shows layouts through Meta's toolkit app on the Display, as Meta's Device Access Toolkit does. The first
 > time an app shows one, Visor asks the person once to set the glasses up for apps, and installs the toolkit app.
-> Visor does not play videos yet; FakeVisor does.
+> A video plays alone on the screen: the glasses fetch its URL through the phone's internet, so a short clip can
+> take a few seconds to start.
 
 ```kotlin
 visor.display.layout.show(Layout {
