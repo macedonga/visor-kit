@@ -181,6 +181,54 @@ visor.display.cards.set("weather", "Lake weather", LayoutIconName.CLOUD) {
 }
 ```
 
+### Live cards
+
+A card can follow the app's state: `keep` sets the card again for each new state of a `Flow`, as long as it runs.
+
+```kotlin
+scope.launch {
+    visor.display.cards.keep("pasta", "Kitchen timer", LayoutIconName.CLOCK, timer.remaining) { left ->
+        header(LayoutIconName.CLOCK, "Kitchen timer")
+        stat("%d:%02d".format(left.inWholeMinutes, left.inWholeSeconds % 60), "Pasta")
+        progress(1 - left / total)
+    }
+}
+```
+
+States closer than a second apart are merged into the newest, and a state that draws the same card sends nothing.
+While an app has cards on it, the Display asks for the Briefing every 15 seconds as the wearer looks at it, so a
+live card keeps up within seconds. When `keep` ends, the card stays as its last state drew it, until `remove`.
+
+### From Python, TypeScript and JSON-RPC
+
+The Python and TypeScript clients have the same pieces, building the JSON the Kotlin builder makes:
+
+```python
+from visor_kit.layout import card, header, stat, change, page, chart
+
+await visor.call("display.cards.set", card(
+    "stocks", "My stocks",
+    header("My stocks", icon="chart_line"),
+    stat("27,012.40"),
+    change("+481.50 (+1.8%)", rising=True),
+    icon="chart_line",
+    pages=[page(chart([26.1, 26.4, 26.9, 27.0]))],
+))
+```
+
+```ts
+import { card, header, stat, change, page, chart } from "visor-kit/layout";
+
+await visor.call("display.cards.set", card("stocks", "My stocks", [
+  header("My stocks", "chart_line"),
+  stat("27,012.40"),
+  change("+481.50 (+1.8%)", true),
+], { icon: "chart_line", pages: [page([chart([26.1, 26.4, 26.9, 27.0])])] }));
+```
+
+On the wire a card is `{"id", "name", "icon", "layout": {"root": ...}, "detail": {"root": ...}}`, each element
+`{"type": "text", "text": "...", "style": "title", ...}` with the field names of the tables above.
+
 ## JSON-RPC
 
 | | Name | Params | Answer |

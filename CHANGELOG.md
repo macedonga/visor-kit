@@ -25,6 +25,10 @@
 - `image(bitmap)` on Android: a photo from the app inside a layout or a card, scaled to the Display. Visor scales
   `data:` images larger than 600 px a side. A card and its detail take at most 256 KiB (`BriefingCard.MAX_BYTES`),
   checked by the client, Visor and FakeVisor alike.
+- `display.cards.keep`: a card that follows a `Flow` of the app's state. While an app has cards on the Briefing,
+  the Display asks for it every 15 seconds.
+- Python `visor_kit.layout` and TypeScript `visor-kit/layout`: layouts and Briefing cards with the Kotlin builder's
+  pieces and blocks; `image_file(path)` in Python.
 - `kit-testing` serves FakeVisor's imported captures and live photos to the app under test, with the bytes the
   test gives them: `fake.glasses.add(type, bytes, mime)`, `fake.live.photo(bytes, mime)`.
 - `voice.speak`, with the `voice` scope: the glasses say a line in their own voice, unasked. On the Display;

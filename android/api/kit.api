@@ -41,6 +41,8 @@ public final class com/macedonga/visor/kit/Display {
 }
 
 public final class com/macedonga/visor/kit/DisplayCards {
+	public final fun keep (Ljava/lang/String;Ljava/lang/String;Lkotlinx/coroutines/flow/Flow;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun keep-90vLc5k (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlinx/coroutines/flow/Flow;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun remove (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun set (Lcom/macedonga/visor/kit/protocol/BriefingCard;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun set (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;

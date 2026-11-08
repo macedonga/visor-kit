@@ -15,7 +15,9 @@ import com.macedonga.visor.kit.protocol.PrompterStyle
 import com.macedonga.visor.kit.protocol.Scope
 import com.macedonga.visor.kit.protocol.Topics
 import com.macedonga.visor.kit.protocol.problem
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.conflate
 
 /** What the Meta Ray-Ban Display shows. Needs [Scope.DISPLAY]; on glasses without a display, every call fails. */
 public class Display internal constructor(visor: Visor) {
@@ -47,6 +49,42 @@ public class DisplayCards internal constructor(private val visor: Visor) {
         set(BriefingCard(id, name, icon, block))
 
     public suspend fun remove(id: String): Unit = visor.call(Methods.DISPLAY_CARDS_REMOVE, CardRemoval(id))
+
+    /**
+     * Keeps card [id] on the Briefing in step with [states]: each state sets the card again, as [block] draws it, for
+     * example a timer's remaining time or a delivery's position:
+     *
+     * ```
+     * visor.display.cards.keep("pasta", "Kitchen timer", LayoutIconName.CLOCK, timer.remaining) { left ->
+     *     header(LayoutIconName.CLOCK, "Kitchen timer")
+     *     stat(left.format(), "Pasta")
+     * }
+     * ```
+     *
+     * Suspends until cancelled or until a set fails, which it throws. The card stays after, as the last state drew
+     * it, until [remove]. States closer than a second apart are merged into the newest, and a state that draws the
+     * same card sends nothing. The Display shows a change the next time it asks, within seconds while the wearer
+     * looks at the Briefing.
+     */
+    public suspend fun <T> keep(id: String, name: String, icon: LayoutIconName, states: Flow<T>, block: LayoutCard.(T) -> Unit) {
+        var last: BriefingCard? = null
+        states.conflate().collect { state ->
+            val card = BriefingCard(id, name, icon) { block(state) }
+            if (card != last) {
+                set(card)
+                last = card
+                delay(KEEP_GAP_MS)
+            }
+        }
+    }
+
+    /** [keep] with the bell icon. */
+    public suspend fun <T> keep(id: String, name: String, states: Flow<T>, block: LayoutCard.(T) -> Unit): Unit =
+        keep(id, name, LayoutIconName.BELL, states, block)
+
+    private companion object {
+        const val KEEP_GAP_MS = 1_000L
+    }
 }
 
 /**
