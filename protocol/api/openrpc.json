@@ -790,8 +790,34 @@
         },
         {
             "name": "glasses.inputs",
-            "summary": "Each touch of the glasses' touchpad and each press of their buttons.",
-            "params": [],
+            "summary": "Each touch of the glasses' touchpad, each press of their buttons, and the Display's navigation.",
+            "params": [
+                {
+                    "name": "sources",
+                    "required": false,
+                    "schema": {
+                        "anyOf": [
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "title": "InputSource"
+                                }
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "keepBack",
+                    "required": false,
+                    "schema": {
+                        "type": "boolean"
+                    }
+                }
+            ],
             "event": {
                 "name": "event",
                 "schema": {
@@ -1446,6 +1472,46 @@
                     },
                     "time": {
                         "type": "integer"
+                    },
+                    "x": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "y": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "dx": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "dy": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 },
                 "required": [

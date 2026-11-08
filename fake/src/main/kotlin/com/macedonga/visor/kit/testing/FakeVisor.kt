@@ -52,6 +52,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.serialization.json.contentOrNull
@@ -162,7 +163,7 @@ public class FakeVisor {
             pairs.now()
         }
         stream(Topics.GLASSES_PAIRS) { _, _ -> pairs.list }
-        stream(Topics.GLASSES_INPUTS) { _, _ -> glasses.inputs }
+        stream(Topics.GLASSES_INPUTS) { _, request -> glasses.inputs.filter { request.sources?.contains(it.source) ?: true } }
         stream(Topics.GLASSES_MOTION) { _, request -> glasses.motion(request) }
         answer(Methods.GLASSES_SELECT) { _, selection ->
             called(Methods.GLASSES_SELECT.name)
@@ -323,6 +324,11 @@ public class FakeGlasses internal constructor() {
     internal val inputs = MutableSharedFlow<GlassesInput>(extraBufferCapacity = 64)
     internal val progress = MutableSharedFlow<CaptureProgress>(extraBufferCapacity = 64)
     internal val imported = MutableSharedFlow<Capture>(extraBufferCapacity = 64)
+
+    /** Sends a drag's step from [source], with its position and its move, as the Display reports one. */
+    public fun drag(source: InputSource, action: InputAction, x: Double, y: Double, dx: Double, dy: Double) {
+        inputs.tryEmit(GlassesInput(source, action, System.currentTimeMillis(), x, y, dx, dy))
+    }
 
     /** Sends a touch or a press to every app that collects inputs now, for example `input(TOUCHPAD, TAP)`. */
     public fun input(source: InputSource, action: InputAction) {

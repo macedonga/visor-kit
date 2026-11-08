@@ -76,18 +76,29 @@ visor.glasses.inputs.collect { input ->
 
 Each `GlassesInput` is one touch of the touchpad or one press of a button, as the glasses report it to the phone.
 The glasses still act on it as they always do: a tap still pauses the music, and the capture button still takes a
-photo. The VDK cannot keep an input from them.
+photo. The VDK cannot keep an input from them, except back on the Display (below).
 
 | `source` | Actions |
 |---|---|
 | `touchpad` | `tap`, `double_tap`, `triple_tap`, `tap_hold`, `swipe_forward`, `swipe_backward`, `slide_forward`, `slide_backward`, `touch`, `release`, `palm_tap`, `palm_hold` |
 | `capture_button` | `press`, `release`, `long_press`, `very_long_press`, `very_very_long_press`, `extremely_long_press`, `very_very_long_release`, `double_press` |
 | `action_button` | `press`, `release`, `long_release` |
+| `touchpad`, `band` on the Display | `nav_up`, `nav_down`, `nav_left`, `nav_right`, `select`, `back`, `drag_start`, `drag_move`, `drag_end` |
 
 A swipe goes `forward` towards the lenses. `touch` and `release` tell when a finger rests on the touchpad and when
 it leaves; `slide_*` is a finger that moves while it rests there. `time` is when Visor heard the input. Which
 actions a pair reports depends on its model and firmware: treat an action you do not know as unknown, and a source
 you do not know too.
+
+On the Display the touchpad and the band also navigate, as in DAT: `nav_*`, `select` and `back`, and drags with
+`x`, `y`, `dx` and `dy` in the glasses' own units. Ask for some sources only, and keep back for your app, with an
+`InputsRequest`:
+
+```kotlin
+visor.glasses.inputs(InputsRequest { sources = listOf(InputSource.BAND); keepBack = true }).collect { input -> }
+```
+
+`keepBack` works on the Display only: back then comes to the app as `back`, and the Display stays on its screen.
 
 ## Motion
 
@@ -124,7 +135,7 @@ or a whole `MotionSample` with `fake.glasses.motion(sample)`.
 | Method | `glasses.pairs` | none | a list of `GlassesPair` |
 | Topic | `glasses.pairs` | none | the list now, then on each change |
 | Method | `glasses.select` | `serial` | the new active `GlassesPair` |
-| Topic | `glasses.inputs` | none | a `GlassesInput` for each touch or press |
+| Topic | `glasses.inputs` | `sources`, `keepBack` (an `InputsRequest`, optional) | a `GlassesInput` for each touch or press |
 | Topic | `glasses.motion` | `rateHz` (default 30) | a `MotionSample` for each reading |
 
 ```

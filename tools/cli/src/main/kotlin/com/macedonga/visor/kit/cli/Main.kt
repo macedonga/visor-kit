@@ -468,11 +468,13 @@ private class Commands(private val session: Session, private val json: Boolean) 
 
     /** A touch or a press from words: SOURCE ACTION. */
     private fun input(words: List<String>): JsonElement {
-        if (words.size != 2) usage("An input is SOURCE ACTION, for example: touchpad double_tap")
+        val at = words.drop(2).map { it.toDoubleOrNull() ?: usage("A drag's X Y DX DY are numbers.") }
+        if (words.size != 2 && words.size != 6) usage("An input is SOURCE ACTION [X Y DX DY], for example: touchpad double_tap")
         return buildJsonObject {
             put("source", words[0])
             put("action", words[1])
             put("time", System.currentTimeMillis())
+            listOf("x", "y", "dx", "dy").zip(at).forEach { (name, value) -> put(name, value) }
         }
     }
 

@@ -3,6 +3,7 @@ package com.macedonga.visor.kit
 import com.macedonga.visor.kit.protocol.GlassesInput
 import com.macedonga.visor.kit.protocol.GlassesPair
 import com.macedonga.visor.kit.protocol.GlassesStatus
+import com.macedonga.visor.kit.protocol.InputsRequest
 import com.macedonga.visor.kit.protocol.Methods
 import com.macedonga.visor.kit.protocol.MotionRequest
 import com.macedonga.visor.kit.protocol.MotionSample
@@ -25,11 +26,14 @@ public class Glasses internal constructor(private val visor: Visor) {
         get() = visor.subscribe(Topics.GLASSES_PAIRS, Unit)
 
     /**
-     * Each touch of the touchpad and each press of a button, while collected. The glasses still act on each one as
-     * they always do. Needs [Scope.INPUTS].
+     * Each touch of the touchpad and each press of a button, and on the Display its navigation, while collected. The
+     * glasses still act on each one as they always do. Needs [Scope.INPUTS].
      */
     public val inputs: Flow<GlassesInput>
-        get() = visor.subscribe(Topics.GLASSES_INPUTS, Unit)
+        get() = visor.subscribe(Topics.GLASSES_INPUTS, InputsRequest())
+
+    /** [inputs] from the sources [request] names, keeping back for the app when it asks and the Display can. */
+    public fun inputs(request: InputsRequest): Flow<GlassesInput> = visor.subscribe(Topics.GLASSES_INPUTS, request)
 
     /** The motion sensors, 30 samples a second, while collected. Needs [Scope.MOTION]. */
     public val motion: Flow<MotionSample>

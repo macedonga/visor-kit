@@ -251,10 +251,10 @@ public object Topics {
      * Each touch of the touchpad and each press of a button, as the glasses report it to the phone. The glasses still
      * act on it as they always do: a tap still pauses the music.
      */
-    public val GLASSES_INPUTS: Topic<Unit, GlassesInput> = Topic(
+    public val GLASSES_INPUTS: Topic<InputsRequest, GlassesInput> = Topic(
         "glasses.inputs", Scope.INPUTS, 1,
-        "Each touch of the glasses' touchpad and each press of their buttons.",
-        Unit.serializer(), GlassesInput.serializer(),
+        "Each touch of the glasses' touchpad, each press of their buttons, and the Display's navigation.",
+        InputsRequest.serializer(), GlassesInput.serializer(),
     )
 
     /**

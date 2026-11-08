@@ -496,10 +496,15 @@ public final class com/macedonga/visor/kit/protocol/GestureAction$Companion {
 
 public final class com/macedonga/visor/kit/protocol/GlassesInput {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/GlassesInput$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;JLjava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Double;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAction-NR7BcMA ()Ljava/lang/String;
+	public final fun getDx ()Ljava/lang/Double;
+	public final fun getDy ()Ljava/lang/Double;
 	public final fun getSource-T5YlQlg ()Ljava/lang/String;
 	public final fun getTime ()J
+	public final fun getX ()Ljava/lang/Double;
+	public final fun getY ()Ljava/lang/Double;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -802,14 +807,23 @@ public final synthetic class com/macedonga/visor/kit/protocol/InputAction$$seria
 }
 
 public final class com/macedonga/visor/kit/protocol/InputAction$Companion {
+	public final fun getBACK-NR7BcMA ()Ljava/lang/String;
 	public final fun getDOUBLE_PRESS-NR7BcMA ()Ljava/lang/String;
 	public final fun getDOUBLE_TAP-NR7BcMA ()Ljava/lang/String;
+	public final fun getDRAG_END-NR7BcMA ()Ljava/lang/String;
+	public final fun getDRAG_MOVE-NR7BcMA ()Ljava/lang/String;
+	public final fun getDRAG_START-NR7BcMA ()Ljava/lang/String;
 	public final fun getLONG_PRESS-NR7BcMA ()Ljava/lang/String;
 	public final fun getLONG_RELEASE-NR7BcMA ()Ljava/lang/String;
+	public final fun getNAV_DOWN-NR7BcMA ()Ljava/lang/String;
+	public final fun getNAV_LEFT-NR7BcMA ()Ljava/lang/String;
+	public final fun getNAV_RIGHT-NR7BcMA ()Ljava/lang/String;
+	public final fun getNAV_UP-NR7BcMA ()Ljava/lang/String;
 	public final fun getPALM_HOLD-NR7BcMA ()Ljava/lang/String;
 	public final fun getPALM_TAP-NR7BcMA ()Ljava/lang/String;
 	public final fun getPRESS-NR7BcMA ()Ljava/lang/String;
 	public final fun getRELEASE-NR7BcMA ()Ljava/lang/String;
+	public final fun getSELECT-NR7BcMA ()Ljava/lang/String;
 	public final fun getSLIDE_BACKWARD-NR7BcMA ()Ljava/lang/String;
 	public final fun getSLIDE_FORWARD-NR7BcMA ()Ljava/lang/String;
 	public final fun getSWIPE_BACKWARD-NR7BcMA ()Ljava/lang/String;
@@ -850,8 +864,46 @@ public final synthetic class com/macedonga/visor/kit/protocol/InputSource$$seria
 
 public final class com/macedonga/visor/kit/protocol/InputSource$Companion {
 	public final fun getACTION_BUTTON-T5YlQlg ()Ljava/lang/String;
+	public final fun getBAND-T5YlQlg ()Ljava/lang/String;
 	public final fun getCAPTURE_BUTTON-T5YlQlg ()Ljava/lang/String;
 	public final fun getTOUCHPAD-T5YlQlg ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/InputsKt {
+	public static final fun InputsRequest (Lkotlin/jvm/functions/Function1;)Lcom/macedonga/visor/kit/protocol/InputsRequest;
+}
+
+public final class com/macedonga/visor/kit/protocol/InputsRequest {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/InputsRequest$Companion;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKeepBack ()Z
+	public final fun getSources ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/InputsRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/InputsRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/InputsRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/InputsRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/InputsRequest$Builder {
+	public fun <init> ()V
+	public final fun build ()Lcom/macedonga/visor/kit/protocol/InputsRequest;
+	public final fun getKeepBack ()Z
+	public final fun getSources ()Ljava/util/List;
+	public final fun setKeepBack (Z)V
+	public final fun setSources (Ljava/util/List;)V
+}
+
+public final class com/macedonga/visor/kit/protocol/InputsRequest$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 

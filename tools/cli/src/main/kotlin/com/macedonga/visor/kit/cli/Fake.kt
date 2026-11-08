@@ -65,7 +65,8 @@ Type here to play the glasses:
   battery N                 The glasses' battery, 0 to 100.
   charging|worn|folded|connected|display on|off
   thermal LEVEL             normal, light, moderate, severe, critical.
-  input SOURCE ACTION       A touch or a press: touchpad tap, capture press, ...
+  input SOURCE ACTION       A touch, a press or the Display's navigation: touchpad tap, band nav_left, ...
+  input SOURCE ACTION X Y DX DY   A drag step: band drag_move 120 40 6 0.
   gesture FINGER ACTION     A band gesture: index tap, middle double_tap, ...
   motion AX AY AZ           An accelerometer reading in m/s², for glasses.motion: motion 0 9.8 0.
   photo|video               A new capture on the glasses.
@@ -199,7 +200,15 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
             "connected" -> glasses.connected = onOff(words)
             "display" -> glasses.display = onOff(words)
             "thermal" -> glasses.thermal = ThermalLevel(rest.ifEmpty { throw CliError("thermal needs a level.") })
-            "input" -> pair(words, "input SOURCE ACTION").let { (a, b) -> glasses.input(InputSource(a), InputAction(b)) }
+            "input" -> {
+                val all = line.split(Regex("\\s+")).drop(1)
+                val at = all.drop(2).mapNotNull(String::toDoubleOrNull)
+                when {
+                    all.size == 2 -> glasses.input(InputSource(all[0]), InputAction(all[1]))
+                    all.size == 6 && at.size == 4 -> glasses.drag(InputSource(all[0]), InputAction(all[1]), at[0], at[1], at[2], at[3])
+                    else -> throw CliError("Type input SOURCE ACTION, or input SOURCE ACTION X Y DX DY for a drag.")
+                }
+            }
             "gesture" -> pair(words, "gesture FINGER ACTION").let { (a, b) -> fake.band.gesture(Finger(a), GestureAction(b)) }
             "motion" -> {
                 val axes = words.drop(1).joinToString(" ").split(Regex("\\s+")).mapNotNull(String::toFloatOrNull)
