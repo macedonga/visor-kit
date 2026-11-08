@@ -171,7 +171,7 @@ gives the assistant's model tools to call while it answers.
 | `InputEvent.Back` | `back` on the Display; no gesture means back on other glasses |
 | `InputSource.CAPTOUCH`, `CAPTURE_BUTTON`, `ACTION_BUTTON` | `InputSource.TOUCHPAD`, `CAPTURE_BUTTON`, `ACTION_BUTTON` |
 | `InputSource.NEURAL_BAND`, `NEURAL_BAND_DRAG` | `InputSource.BAND`; every band gesture is also on `visor.band.gestures`, scope `band` |
-| `consumeBack = true` | `keepBack = true`, on the Display only: other glasses still act on every input |
+| `consumeBack = true` | `keepBack = true`, on the Display only: other glasses still act on every input. The band's back still closes the layout |
 
 ## Motion
 

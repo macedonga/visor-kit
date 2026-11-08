@@ -90,15 +90,17 @@ it leaves; `slide_*` is a finger that moves while it rests there. `time` is when
 actions a pair reports depends on its model and firmware: treat an action you do not know as unknown, and a source
 you do not know too.
 
-On the Display the touchpad and the band also navigate, as in DAT: `nav_*`, `select` and `back`, and drags with
-`x`, `y`, `dx` and `dy` in the glasses' own units. Ask for some sources only, and keep back for your app, with an
-`InputsRequest`:
+On the Display the touchpad's and the band's gestures come as `tap`, `double_tap`, `triple_tap`, `tap_hold` and
+`nav_*` at any time. While your app shows a layout they also navigate, as in DAT: `nav_*`, `select` and `back`, and
+drags with `x`, `y`, `dx` and `dy` in the glasses' own units. A tap then comes twice, as `tap` and as `select`: act on
+one of them. Ask for some sources only, and keep back for your app, with an `InputsRequest`:
 
 ```kotlin
 visor.glasses.inputs(InputsRequest { sources = listOf(InputSource.BAND); keepBack = true }).collect { input -> }
 ```
 
-`keepBack` works on the Display only: back then comes to the app as `back`, and the Display stays on its screen.
+`keepBack` asks the Display to hand back to your app as `back`. The band's back, a middle-finger tap, still closes
+the layout: the Display acts on it before the layout hears it.
 
 ## Motion
 

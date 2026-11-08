@@ -14,6 +14,8 @@
 - `glasses.motion`, with the `motion` scope: the accelerometer, gyroscope, magnetometer and orientation at 5 to 60
   samples a second. Visor reads them from the glasses' own sensor service, with nothing on their screen, and fuses
   the orientation on the phone; FakeVisor also serves the band's motion.
+- `glasses.inputs` on the Display: while a layout shows, `nav_*`, `select`, `back` and drags with `x`, `y`, `dx`
+  and `dy`, as DAT gives them.
 - `band.gestures` leaves the band on the Display: the gestures come through a session with it, and `derived` carries
   the same gesture as `action`.
 - `display.layout.show`, `display.layout.close` and `display.layout.clicks`: layouts with DAT's elements (columns
