@@ -17,11 +17,11 @@ runs them. It needs no Meta account, no Meta AI app and no developer review, and
 | **Camera** | Take a photo and get it in the phone's gallery. Start and stop videos and hyperlapses. Stream the camera live, up to 1080p over Wi-Fi Direct, with the microphones. |
 | **Captures** | List what is on the glasses, import it over Wi-Fi Direct, and follow each import. |
 | **Neural Band** | Receive every gesture: finger, action and the band's own reading of it. Make the band vibrate. |
-| **Display** | Put a script on the Ray-Ban Display's teleprompter, and notifications on the Display. |
-| **Voice** | Answer the questions the wearer asks that name your app, in the glasses' own voice. Turn what the glasses hear into text. |
+| **Display** | Show layouts with DAT's elements (text, images, icons, buttons, video) and get the clicks; put a script on the teleprompter, and notifications on the Display. |
+| **Voice** | Answer the questions the wearer asks that name your app, in the glasses' own voice, or start your app by a phrase. Turn what the glasses hear into text, live. |
 | **Assistant** | Give the assistant's model your app's tools, which it calls while it answers the wearer. Read every question and answer. |
 | **Settings** | Read every setting the glasses keep, and change the everyday ones. |
-| **Without the glasses** | `visor fake` runs a fake Visor on your computer; `visor record` and `visor replay` play back what the wearer did. |
+| **Without the glasses** | `visor fake` runs a fake Visor on your computer, with a Display simulator in the browser; `visor record` and `visor replay` play back what the wearer did. |
 
 Programs and AI agents can reach the glasses over the network too, through JSON-RPC or MCP, with a token the
 person makes for them. Coming next: JavaScript for the Display's web apps. See the
