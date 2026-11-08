@@ -20,8 +20,29 @@ public class BriefingCard @KitInternal constructor(
 ) {
     public companion object {
         public const val MAX_NAME: Int = 40
+
+        /**
+         * The most a card and its detail take as JSON, images inside them included: 256 KiB. An image given as an
+         * `https://` URL costs only its URL: the glasses fetch it through the phone.
+         */
+        public const val MAX_BYTES: Int = 262_144
     }
 }
+
+/** Why Visor refuses this card, or null when it takes it. Visor, FakeVisor and the Android client check with it. */
+@KitInternal
+public fun BriefingCard.problem(): String? {
+    if (id.isBlank()) return "A card needs an id."
+    if (name.isBlank() || name.length > BriefingCard.MAX_NAME) return "A card needs a name of 1 to ${BriefingCard.MAX_NAME} characters."
+    val size = KitJson.encodeToString(BriefingCard.serializer(), this).encodeToByteArray().size
+    if (size > BriefingCard.MAX_BYTES) {
+        return "The card and its detail take ${size / KIB} KiB, over ${BriefingCard.MAX_BYTES / KIB} KiB: scale its images down, " +
+            "or give them as https:// URLs, which the glasses fetch."
+    }
+    return null
+}
+
+private const val KIB = 1024
 
 /** The params of [Methods.DISPLAY_CARDS_REMOVE]. */
 @Poko

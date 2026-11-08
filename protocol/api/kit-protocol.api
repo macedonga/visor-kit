@@ -96,6 +96,7 @@ public final class com/macedonga/visor/kit/protocol/BandStatus$Companion {
 
 public final class com/macedonga/visor/kit/protocol/BriefingCard {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/BriefingCard$Companion;
+	public static final field MAX_BYTES I
 	public static final field MAX_NAME I
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/macedonga/visor/kit/protocol/Layout;Lcom/macedonga/visor/kit/protocol/Layout;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z

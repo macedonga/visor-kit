@@ -54,7 +54,7 @@ is a column; boxes nest. The elements are DAT's, with the same sizes and styles:
 |---|---|---|
 | Column, row | `column { }`, `row { }` | `gap`; `padding`, or `paddingTop`, `paddingBottom`, `paddingStart`, `paddingEnd`, in pixels; `align` along the box: `start`, `center`, `end`, `space_between`; `crossAlign` across it: `start`, `center`, `end`, `stretch`; `reverse` to lay the children out from the end; `wrap`; `card` to draw it on a card; `background`, a colour behind its children; `height` in pixels; `id` to make the whole box a click target |
 | Text | `text("...") { }` | `style`: `heading` (40 px, bold), `title` (24 px, bold, the first line of Meta's Briefing cards), `body` (28 px, the default), `meta` (22 px); `color` (below; `secondary` is the default for `meta`); `maxLines`, cut with an ellipsis; `align`: `start`, `center`, `end` |
-| Image | `image(url) { }` | An `https://` URL or a `data:` URI; `size`: `fill` (the width it gets, the default) or `icon` (a 32 px square); `corners`: `none`, `small`, `medium`; `height` in pixels |
+| Image | `image(url) { }`, `image(bitmap) { }` | An `https://` URL, which the glasses fetch through the phone; a `data:` URI; or on Android a `Bitmap`, sent inside the layout. Visor scales a `data:` image larger than the Display's 600 px a side. `size`: `fill` (the width it gets, the default) or `icon` (a 32 px square); `corners`: `none`, `small`, `medium`; `height` in pixels |
 | Icon | `icon(LayoutIconName.HEART) { }` | One of the Display's own icons (below); `style`: `filled` (the default) or `outline`; `color`, white unless set; `size` in pixels, 32 unless set |
 | Button | `button(id, label) { }` | `style`: `primary` (the default), `secondary`, `outline`; `icon`; `primary = true` for the button the Display focuses first |
 | Button bar | `buttons { button(...) }` | The Display's own bar of buttons; `align`: `start`, `center`, `end` |
@@ -138,6 +138,10 @@ A card is a layout, drawn in the Briefing's own card style and padded 24 px as M
 padding. Setting a card with the same id replaces it; the Display shows the change the next time it asks, within
 about a minute. The name and the icon show in the Display's list of Briefing cards, where the wearer can turn a card
 off. On the card itself buttons and videos do nothing: a click on the card opens its detail.
+
+A card and its detail take at most 256 KiB as JSON (`BriefingCard.MAX_BYTES`), images inside them included; past
+that `set` fails with `invalid_params`, saying the size. A few photos from `image(bitmap)` fit; for more, give
+`https://` URLs, which cost only their length. A chart costs nothing here: Visor draws it.
 
 `detail { }` is the screen a click opens, padded as a card. `pages { page { }; page { } }` makes the detail a set of
 pages the wearer swipes through, as Meta's Weather (now, the next hours, the week) and Stocks (one page a stock).

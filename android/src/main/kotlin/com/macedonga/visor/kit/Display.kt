@@ -2,6 +2,7 @@ package com.macedonga.visor.kit
 
 import com.macedonga.visor.kit.protocol.BriefingCard
 import com.macedonga.visor.kit.protocol.CardRemoval
+import com.macedonga.visor.kit.protocol.ErrorCode
 import com.macedonga.visor.kit.protocol.Layout
 import com.macedonga.visor.kit.protocol.LayoutCard
 import com.macedonga.visor.kit.protocol.LayoutClick
@@ -13,6 +14,7 @@ import com.macedonga.visor.kit.protocol.PrompterRequest
 import com.macedonga.visor.kit.protocol.PrompterStyle
 import com.macedonga.visor.kit.protocol.Scope
 import com.macedonga.visor.kit.protocol.Topics
+import com.macedonga.visor.kit.protocol.problem
 import kotlinx.coroutines.flow.Flow
 
 /** What the Meta Ray-Ban Display shows. Needs [Scope.DISPLAY]; on glasses without a display, every call fails. */
@@ -32,7 +34,12 @@ public class Display internal constructor(visor: Visor) {
  * ```
  */
 public class DisplayCards internal constructor(private val visor: Visor) {
-    public suspend fun set(card: BriefingCard): Unit = visor.call(Methods.DISPLAY_CARDS_SET, card)
+    /** Puts [card] on the Briefing, or replaces the app's card with its id. Fails with `invalid_params` past [BriefingCard.MAX_BYTES]. */
+    public suspend fun set(card: BriefingCard) {
+        // Checked here too: a card far past the limit would not fit through binder at all.
+        card.problem()?.let { throw KitException(ErrorCode.INVALID_PARAMS, it) }
+        visor.call(Methods.DISPLAY_CARDS_SET, card)
+    }
 
     public suspend fun set(id: String, name: String, block: LayoutCard.() -> Unit): Unit = set(BriefingCard(id, name, block))
 

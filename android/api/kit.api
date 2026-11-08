@@ -65,6 +65,11 @@ public final class com/macedonga/visor/kit/Glasses {
 	public final fun select (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
+public final class com/macedonga/visor/kit/LayoutImagesKt {
+	public static final fun image (Lcom/macedonga/visor/kit/protocol/LayoutBox;Landroid/graphics/Bitmap;)V
+	public static final fun image (Lcom/macedonga/visor/kit/protocol/LayoutBox;Landroid/graphics/Bitmap;Lkotlin/jvm/functions/Function1;)V
+}
+
 public final class com/macedonga/visor/kit/LiveAudioDecoder : java/lang/AutoCloseable {
 	public fun <init> (Lkotlin/jvm/functions/Function4;)V
 	public fun close ()V

@@ -36,6 +36,7 @@ import com.macedonga.visor.kit.protocol.Scope
 import com.macedonga.visor.kit.protocol.ThermalLevel
 import com.macedonga.visor.kit.protocol.Topics
 import com.macedonga.visor.kit.protocol.Vector3
+import com.macedonga.visor.kit.protocol.problem
 import com.macedonga.visor.kit.server.Caller
 import com.macedonga.visor.kit.server.Dispatcher
 import com.macedonga.visor.kit.server.Gate
@@ -569,9 +570,7 @@ public class FakeDisplay internal constructor() {
     public val cards: StateFlow<List<BriefingCard>> = _cards.asStateFlow()
 
     internal fun setCard(card: BriefingCard) {
-        if (card.id.isBlank() || card.name.isBlank() || card.name.length > BriefingCard.MAX_NAME) {
-            throw KitException(ErrorCode.INVALID_PARAMS, "A card needs an id and a name of 1 to ${BriefingCard.MAX_NAME} characters.")
-        }
+        card.problem()?.let { throw KitException(ErrorCode.INVALID_PARAMS, it) }
         _cards.update { cards -> if (cards.any { it.id == card.id }) cards.map { if (it.id == card.id) card else it } else cards + card }
     }
 
