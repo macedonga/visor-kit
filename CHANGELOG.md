@@ -12,8 +12,8 @@
   Display DAT's navigation (nav, select, back, drags) from the touchpad and the band, with a sources filter and
   `keepBack`.
 - `glasses.motion`, with the `motion` scope: the accelerometer, gyroscope, magnetometer and orientation at 5 to 60
-  samples a second. Visor reads the first three from the glasses' own sensor service, with nothing on their screen;
-  FakeVisor serves every field.
+  samples a second. Visor reads them from the glasses' own sensor service, with nothing on their screen, and fuses
+  the orientation on the phone; FakeVisor also serves the band's motion.
 - `band.gestures` leaves the band on the Display: the gestures come through a session with it, and `derived` carries
   the same gesture as `action`.
 - `display.layout.show`, `display.layout.close` and `display.layout.clicks`: layouts with DAT's elements (columns

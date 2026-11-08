@@ -69,7 +69,7 @@ Visor instead, so the trade-offs differ:
 | Camera | A video stream up to 720p over Bluetooth; photos up to 4032 x 3024 | A live stream up to 1080p at 30 frames over Wi-Fi Direct, encoded or decoded, with the microphones; full-size photos and videos, imported over Wi-Fi Direct |
 | Speech | The glasses' own recognition, with partial results | The phone's recogniser on the glasses' microphones, with partial results and a confidence |
 | Inputs | Navigation, select, back and drags, from the touchpad and the band | Every touch and press on every model, and the Display's navigation |
-| Motion | Accelerometer, gyroscope, magnetometer and orientation, 5 to 60 Hz, with the toolkit app on the screen | The accelerometer, gyroscope and magnetometer at the same rates, with nothing on the screen |
+| Motion | Accelerometer, gyroscope, magnetometer and orientation, 5 to 60 Hz, with the toolkit app on the screen | The same samples and rates, with nothing on the screen; the band's motion only in FakeVisor |
 | Neural Band | Navigation events | Every gesture, with the band left on the Display, and vibration |
 | Voice | "Hey Meta, start {app}" opens an app | Questions that name an app go to it, answered in the glasses' own voice; a phrase also starts an app; tools for the model |
 | Display | Layouts of boxes, text, images, icons, buttons, and a video | The same layouts, from the same toolkit app; the teleprompter and notifications |

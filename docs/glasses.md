@@ -108,8 +108,8 @@ visor.glasses.motion(rateHz = 60).collect { sample -> }
 ```
 
 > On the glasses, Visor reads motion from their own sensor service, with nothing on the screen and no toolkit app.
-> It gives the accelerometer, the gyroscope and the magnetometer: `orientation` is null and `source` is `glasses`.
-> FakeVisor also serves orientation and the band's motion.
+> The phone fuses the accelerometer, gyroscope and magnetometer into `orientation`, which settles within two
+> seconds of the start. `source` is `glasses`: the band's motion comes only from FakeVisor.
 
 Motion needs the `motion` scope. The rate is one of 5, 10, 15, 24, 30 or 60 samples a second. A `MotionSample`:
 
