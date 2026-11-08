@@ -181,6 +181,31 @@ visor.display.cards.set("weather", "Lake weather", LayoutIconName.CLOUD) {
 }
 ```
 
+### Clicks in a detail
+
+Buttons, and boxes with an `id`, work in a card's detail: each click comes to the app that owns the card, on
+`clicks`, whether or not the app shows a layout. A `toast` on the element tells the wearer at once that it worked.
+
+```kotlin
+visor.display.cards.set("pasta", "Kitchen timer", LayoutIconName.CLOCK) {
+    header(LayoutIconName.CLOCK, "Kitchen timer")
+    stat("4:00", "Pasta")
+    detail {
+        header("Pasta")
+        buttons {
+            button("add", "+1 minute") { icon = LayoutIconName.PLUS; toast = "One more minute" }
+            button("stop", "Stop") { toast = "Stopped" }
+        }
+    }
+}
+visor.display.cards.clicks.collect { click ->
+    if (click.card == "pasta" && click.id == "stop") timer.stop()
+}
+```
+
+To show the result of a click, set the card again: the detail shows the new state the next time the wearer opens it.
+In a test, `fake.display.clickCard("pasta", "stop")` clicks.
+
 ### Live cards
 
 A card can follow the app's state: `keep` sets the card again for each new state of a `Flow`, as long as it runs.
@@ -240,6 +265,7 @@ On the wire a card is `{"id", "name", "icon", "layout": {"root": ...}, "detail":
 | Method | `display.cards.set` | `id`, `name`, `icon` (default `bell`), `layout`, `detail` (a layout, optional) | `{}` |
 | Method | `display.cards.remove` | `id` | `{}` |
 | Topic | `display.layout.clicks` | none | `LayoutClick`: `id`, `time` |
+| Topic | `display.cards.clicks` | none | `CardClick`: `card`, `id`, `time` |
 | Topic | `display.layout.state` | none | `LayoutState`: `showing`, `reason`, `time` |
 | Topic | `display.video` | none | `LayoutVideoEvent`: `state`, `error`, `time` |
 

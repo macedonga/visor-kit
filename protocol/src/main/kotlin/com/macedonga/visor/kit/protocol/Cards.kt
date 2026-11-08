@@ -44,6 +44,18 @@ public fun BriefingCard.problem(): String? {
 
 private const val KIB = 1024
 
+/** A click in the detail of one of the app's Briefing cards, from [Topics.DISPLAY_CARDS_CLICKS]. */
+@Poko
+@Serializable
+public class CardClick @KitInternal constructor(
+    /** The card's [BriefingCard.id]. */
+    public val card: String,
+    /** The id of the button or box clicked. */
+    public val id: String,
+    /** When Visor heard it, in milliseconds since 1970. */
+    public val time: Long,
+)
+
 /** The params of [Methods.DISPLAY_CARDS_REMOVE]. */
 @Poko
 @Serializable

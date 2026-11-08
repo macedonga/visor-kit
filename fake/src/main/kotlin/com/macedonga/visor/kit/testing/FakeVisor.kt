@@ -3,6 +3,7 @@ package com.macedonga.visor.kit.testing
 import com.macedonga.visor.kit.KitException
 import com.macedonga.visor.kit.protocol.BandStatus
 import com.macedonga.visor.kit.protocol.BriefingCard
+import com.macedonga.visor.kit.protocol.CardClick
 import com.macedonga.visor.kit.protocol.Capture
 import com.macedonga.visor.kit.protocol.CaptureProgress
 import com.macedonga.visor.kit.protocol.CaptureType
@@ -254,6 +255,7 @@ public class FakeVisor {
             display.removeCard(removal.id)
         }
         stream(Topics.DISPLAY_LAYOUT_CLICKS) { _, _ -> display.clicks }
+        stream(Topics.DISPLAY_CARDS_CLICKS) { _, _ -> display.cardClicks }
         stream(Topics.DISPLAY_LAYOUT_STATE) { _, _ -> display.state }
         stream(Topics.DISPLAY_VIDEO) { _, _ -> display.video }
 
@@ -572,6 +574,16 @@ public class FakeDisplay internal constructor() {
     internal fun setCard(card: BriefingCard) {
         card.problem()?.let { throw KitException(ErrorCode.INVALID_PARAMS, it) }
         _cards.update { cards -> if (cards.any { it.id == card.id }) cards.map { if (it.id == card.id) card else it } else cards + card }
+    }
+
+    internal val cardClicks = MutableSharedFlow<CardClick>(extraBufferCapacity = 64)
+
+    /** Clicks the button or box [id] in the detail of the app's card [card], as the wearer does on the Briefing. */
+    public fun clickCard(card: String, id: String) {
+        val shown = checkNotNull(_cards.value.firstOrNull { it.id == card }) { "The app has no card $card." }
+        val detail = checkNotNull(shown.detail) { "Card $card has no detail." }
+        check(ids(detail.root).contains(id)) { "The detail of card $card has no element with id $id." }
+        cardClicks.tryEmit(CardClick(card, id, System.currentTimeMillis()))
     }
 
     internal fun removeCard(id: String) {

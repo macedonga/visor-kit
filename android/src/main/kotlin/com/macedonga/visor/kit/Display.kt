@@ -1,6 +1,7 @@
 package com.macedonga.visor.kit
 
 import com.macedonga.visor.kit.protocol.BriefingCard
+import com.macedonga.visor.kit.protocol.CardClick
 import com.macedonga.visor.kit.protocol.CardRemoval
 import com.macedonga.visor.kit.protocol.ErrorCode
 import com.macedonga.visor.kit.protocol.Layout
@@ -49,6 +50,14 @@ public class DisplayCards internal constructor(private val visor: Visor) {
         set(BriefingCard(id, name, icon, block))
 
     public suspend fun remove(id: String): Unit = visor.call(Methods.DISPLAY_CARDS_REMOVE, CardRemoval(id))
+
+    /**
+     * Each click on a button or box with an id in the detail of one of the app's cards, while collected: the card's
+     * id and the element's. To show the result, set the card again; the detail shows it when the wearer opens it
+     * next. A `toast` on the element confirms the click on the Display at once.
+     */
+    public val clicks: Flow<CardClick>
+        get() = visor.subscribe(Topics.DISPLAY_CARDS_CLICKS, Unit)
 
     /**
      * Keeps card [id] on the Briefing in step with [states]: each state sets the card again, as [block] draws it, for

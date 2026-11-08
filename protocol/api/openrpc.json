@@ -1042,6 +1042,19 @@
             "x-since": 1
         },
         {
+            "name": "display.cards.clicks",
+            "summary": "Each click on a button or box with an id in the detail of one of the app's Briefing cards.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/CardClick"
+                }
+            },
+            "x-scope": "display",
+            "x-since": 1
+        },
+        {
             "name": "display.layout.state",
             "summary": "Whether the app's layout shows, and why it went.",
             "params": [],
@@ -1497,6 +1510,25 @@
                     "id",
                     "received",
                     "size"
+                ]
+            },
+            "CardClick": {
+                "type": "object",
+                "properties": {
+                    "card": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "time": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "card",
+                    "id",
+                    "time"
                 ]
             },
             "Failure": {
@@ -2355,6 +2387,16 @@
                                 "items": {
                                     "type": "number"
                                 }
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "toast": {
+                        "anyOf": [
+                            {
+                                "type": "string"
                             },
                             {
                                 "type": "null"

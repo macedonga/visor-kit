@@ -339,6 +339,16 @@ public object Topics {
     )
 
     /**
+     * The clicks on buttons and boxes with an id in the details of the app's Briefing cards. Only the app that owns
+     * the card gets them, whether or not it runs a layout.
+     */
+    public val DISPLAY_CARDS_CLICKS: Topic<Unit, CardClick> = Topic(
+        "display.cards.clicks", Scope.DISPLAY, 1,
+        "Each click on a button or box with an id in the detail of one of the app's Briefing cards.",
+        Unit.serializer(), CardClick.serializer(),
+    )
+
+    /**
      * Whether the app's layout shows: now, then each change. It goes when the wearer goes back, when another app
      * shows its own, when the app closes it, or when the glasses fail to draw it.
      */
@@ -428,7 +438,7 @@ public object Topics {
         GLASSES_STATUS, GLASSES_PAIRS, GLASSES_INPUTS, GLASSES_MOTION,
         CAPTURES_AVAILABLE, CAPTURES_PROGRESS, CAPTURES_IMPORTED, CAPTURES_FAILED,
         BAND_STATUS, BAND_GESTURES,
-        DISPLAY_LAYOUT_CLICKS, DISPLAY_LAYOUT_STATE, DISPLAY_VIDEO,
+        DISPLAY_LAYOUT_CLICKS, DISPLAY_CARDS_CLICKS, DISPLAY_LAYOUT_STATE, DISPLAY_VIDEO,
         VOICE_REQUESTS, VOICE_TRANSCRIPTS,
         ASSISTANT_TOOLS, ASSISTANT_TURNS,
         SETTINGS_CHANGES,

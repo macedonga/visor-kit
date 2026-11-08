@@ -285,6 +285,31 @@ public final class com/macedonga/visor/kit/protocol/CaptureType$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/macedonga/visor/kit/protocol/CardClick {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/CardClick$Companion;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCard ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/String;
+	public final fun getTime ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/CardClick$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/CardClick$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/CardClick;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/CardClick;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/CardClick$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class com/macedonga/visor/kit/protocol/CardRemoval {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/CardRemoval$Companion;
 	public fun equals (Ljava/lang/Object;)Z
@@ -1080,6 +1105,7 @@ public class com/macedonga/visor/kit/protocol/LayoutBox : com/macedonga/visor/ki
 	public final fun getPaddingStart ()Ljava/lang/Integer;
 	public final fun getPaddingTop ()Ljava/lang/Integer;
 	public final fun getReverse ()Z
+	public final fun getToast ()Ljava/lang/String;
 	public final fun getWrap ()Z
 	public final fun icon-GtHYKq0 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public final fun icon-SPylG5c (Ljava/lang/String;)V
@@ -1100,6 +1126,7 @@ public class com/macedonga/visor/kit/protocol/LayoutBox : com/macedonga/visor/ki
 	public final fun setPaddingStart (Ljava/lang/Integer;)V
 	public final fun setPaddingTop (Ljava/lang/Integer;)V
 	public final fun setReverse (Z)V
+	public final fun setToast (Ljava/lang/String;)V
 	public final fun setWrap (Z)V
 	public final fun text (Ljava/lang/String;)V
 	public final fun text (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
@@ -1111,9 +1138,11 @@ public final class com/macedonga/visor/kit/protocol/LayoutButton : com/macedonga
 	public final fun getIcon-bNDKGY8 ()Ljava/lang/String;
 	public final fun getPrimary ()Z
 	public final fun getStyle-S4oKjhs ()Ljava/lang/String;
+	public final fun getToast ()Ljava/lang/String;
 	public final fun setIcon-4VjfgJc (Ljava/lang/String;)V
 	public final fun setPrimary (Z)V
 	public final fun setStyle-buIq84w (Ljava/lang/String;)V
+	public final fun setToast (Ljava/lang/String;)V
 }
 
 public final class com/macedonga/visor/kit/protocol/LayoutButtons : com/macedonga/visor/kit/protocol/LayoutItem {
@@ -1513,7 +1542,7 @@ public final class com/macedonga/visor/kit/protocol/LayoutKt {
 
 public final class com/macedonga/visor/kit/protocol/LayoutNode {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/LayoutNode$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAlign-D99p7zg ()Ljava/lang/String;
 	public final fun getAlignSelf-D99p7zg ()Ljava/lang/String;
@@ -1545,6 +1574,7 @@ public final class com/macedonga/visor/kit/protocol/LayoutNode {
 	public final fun getSize-LwJGDBQ ()Ljava/lang/String;
 	public final fun getStyle-S4oKjhs ()Ljava/lang/String;
 	public final fun getText ()Ljava/lang/String;
+	public final fun getToast ()Ljava/lang/String;
 	public final fun getType-ZNsRGrs ()Ljava/lang/String;
 	public final fun getUrl ()Ljava/lang/String;
 	public final fun getValues ()Ljava/util/List;
@@ -2921,6 +2951,7 @@ public final class com/macedonga/visor/kit/protocol/Topics {
 	public final fun getCAPTURES_FAILED ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getCAPTURES_IMPORTED ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getCAPTURES_PROGRESS ()Lcom/macedonga/visor/kit/protocol/Topic;
+	public final fun getDISPLAY_CARDS_CLICKS ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getDISPLAY_LAYOUT_CLICKS ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getDISPLAY_LAYOUT_STATE ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getDISPLAY_VIDEO ()Lcom/macedonga/visor/kit/protocol/Topic;

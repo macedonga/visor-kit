@@ -77,6 +77,11 @@ public class LayoutNode @KitInternal constructor(
     /** A chart's values, left to right. */
     public val values: List<Double>? = null,
     /**
+     * In a Briefing card's detail, what the Display shows for a moment once Visor has the click on this button or
+     * box, such as "Snoozed". Layouts shown with [Methods.DISPLAY_LAYOUT_SHOW] ignore it.
+     */
+    public val toast: String? = null,
+    /**
      * Pins the element to its box's edges, this many pixels in, over the box's other children instead of in line with
      * them. Null on all four for an element in line.
      */
@@ -365,6 +370,9 @@ public open class LayoutBox internal constructor(private val type: LayoutType) :
     /** Fills the box behind its children. */
     public var background: LayoutColor? = null
 
+    /** In a Briefing card's detail, what the Display shows for a moment after a click on the box. */
+    public var toast: String? = null
+
     /** Its height in pixels, instead of what its children need. */
     public var height: Int? = null
 
@@ -470,7 +478,7 @@ public open class LayoutBox internal constructor(private val type: LayoutType) :
         wrap = wrap.takeIf { it }, paddingTop = paddingTop, paddingBottom = paddingBottom,
         paddingStart = paddingStart, paddingEnd = paddingEnd, grow = grow, shrink = shrink, alignSelf = alignSelf,
         background = background, pinTop = pinTop, pinBottom = pinBottom, pinStart = pinStart, pinEnd = pinEnd,
-        height = height,
+        height = height, toast = toast,
     )
 }
 
@@ -516,10 +524,13 @@ public class LayoutButton internal constructor() : LayoutItem() {
     /** Makes this the button the Display focuses first. */
     public var primary: Boolean = false
 
+    /** In a Briefing card's detail, what the Display shows for a moment after a click, such as "Snoozed". */
+    public var toast: String? = null
+
     internal fun node(id: String, label: String) = LayoutNode(
         LayoutType.BUTTON, id = id, text = label, style = style, icon = icon, primary = primary.takeIf { it },
         grow = grow, shrink = shrink, alignSelf = alignSelf, pinTop = pinTop, pinBottom = pinBottom, pinStart = pinStart,
-        pinEnd = pinEnd,
+        pinEnd = pinEnd, toast = toast,
     )
 }
 
