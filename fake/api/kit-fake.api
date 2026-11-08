@@ -118,6 +118,7 @@ public final class com/macedonga/visor/kit/testing/FakeVisor {
 public final class com/macedonga/visor/kit/testing/FakeVoice {
 	public final fun ask (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun getListening ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun getSpoken ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun say (Ljava/lang/String;)V
 	public final fun say (Ljava/lang/String;ZLjava/lang/Double;)V
 }

@@ -50,7 +50,7 @@ The glasses' own safeguards stay in place: the capture light turns on for every 
 | [Captures](camera-and-captures.md) | `captures.list`, `captures.import`, `captures.available`, `captures.progress`, `captures.imported`, `captures.failed` | All |
 | [Neural Band](neural-band.md) | `band.status`, `band.gestures`, `band.buzz` | Meta Ray-Ban Display with a Neural Band |
 | [Display](display.md) | `display.prompter.show`, `display.prompter.close` | Meta Ray-Ban Display |
-| [Voice](voice-and-assistant.md) | `voice.requests`, `voice.reply`, `voice.transcripts` | All |
+| [Voice](voice-and-assistant.md) | `voice.requests`, `voice.reply`, `voice.speak`, `voice.transcripts` | All; `voice.speak` on the Meta Ray-Ban Display, soon |
 | [Assistant](voice-and-assistant.md) | `assistant.tools`, `assistant.tools.answer`, `assistant.turns`, `assistant.history` | All |
 | [Notifications](voice-and-assistant.md) | `notify.post`, `notify.remove` | Meta Ray-Ban Display |
 | [Settings](settings.md) | `settings.list`, `settings.get`, `settings.set`, `settings.changes` | All |
@@ -90,7 +90,7 @@ and the touchpad's gestures from a session without the toolkit app, so neither p
 1. **VDK 0.1:** the glasses' status, the camera and captures, the Neural Band, the Display's teleprompter, the
    `visor` command and FakeVisor.
 2. **Voice and the assistant:** phrases routed to apps ("Hey Meta, ask My App..."), tools for the assistant's
-   model, answers in the glasses' own voice, and notifications on the glasses.
+   model, answers in the glasses' own voice, lines the glasses say unasked, and notifications on the glasses.
 3. **The network:** JSON-RPC over WebSocket and an MCP server on the phone, webhooks, Python and TypeScript
    clients, and raw access to the glasses' services for research.
 4. **The Display:** a JavaScript library for the Display's web apps, cards on the Display's home, and the Neural

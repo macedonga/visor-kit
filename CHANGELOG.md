@@ -14,6 +14,8 @@
 - `glasses.motion`, with the `motion` scope: the accelerometer, gyroscope, magnetometer and orientation at 5 to 60
   samples a second. Visor reads them from the glasses' own sensor service, with nothing on their screen, and fuses
   the orientation on the phone; FakeVisor also serves the band's motion.
+- `voice.speak`, with the `voice` scope: the glasses say a line in their own voice, unasked. On the Display;
+  FakeVisor keeps what was said in `fake.voice.spoken`.
 - Videos in layouts on the Display, with `display.video`: `starting`, `playing`, `ended`, `failed`.
 - `glasses.inputs` on the Display: while a layout shows, `nav_*`, `select`, `back` and drags with `x`, `y`, `dx`
   and `dy`, as DAT gives them.

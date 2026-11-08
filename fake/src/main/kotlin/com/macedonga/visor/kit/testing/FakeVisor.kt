@@ -250,6 +250,10 @@ public class FakeVisor {
             called(Methods.VOICE_REPLY.name)
             voice.replied(reply)
         }
+        answer(Methods.VOICE_SPEAK) { _, request ->
+            called(Methods.VOICE_SPEAK.name)
+            voice.spoke(request)
+        }
         stream(Topics.ASSISTANT_TOOLS) { _, offer -> assistant.offer(offer.tools) }
         answer(Methods.ASSISTANT_TOOLS_ANSWER) { _, answer ->
             called(Methods.ASSISTANT_TOOLS_ANSWER.name)

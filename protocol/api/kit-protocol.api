@@ -1842,6 +1842,7 @@ public final class com/macedonga/visor/kit/protocol/Methods {
 	public final fun getSETTINGS_LIST ()Lcom/macedonga/visor/kit/protocol/Method;
 	public final fun getSETTINGS_SET ()Lcom/macedonga/visor/kit/protocol/Method;
 	public final fun getVOICE_REPLY ()Lcom/macedonga/visor/kit/protocol/Method;
+	public final fun getVOICE_SPEAK ()Lcom/macedonga/visor/kit/protocol/Method;
 }
 
 public final class com/macedonga/visor/kit/protocol/MotionRequest {
@@ -2499,6 +2500,30 @@ public final synthetic class com/macedonga/visor/kit/protocol/SimulateRequest$$s
 }
 
 public final class com/macedonga/visor/kit/protocol/SimulateRequest$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/SpeakRequest {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/SpeakRequest$Companion;
+	public static final field MAX_LENGTH I
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/SpeakRequest$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/SpeakRequest$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/SpeakRequest;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/SpeakRequest;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/SpeakRequest$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 

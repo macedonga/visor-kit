@@ -71,6 +71,21 @@ Visor starts only apps the person granted the `voice` scope, so ask for it once,
 `requests`, its running offer answers instead and nothing is started. Visor reads the declared phrases again every
 30 seconds, so a newly installed app is heard within half a minute.
 
+## Saying something unasked
+
+`speak` has the glasses say a line in their own voice now, with nobody asking: a timer that ran out, a door that
+opened, a message worth hearing. It needs the `voice` scope.
+
+```kotlin
+visor.voice.speak("Your coffee is ready.")
+```
+
+Keep it short and rare: the wearer hears it over whatever they are doing. The text holds at most 500 characters.
+
+> [!NOTE]
+> Visor speaks through the glasses' data collection service, which starts for it and stops after a minute of quiet.
+> It works on the Meta Ray-Ban Display.
+
 ## What the glasses hear
 
 Scope: `microphone`. All glasses, on Android 13 or later.
@@ -192,6 +207,7 @@ there `post` fails with `unsupported`.
 |---|---|---|---|
 | Topic | `voice.requests` | `phrases` | `VoiceRequest` |
 | Method | `voice.reply` | `request`, `text`, `listen` (default false) | `{}` |
+| Method | `voice.speak` | `text` | `{}` |
 | Topic | `voice.transcripts` | `language`, `partials` (optional) | `Transcript`: `text`, `language`, `time`, `partial`, `confidence` |
 | Topic | `assistant.tools` | `tools`: a list of `{name, description, schema}` | `ToolCall` |
 | Method | `assistant.tools.answer` | `call`, `text`, `error` (default false) | `{}` |

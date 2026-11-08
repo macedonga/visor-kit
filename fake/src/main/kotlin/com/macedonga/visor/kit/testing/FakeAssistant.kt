@@ -5,6 +5,7 @@ import com.macedonga.visor.kit.protocol.AssistantTurn
 import com.macedonga.visor.kit.protocol.ErrorCode
 import com.macedonga.visor.kit.protocol.HistoryQuery
 import com.macedonga.visor.kit.protocol.Notice
+import com.macedonga.visor.kit.protocol.SpeakRequest
 import com.macedonga.visor.kit.protocol.ToolAnswer
 import com.macedonga.visor.kit.protocol.ToolCall
 import com.macedonga.visor.kit.protocol.ToolSpec
@@ -71,6 +72,19 @@ public class FakeVoice internal constructor() {
     internal fun replied(reply: VoiceReply) {
         waiting[reply.request]?.complete(reply)
             ?: throw KitException(ErrorCode.INVALID_PARAMS, "No question ${reply.request} is waiting.", reason = "expired")
+    }
+
+    private val _spoken = MutableStateFlow<List<String>>(emptyList())
+
+    /** What apps had the glasses say with `voice.speak`, oldest first. */
+    public val spoken: StateFlow<List<String>> = _spoken.asStateFlow()
+
+    internal fun spoke(request: SpeakRequest) {
+        val text = request.text.trim()
+        if (text.isEmpty() || text.length > SpeakRequest.MAX_LENGTH) {
+            throw KitException(ErrorCode.INVALID_PARAMS, "The text must hold 1 to ${SpeakRequest.MAX_LENGTH} characters.")
+        }
+        _spoken.update { it + text }
     }
 
     private class Heard(val text: String, val partial: Boolean, val confidence: Double?)

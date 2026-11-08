@@ -68,6 +68,18 @@ public class Transcript @KitInternal constructor(
     public val confidence: Double? = null,
 )
 
+/** The params of [Methods.VOICE_SPEAK]. */
+@Poko
+@Serializable
+public class SpeakRequest @KitInternal constructor(
+    /** What the glasses say, at most [MAX_LENGTH] characters. */
+    public val text: String,
+) {
+    public companion object {
+        public const val MAX_LENGTH: Int = 500
+    }
+}
+
 /** The params of [Methods.VOICE_REPLY]. */
 @Poko
 @Serializable

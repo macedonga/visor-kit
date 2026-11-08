@@ -152,6 +152,7 @@ public final class com/macedonga/visor/kit/Voice {
 	public final fun reply (Lcom/macedonga/visor/kit/protocol/VoiceRequest;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun reply (Lcom/macedonga/visor/kit/protocol/VoiceRequest;Ljava/lang/String;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun requests (Ljava/util/List;)Lkotlinx/coroutines/flow/Flow;
+	public final fun speak (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun transcripts ()Lkotlinx/coroutines/flow/Flow;
 	public final fun transcripts (Lcom/macedonga/visor/kit/protocol/TranscriptRequest;)Lkotlinx/coroutines/flow/Flow;
 }

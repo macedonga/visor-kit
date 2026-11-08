@@ -150,6 +150,16 @@ public object Methods {
         VoiceReply.serializer(), Unit.serializer(),
     )
 
+    /**
+     * The glasses say [SpeakRequest.text] in their own voice now, unasked: an announcement, not an answer. Fails with
+     * [ErrorCode.INVALID_PARAMS] for empty text or text over [SpeakRequest.MAX_LENGTH] characters.
+     */
+    public val VOICE_SPEAK: Method<SpeakRequest, Unit> = Method(
+        "voice.speak", Scope.VOICE, 1,
+        "Says text in the glasses' own voice, unasked.",
+        SpeakRequest.serializer(), Unit.serializer(),
+    )
+
     /** Answers a [ToolCall]. Fails like [VOICE_REPLY] once the model stopped waiting, after 15 seconds. */
     public val ASSISTANT_TOOLS_ANSWER: Method<ToolAnswer, Unit> = Method(
         "assistant.tools.answer", Scope.ASSISTANT, 1,
@@ -223,7 +233,7 @@ public object Methods {
         CAPTURES_LIST, CAPTURES_IMPORT,
         BAND_STATUS, BAND_BUZZ,
         DISPLAY_PROMPTER_SHOW, DISPLAY_PROMPTER_CLOSE, DISPLAY_LAYOUT_SHOW, DISPLAY_LAYOUT_CLOSE,
-        VOICE_REPLY,
+        VOICE_REPLY, VOICE_SPEAK,
         ASSISTANT_TOOLS_ANSWER, ASSISTANT_HISTORY,
         NOTIFY_POST, NOTIFY_REMOVE,
         SETTINGS_LIST, SETTINGS_GET, SETTINGS_SET,

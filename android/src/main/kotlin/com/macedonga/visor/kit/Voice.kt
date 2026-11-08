@@ -6,6 +6,7 @@ import com.macedonga.visor.kit.protocol.Methods
 import com.macedonga.visor.kit.protocol.Notice
 import com.macedonga.visor.kit.protocol.NoticeRemoval
 import com.macedonga.visor.kit.protocol.Scope
+import com.macedonga.visor.kit.protocol.SpeakRequest
 import com.macedonga.visor.kit.protocol.ToolAnswer
 import com.macedonga.visor.kit.protocol.ToolCall
 import com.macedonga.visor.kit.protocol.ToolSpec
@@ -46,6 +47,9 @@ public class Voice internal constructor(private val visor: Visor) {
     /** The glasses say [text] to the wearer; with [listen], they keep the microphone open for a follow-up. */
     public suspend fun reply(request: VoiceRequest, text: String, listen: Boolean): Unit =
         visor.call(Methods.VOICE_REPLY, VoiceReply(request.id, text, listen))
+
+    /** The glasses say [text] in their own voice now, unasked: an announcement, not an answer. */
+    public suspend fun speak(text: String): Unit = visor.call(Methods.VOICE_SPEAK, SpeakRequest(text))
 }
 
 /** Tools for the assistant's model, which it calls while it answers the wearer. Needs [Scope.ASSISTANT]. */

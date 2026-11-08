@@ -358,6 +358,28 @@
             "x-since": 1
         },
         {
+            "name": "voice.speak",
+            "summary": "Says text in the glasses' own voice, unasked.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "text",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "voice",
+            "x-since": 1
+        },
+        {
             "name": "assistant.tools.answer",
             "summary": "Answers the assistant's call of one of the app's tools.",
             "paramStructure": "by-name",
