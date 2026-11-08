@@ -543,7 +543,9 @@ public class FakeDisplay internal constructor() {
             return
         }
         val videos = all(layout.root).filter { it.type == LayoutType.VIDEO }
-        if (videos.size > 1) throw KitException(ErrorCode.INVALID_PARAMS, "A layout holds one video at most.", reason = "two_videos")
+        if (videos.isNotEmpty() && all(layout.root).size != 2) {
+            throw KitException(ErrorCode.INVALID_PARAMS, "A video fills the layout alone.", reason = "video_not_alone")
+        }
         val before = _layout.value?.root?.let(::videoOf)?.url
         _layout.value = layout
         _state.value = LayoutState(showing = true, time = System.currentTimeMillis())

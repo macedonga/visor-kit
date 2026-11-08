@@ -56,7 +56,7 @@ is a column; boxes nest. The elements are DAT's, with the same sizes and styles:
 | Icon | `icon(LayoutIconName.HEART) { }` | One of the Display's own icons, by the names DAT has (`LayoutIconName.all`); `style`: `filled` (the default) or `outline` |
 | Button | `button(id, label) { }` | `style`: `primary` (the default), `secondary`, `outline`; `icon`; `primary = true` for the button the Display focuses first |
 | Button bar | `buttons { button(...) }` | The Display's own bar of buttons; `align`: `start`, `center`, `end` |
-| Video | `video(url) { }` | MP4 over `https://`, at most 400 pixels a side and 70,000 pixels in all, one per layout; `controls` to show play and pause |
+| Video | `video(url) { }` | MP4 over `https://`, at most 400 pixels a side and 70,000 pixels in all; it fills the layout alone, as on DAT; `controls` to show play and pause |
 
 Every element also takes `grow` and `shrink`, its share of the free space along its box, and `alignSelf`, its own
 place across the box.

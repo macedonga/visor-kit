@@ -88,7 +88,10 @@ public value class LayoutType(public val id: String) {
         /** A row of buttons, the Display's own button bar. Its children are buttons. */
         public val BUTTON_GROUP: LayoutType = LayoutType("button_group")
 
-        /** A video from [LayoutNode.url]: MP4 over `https://`, at most 400 pixels a side. One per layout. */
+        /**
+         * A video from [LayoutNode.url]: MP4 over `https://`, at most 400 pixels a side. It fills the screen alone: a
+         * layout with a video holds nothing else, as on DAT.
+         */
         public val VIDEO: LayoutType = LayoutType("video")
     }
 }
@@ -364,7 +367,7 @@ public class LayoutBox internal constructor(private val type: LayoutType) : Layo
         children += LayoutButtons().apply(block).build()
     }
 
-    /** A video: MP4 over `https://`, at most 400 pixels a side. One per layout. */
+    /** A video: MP4 over `https://`, at most 400 pixels a side. It fills the screen alone, as on DAT. */
     public fun video(url: String) {
         video(url) {}
     }
