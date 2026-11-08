@@ -31,4 +31,4 @@
   `samples/python`: a prompter pager, an assistant journal and a settings tool.
 - `samples/web`: a console for the glasses in one page, on JSON-RPC over WebSocket.
 - `visor record` saves topics' events as JSON lines, and `visor replay` plays them into the apps at their pace,
-  on a phone or on `visor fake`.
+  on a phone or on `visor fake`. `FakeVisor.replay` plays them in JVM tests.

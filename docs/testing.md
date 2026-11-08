@@ -132,6 +132,13 @@ visor replay walk.jsonl                     # into the apps on the phone
 visor --fake replay walk.jsonl --loop       # into visor fake, over and over
 ```
 
+In a JVM test, `FakeVisor.replay` plays a recording into your app the same way, paced or all at once:
+
+```kotlin
+fake.replay(File("src/test/resources/walk.jsonl").reader())          // at its recorded pace
+fake.replay(File("src/test/resources/taps.jsonl").reader(), paced = false)
+```
+
 Each line is one event, `{"t": 1520, "topic": "band.gestures", "event": {...}}`, with `t` in milliseconds from
 the start of the recording. While a replay runs, its topics are simulated: apps get the recorded events, at
 their recorded times, and nothing from the real glasses or band. The events keep the times they were recorded

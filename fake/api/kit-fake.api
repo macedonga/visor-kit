@@ -97,6 +97,8 @@ public final class com/macedonga/visor/kit/testing/FakeVisor {
 	public final fun getPairs ()Lcom/macedonga/visor/kit/testing/FakePairs;
 	public final fun getSettings ()Lcom/macedonga/visor/kit/testing/FakeSettings;
 	public final fun getVoice ()Lcom/macedonga/visor/kit/testing/FakeVoice;
+	public final fun replay (Ljava/io/Reader;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun replay (Ljava/io/Reader;ZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun setGranted (Ljava/util/Set;)V
 }
 

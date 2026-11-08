@@ -65,6 +65,13 @@ public class Dispatcher(
     private val trace = MutableSharedFlow<TraceRecord>(extraBufferCapacity = 256, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     private val shellRoutes = shellRoutes()
 
+    /** Sends [event], checked against [topic]'s type, to the callers subscribed to it now, as the shell's inject does. */
+    @KitInternal
+    public suspend fun inject(topic: String, event: String) {
+        val stream = routes.topics[topic] ?: throw KitException(ErrorCode.INVALID_PARAMS, "Visor does not stream $topic.")
+        injected(topic).emit(stream.check(event))
+    }
+
     /** Ends the streams callers may no longer have, after a scope was taken back. */
     public fun recheck() {
         conversations.forEach { it.recheck() }
@@ -184,11 +191,7 @@ public class Dispatcher(
             simulate(caller, request.topics.toSet())
             request.topics
         }
-        answer(Shell.INJECT) { _, request ->
-            val stream = routes.topics[request.topic]
-                ?: throw KitException(ErrorCode.INVALID_PARAMS, "Visor does not stream ${request.topic}.")
-            injected(request.topic).emit(stream.check(request.event.toString()))
-        }
+        answer(Shell.INJECT) { _, request -> inject(request.topic, request.event.toString()) }
         stream(Shell.TRACE) { _, _ -> trace }
     }
 

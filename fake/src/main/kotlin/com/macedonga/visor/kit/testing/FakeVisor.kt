@@ -14,12 +14,13 @@ import com.macedonga.visor.kit.protocol.GlassesInput
 import com.macedonga.visor.kit.protocol.GlassesPair
 import com.macedonga.visor.kit.protocol.GlassesStatus
 import com.macedonga.visor.kit.protocol.Hello
+import com.macedonga.visor.kit.protocol.InputAction
+import com.macedonga.visor.kit.protocol.InputSource
 import com.macedonga.visor.kit.protocol.KitInternal
+import com.macedonga.visor.kit.protocol.KitJson
 import com.macedonga.visor.kit.protocol.Layout
 import com.macedonga.visor.kit.protocol.LayoutClick
 import com.macedonga.visor.kit.protocol.LayoutNode
-import com.macedonga.visor.kit.protocol.InputAction
-import com.macedonga.visor.kit.protocol.InputSource
 import com.macedonga.visor.kit.protocol.Link
 import com.macedonga.visor.kit.protocol.Methods
 import com.macedonga.visor.kit.protocol.PrompterStyle
@@ -30,19 +31,25 @@ import com.macedonga.visor.kit.server.Caller
 import com.macedonga.visor.kit.server.Dispatcher
 import com.macedonga.visor.kit.server.Gate
 import com.macedonga.visor.kit.server.Routes
+import java.io.Reader
 import java.util.Collections
 import kotlin.properties.Delegates
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.longOrNull
 
 /**
  * Visor inside the app's own process, for tests and for building without Visor or glasses. It answers every method of
@@ -102,6 +109,36 @@ public class FakeVisor {
     /** The one app the fake admits, granted [granted]. */
     @KitInternal
     public val caller: Caller get() = Caller(UID, APP)
+
+    /**
+     * Plays a recording made by `visor record` into the app, each event at its recorded time from now. The events go
+     * to what the app collects when each comes, as with `visor inject`; the fake's own state does not change. It
+     * closes the reader at the end.
+     *
+     * @throws IllegalArgumentException for a line that is not a recorded event, or a topic the fake does not stream.
+     */
+    public suspend fun replay(recording: Reader): Unit = replay(recording, paced = true)
+
+    /** As [replay], with every event at once, in order, when [paced] is false. */
+    public suspend fun replay(recording: Reader, paced: Boolean) {
+        val started = System.nanoTime()
+        recording.useLines { lines ->
+            lines.forEachIndexed { i, line ->
+                if (line.isBlank()) return@forEachIndexed
+                val o = runCatching { KitJson.parseToJsonElement(line).jsonObject }.getOrNull()
+                val t = o?.get("t")?.jsonPrimitive?.longOrNull
+                val topic = o?.get("topic")?.jsonPrimitive?.contentOrNull
+                val event = o?.get("event")
+                require(t != null && topic != null && event != null) { "Line ${i + 1} is not a recorded event." }
+                if (paced) delay(t - (System.nanoTime() - started) / NANOS_PER_MS)
+                try {
+                    dispatcher.inject(topic, event.toString())
+                } catch (e: KitException) {
+                    throw IllegalArgumentException("Line ${i + 1}: ${e.message}", e)
+                }
+            }
+        }
+    }
 
     /** Ends every connection to this fake. */
     public fun close(): Unit = dispatcher.stop()
@@ -242,6 +279,7 @@ public class FakeVisor {
 
     private companion object {
         const val VERSION = "fake"
+        const val NANOS_PER_MS = 1_000_000L
 
         // The fake knows one app: the one in its own process.
         const val APP = "app"
