@@ -210,7 +210,11 @@ gives the assistant's model tools to call while it answers.
 On the glasses, Visor shows layouts through the Display's toolkit session, as DAT does, and draws them with the
 same rules as DAT's own builder, videos included. FakeVisor, `visor fake` and its Display simulator serve
 everything. The VDK also shows text on the teleprompter (`visor.display.prompter`) and notifications
-(`visor.notify`).
+(`visor.notify`), and keeps an app's cards on the Display's home, beside Meta's weather and stocks, with details,
+pages, charts and clicks: see [Briefing cards](briefing-cards.md). DAT has nothing like them.
+
+The VDK's layouts go beyond DAT's elements with what Meta's own cards use: the `title` text style, any colour,
+`maxLines` and text `align`, icon `color` and `size`, box `background` and `height`, pins, a `pager` and a `chart`.
 
 ## Testing
 

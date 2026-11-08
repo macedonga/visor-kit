@@ -48,6 +48,7 @@ import com.macedonga.visor.kit.VisorState
 import com.macedonga.visor.kit.protocol.LiveConfig
 import com.macedonga.visor.kit.protocol.LiveQuality
 import com.macedonga.visor.kit.protocol.Scope
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -65,6 +66,8 @@ class SampleActivity : ComponentActivity() {
         }
     }
 }
+
+private val CARDS = listOf("weather", "stocks", "pasta")
 
 @Composable
 private fun Sample() {
@@ -191,6 +194,15 @@ private fun Sample() {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton({ run("prompter") { it.display.prompter.show(script) } }) { Text("Show") }
                 OutlinedButton({ run("prompter") { it.display.prompter.close() } }) { Text("Close") }
+            }
+
+            // The recipes of docs/briefing-cards.md: cards on the Display home's Briefing.
+            Text("Briefing", style = MaterialTheme.typography.titleSmall)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton({ run("weather card") { it.display.cards.set(weatherCard()) } }) { Text("Weather card") }
+                OutlinedButton({ run("stocks card") { it.display.cards.set(stocksCard()) } }) { Text("Stocks card") }
+                OutlinedButton({ run("timer") { kitchenTimer(it, 4.minutes) } }) { Text("Timer, 4 min") }
+                OutlinedButton({ run("remove") { CARDS.forEach { id -> it.display.cards.remove(id) } } }) { Text("Remove cards") }
             }
         }
         log.take(LOG_LINES).forEach { Text(it, style = MaterialTheme.typography.bodySmall) }

@@ -114,6 +114,10 @@ In a test, `fake.display.layout` holds the layout shown, `fake.display.click(id)
 
 ## Cards on the Briefing
 
+> [!TIP]
+> [Briefing cards](briefing-cards.md) is the guide, with recipes: weather as Meta's, a stocks watchlist, a live timer
+> with buttons, photos. This section is the reference.
+
 The Display's home has a Briefing panel with Meta's glanceable cards: reminders, weather, sports and stocks. An app
 can keep cards of its own there, after Meta's, and give each one a detail that a click opens, full screen, as
 Meta's cards open theirs. A card stays, whether or not the app runs, until the app removes it, so the wearer sees

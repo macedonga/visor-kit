@@ -34,6 +34,8 @@
 - The Display simulator shows the Briefing with the app's cards and opens their details; kit-testing has
   `fake.display.briefingPreview(context)`. The `visor` command: `card FILE`, `call METHOD @FILE` and `-` for
   standard input, `--fake=PORT`, and an error that names the port and the cause when no fake answers.
+- Docs: [Briefing cards](docs/briefing-cards.md), a guide with recipes (weather, a stocks watchlist, a live timer
+  with buttons, photos) that the Android sample runs.
 - `kit-testing` serves FakeVisor's imported captures and live photos to the app under test, with the bytes the
   test gives them: `fake.glasses.add(type, bytes, mime)`, `fake.live.photo(bytes, mime)`.
 - `voice.speak`, with the `voice` scope: the glasses say a line in their own voice, unasked. On the Display;

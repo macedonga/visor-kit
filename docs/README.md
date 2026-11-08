@@ -10,7 +10,8 @@ Start with the overview, then getting started. The rest is reference.
    - [Glasses](glasses.md): status, pairs, touches and presses, motion.
    - [Camera and captures](camera-and-captures.md): the camera live, photos, videos, imports.
    - [Neural Band](neural-band.md): gestures, status, vibration.
-   - [Display](display.md): the teleprompter and layouts.
+   - [Display](display.md): the teleprompter, layouts, and cards on the Briefing.
+   - [Briefing cards](briefing-cards.md): the guide, with recipes for weather, stocks, a live timer and photos.
    - [Voice and the assistant](voice-and-assistant.md): questions for the app, starting it by voice, transcripts,
      tools for the model, notifications.
    - [Settings](settings.md): reading and changing the glasses' settings.

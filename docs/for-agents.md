@@ -28,6 +28,9 @@ Access Toolkit (DAT): no Meta AI app, no Meta account, no developer centre. Port
 4. Layouts for the Display are whole screens: build one with `Layout { }` and show it with
    `visor.display.layout.show(...)`; a new show replaces it. Clicks come on `display.layout.clicks` by the
    element's `id`; `display.layout.state` says when the wearer went back.
+   For something the wearer should see all day (a timer, a delivery, a score), prefer a Briefing card:
+   `visor.display.cards.set(id, name, icon) { header(...); stat(...); detail { } }`, kept with `cards.keep(id,
+   name, icon, flow) { }`, with clicks in its detail on `display.cards.clicks`. A card takes at most 256 KiB.
 5. A voice phrase reaches the app while it collects `visor.voice.requests(phrases)`, or starts it when its
    activity declares the phrases (`VoiceLaunch`). Reply within about 20 seconds with `visor.voice.reply`.
 6. Do not invent methods. The methods and topics are in `kit-protocol` (`Methods`, `Topics`) and in the docs'
@@ -36,7 +39,7 @@ Access Toolkit (DAT): no Meta AI app, no Meta account, no developer centre. Port
 ## Testing without glasses
 
 - `FakeVisor` in unit tests: set `fake.glasses.*`, send `fake.glasses.input(...)`, `fake.band.gesture(...)`,
-  `fake.voice.say(...)`, `fake.display.click(id)`, `fake.display.back()`.
+  `fake.voice.say(...)`, `fake.display.click(id)`, `fake.display.back()`, `fake.display.clickCard(card, id)`.
 - `visor fake` on a computer: JSON-RPC on `ws://127.0.0.1:7333/rpc`, MCP on `/mcp`, the Display simulator on
   `http://127.0.0.1:7333/display`, and a console that plays the glasses.
 - `visor record FILE` and `visor replay FILE` capture and play back what the wearer did.

@@ -12,7 +12,8 @@
 - [The connection](connection.md): one Visor object, its states and its restarts.
 - [Glasses](glasses.md): status, pairs, touches and presses, and motion.
 - [Camera and captures](camera-and-captures.md): photos, videos, the live camera and imports.
-- [Display](display.md): the teleprompter and layouts on the Meta Ray-Ban Display.
+- [Display](display.md): the teleprompter, layouts and Briefing cards on the Meta Ray-Ban Display.
+- [Briefing cards](briefing-cards.md): cards on the Display's home with details, pages, charts and clicks, with recipes.
 - [Neural Band](neural-band.md): gestures and vibration.
 - [Voice and the assistant](voice-and-assistant.md): questions that name the app, starting it by voice, transcripts, tools for the model.
 - [Settings](settings.md): the glasses' settings.
