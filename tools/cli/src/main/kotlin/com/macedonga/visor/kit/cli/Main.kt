@@ -53,6 +53,10 @@ The Visor Development Kit (VDK) from a computer, through adb. The phone needs Vi
 
 Commands:
   status                    Visor, the glasses, the band, and the apps that use the VDK.
+  docs [QUERY]              Searches the VDK's docs, bundled here; with no query, lists the pages.
+  docs-mcp                  The docs as an MCP server over standard input and output, for a coding
+                            assistant: claude mcp add vdk-docs -- visor docs-mcp
+  agents                    Prints guidance for coding assistants, to save as AGENTS.md in your app.
   methods                   The methods and topics this Visor answers.
   call METHOD [JSON]        Runs a method and prints its result.
                               visor call camera.photo '{"import":false}'
@@ -93,7 +97,7 @@ Options:
 
 private val COMMANDS = setOf(
     "status", "methods", "call", "watch", "live", "live-photo", "trace", "simulate", "inject", "record", "replay", "apps", "grant", "revoke",
-    "fake",
+    "fake", "docs", "docs-mcp", "agents",
 )
 
 // What record saves when no topic is named: what the wearer does, and the state it happens in.
@@ -131,6 +135,10 @@ private fun run(args: List<String>) {
     val command = words.firstOrNull() ?: usage("Name a command.")
     if (command !in COMMANDS) usage("No command $command.")
     if (command == "fake") return runFake(words.drop(1))
+    // The docs ride in the command: no phone, adb or fake needed.
+    if (command == "docs") return printDocs(words.drop(1))
+    if (command == "docs-mcp") return serveDocsMcp(VERSION)
+    if (command == "agents") return println(Docs.page("for-agents.md"))
     val session = if (fake) Session.fake(FAKE_PORT) else Session.open(serial)
     // Ctrl+C ends watch, trace and simulate: the forward goes with the session, and with it any simulation.
     Runtime.getRuntime().addShutdownHook(Thread(session::close))

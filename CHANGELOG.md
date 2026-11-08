@@ -31,6 +31,8 @@
 - `visor fake`: FakeVisor on a computer, on the network door's WebSocket and MCP endpoints and for `visor --fake`,
   with a console that plays the glasses. The Python client's `connect_fake()` and the TypeScript client's
   `Visor.connectFake()` reach it.
+- AI tools: `visor docs` searches the docs, `visor docs-mcp` serves them to coding assistants over MCP, `visor
+  agents` prints guidance to save as AGENTS.md, a Claude Code plugin with skills, and `docs/llms.txt`.
 - `kit-fake`: FakeVisor in plain Kotlin, and `kit-server`: the server engine, both for the JVM.
 - FakeVisor plays DAT's motion CSV (`playMotion`) and a recorded H.264 or H.265 stream as the live camera
   (`FakeLive.play`); `visor fake` has `motion-csv` and `camera` for them.

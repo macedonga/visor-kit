@@ -1,0 +1,17 @@
+{
+  "name": "visor-kit",
+  "owner": {
+    "name": "Marco Ceccon"
+  },
+  "plugins": [
+    {
+      "name": "vdk",
+      "version": "0.1.0",
+      "description": "Guidance for building on the Visor Development Kit (VDK), Visor's alternative to Meta's DAT: setup, scopes, layouts on the Display and its simulator, voice, testing with FakeVisor and visor fake, and porting from DAT. Searches the VDK's docs through visor docs-mcp.",
+      "author": {
+        "name": "Marco Ceccon"
+      },
+      "source": "./plugins/vdk"
+    }
+  ]
+}

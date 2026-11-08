@@ -1,0 +1,11 @@
+{
+  "description": "The Visor Development Kit's docs, searched by the visor command on this computer.",
+  "mcpServers": {
+    "vdk-docs": {
+      "command": "visor",
+      "args": [
+        "docs-mcp"
+      ]
+    }
+  }
+}

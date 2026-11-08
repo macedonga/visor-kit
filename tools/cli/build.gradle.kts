@@ -34,6 +34,21 @@ dependencies {
     runtimeOnly(libs.slf4j.nop)
 }
 
+// The docs ride in the command for `visor docs` and `visor docs-mcp`, with an index of their pages.
+val docsResources = tasks.register<Sync>("docsResources") {
+    from(rootProject.file("docs")) {
+        include("*.md", "llms.txt")
+        into("docs")
+    }
+    into(layout.buildDirectory.dir("generated/docs"))
+    doLast {
+        val dir = destinationDir.resolve("docs")
+        dir.resolve("index.txt").writeText(dir.list().orEmpty().filter { it.endsWith(".md") }.sorted().joinToString("\n"))
+    }
+}
+
+sourceSets.main { resources.srcDir(docsResources) }
+
 // The version the command reports, from the build.
 tasks.jar {
     manifest { attributes("Implementation-Version" to version) }
