@@ -25,7 +25,9 @@ asyncio.run(main())
   Network access, and holds that client's scopes.
 - `connect_fake()` reaches the FakeVisor that `visor fake` runs on this computer, for building without a phone.
   It needs the network extra.
-- `call(method, params)` returns the result; `subscribe(topic, params)` yields events; `feed(name, params)`
+- `call(method, params)` returns the result; `subscribe(topic, params)` yields events, subscribing when the
+  iteration starts; `open(topic, params)` subscribes first and returns a `Stream` to iterate and `aclose()`, for
+  events that follow something you do; `feed(name, params)`
   yields a feed's records as `(header, payload)`, the payload as bytes. All raise `VisorError`, whose `code` is
   the kit's error code.
 

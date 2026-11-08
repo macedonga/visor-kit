@@ -27,7 +27,7 @@ import os
 import shutil
 import subprocess
 
-__all__ = ["Visor", "VisorError", "connect_adb", "connect_fake", "connect_network"]
+__all__ = ["Stream", "Visor", "VisorError", "connect_adb", "connect_fake", "connect_network"]
 
 PROTOCOL = 1
 SOCKET = "visor-kit"
@@ -44,6 +44,37 @@ class VisorError(Exception):
         self.reason = failure.get("reason")
         self.scope = failure.get("scope")
         super().__init__(f"{self.code}: {failure.get('message', '')}")
+
+
+class Stream:
+    """The events of one subscription, from ``Visor.open``. Iterate it with ``async for``; it ends when Visor ends
+    the stream, and raises ``VisorError`` when it fails. ``aclose()`` it when done."""
+
+    def __init__(self, visor, id, events):
+        self._visor, self._id, self._events = visor, id, events
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        if self._events is None:
+            raise StopAsyncIteration
+        kind, value = await self._events.get()
+        if kind == "event":
+            return value
+        self._events = None
+        if value is None:
+            raise StopAsyncIteration
+        raise VisorError(value)
+
+    async def aclose(self):
+        """Unsubscribes. After the connection closed, the stream went with it and nothing is sent."""
+        self._events = None
+        if self._visor._streams.pop(self._id, None) is not None and not self._visor._closed:
+            try:
+                await self._visor.call("kit.unsubscribe", {"subscription": self._id})
+            except VisorError:
+                pass  # Visor is gone, and the stream with it.
 
 
 class Visor:
@@ -70,34 +101,33 @@ class Visor:
             self._calls.pop(id, None)
 
     async def subscribe(self, topic, params=None):
-        """Yields each event of ``topic`` until the stream ends; a failure raises ``VisorError``."""
+        """Yields each event of ``topic`` until the stream ends; a failure raises ``VisorError``. It subscribes when
+        iteration starts: use ``open`` to be subscribed before doing something whose events you want."""
+        stream = await self.open(topic, params)
+        try:
+            async for event in stream:
+                yield event
+        finally:
+            await stream.aclose()
+
+    async def open(self, topic, params=None):
+        """Subscribes to ``topic`` and returns a ``Stream`` of its events once Visor has the subscription: nothing
+        Visor sends after this returns is missed. Raises ``VisorError`` when Visor refuses it."""
         id = next(self._ids)
         events = asyncio.Queue()
         self._streams[id] = events
         answer = asyncio.get_running_loop().create_future()
         self._calls[id] = answer
-        await self._send(json.dumps({"jsonrpc": "2.0", "id": id, "method": "kit.subscribe",
-                                     "params": {"topic": topic, "params": params or {}}}))
         try:
-            try:
-                await answer
-            finally:
-                self._calls.pop(id, None)
-            while True:
-                kind, value = await events.get()
-                if kind == "event":
-                    yield value
-                elif value is None:
-                    return
-                else:
-                    raise VisorError(value)
+            await self._send(json.dumps({"jsonrpc": "2.0", "id": id, "method": "kit.subscribe",
+                                         "params": {"topic": topic, "params": params or {}}}))
+            await answer
+        except BaseException:
+            self._streams.pop(id, None)
+            raise
         finally:
-            # A stream left after close, when its generator is finalized, went with the connection.
-            if self._streams.pop(id, None) is not None and not self._closed:
-                try:
-                    await self.call("kit.unsubscribe", {"subscription": id})
-                except VisorError:
-                    pass  # Visor is gone, and the stream with it.
+            self._calls.pop(id, None)
+        return Stream(self, id, events)
 
     async def feed(self, name, params=None):
         """Yields ``(header, payload)`` for each record of the feed ``name``, such as ``camera.live``: the header as a
