@@ -2,6 +2,8 @@ package com.macedonga.visor.kit
 
 import com.macedonga.visor.kit.protocol.Layout
 import com.macedonga.visor.kit.protocol.LayoutClick
+import com.macedonga.visor.kit.protocol.LayoutState
+import com.macedonga.visor.kit.protocol.LayoutVideoEvent
 import com.macedonga.visor.kit.protocol.Methods
 import com.macedonga.visor.kit.protocol.PrompterRequest
 import com.macedonga.visor.kit.protocol.PrompterStyle
@@ -16,7 +18,7 @@ public class Display internal constructor(visor: Visor) {
 }
 
 /**
- * The app's own screen on the Display: a layout of text, images and buttons, which a new [show] replaces in place.
+ * The app's own screen on the Display: a layout of text, images, icons, buttons and a video, which a new [show] replaces in place.
  *
  * ```
  * visor.display.layout.show(Layout { text("Garage") { style = LayoutStyle.HEADING }; button("open", "Open") })
@@ -32,6 +34,14 @@ public class DisplayLayout internal constructor(private val visor: Visor) {
     /** Each click on a button or a box with an id, while collected. */
     public val clicks: Flow<LayoutClick>
         get() = visor.subscribe(Topics.DISPLAY_LAYOUT_CLICKS, Unit)
+
+    /** Whether the layout shows, now and on each change: it goes when the wearer goes back, as on DAT. */
+    public val state: Flow<LayoutState>
+        get() = visor.subscribe(Topics.DISPLAY_LAYOUT_STATE, Unit)
+
+    /** The layout's video: starting, playing, paused, ended or failed. */
+    public val video: Flow<LayoutVideoEvent>
+        get() = visor.subscribe(Topics.DISPLAY_VIDEO, Unit)
 }
 
 /** The Display's teleprompter: one script at a time, which a new [show] replaces. */

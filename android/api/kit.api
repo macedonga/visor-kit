@@ -42,6 +42,8 @@ public final class com/macedonga/visor/kit/Display {
 public final class com/macedonga/visor/kit/DisplayLayout {
 	public final fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun getClicks ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getState ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getVideo ()Lkotlinx/coroutines/flow/Flow;
 	public final fun show (Lcom/macedonga/visor/kit/protocol/Layout;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 

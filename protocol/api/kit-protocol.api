@@ -935,12 +935,14 @@ public final class com/macedonga/visor/kit/protocol/LayoutAlign$Companion {
 	public final fun getEND-ovmRrns ()Ljava/lang/String;
 	public final fun getSPACE_BETWEEN-ovmRrns ()Ljava/lang/String;
 	public final fun getSTART-ovmRrns ()Ljava/lang/String;
+	public final fun getSTRETCH-ovmRrns ()Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/macedonga/visor/kit/protocol/LayoutBox {
+public final class com/macedonga/visor/kit/protocol/LayoutBox : com/macedonga/visor/kit/protocol/LayoutItem {
 	public final fun button (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun button (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun buttons (Lkotlin/jvm/functions/Function1;)V
 	public final fun column (Lkotlin/jvm/functions/Function1;)V
 	public final fun getAlign-D99p7zg ()Ljava/lang/String;
 	public final fun getCard ()Z
@@ -948,6 +950,14 @@ public final class com/macedonga/visor/kit/protocol/LayoutBox {
 	public final fun getGap ()Ljava/lang/Integer;
 	public final fun getId ()Ljava/lang/String;
 	public final fun getPadding ()Ljava/lang/Integer;
+	public final fun getPaddingBottom ()Ljava/lang/Integer;
+	public final fun getPaddingEnd ()Ljava/lang/Integer;
+	public final fun getPaddingStart ()Ljava/lang/Integer;
+	public final fun getPaddingTop ()Ljava/lang/Integer;
+	public final fun getReverse ()Z
+	public final fun getWrap ()Z
+	public final fun icon-GtHYKq0 (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun icon-SPylG5c (Ljava/lang/String;)V
 	public final fun image (Ljava/lang/String;)V
 	public final fun image (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public final fun row (Lkotlin/jvm/functions/Function1;)V
@@ -957,13 +967,32 @@ public final class com/macedonga/visor/kit/protocol/LayoutBox {
 	public final fun setGap (Ljava/lang/Integer;)V
 	public final fun setId (Ljava/lang/String;)V
 	public final fun setPadding (Ljava/lang/Integer;)V
+	public final fun setPaddingBottom (Ljava/lang/Integer;)V
+	public final fun setPaddingEnd (Ljava/lang/Integer;)V
+	public final fun setPaddingStart (Ljava/lang/Integer;)V
+	public final fun setPaddingTop (Ljava/lang/Integer;)V
+	public final fun setReverse (Z)V
+	public final fun setWrap (Z)V
 	public final fun text (Ljava/lang/String;)V
 	public final fun text (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun video (Ljava/lang/String;)V
+	public final fun video (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 }
 
-public final class com/macedonga/visor/kit/protocol/LayoutButton {
+public final class com/macedonga/visor/kit/protocol/LayoutButton : com/macedonga/visor/kit/protocol/LayoutItem {
+	public final fun getIcon-bNDKGY8 ()Ljava/lang/String;
+	public final fun getPrimary ()Z
 	public final fun getStyle-S4oKjhs ()Ljava/lang/String;
+	public final fun setIcon-4VjfgJc (Ljava/lang/String;)V
+	public final fun setPrimary (Z)V
 	public final fun setStyle-buIq84w (Ljava/lang/String;)V
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutButtons : com/macedonga/visor/kit/protocol/LayoutItem {
+	public final fun button (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun button (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun getAlign-D99p7zg ()Ljava/lang/String;
+	public final fun setAlign-eNpEQD4 (Ljava/lang/String;)V
 }
 
 public final class com/macedonga/visor/kit/protocol/LayoutClick {
@@ -990,14 +1019,310 @@ public final class com/macedonga/visor/kit/protocol/LayoutClick$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/macedonga/visor/kit/protocol/LayoutColor {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/LayoutColor$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/macedonga/visor/kit/protocol/LayoutColor;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/LayoutColor$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/LayoutColor$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-7z57i5s (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-ExykroQ (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutColor$Companion {
+	public final fun getPRIMARY-xhdXsNg ()Ljava/lang/String;
+	public final fun getSECONDARY-xhdXsNg ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutCorners {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/LayoutCorners$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/macedonga/visor/kit/protocol/LayoutCorners;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/LayoutCorners$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/LayoutCorners$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-AdUz5g4 (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-qpYCs2s (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutCorners$Companion {
+	public final fun getMEDIUM-TNBZxpw ()Ljava/lang/String;
+	public final fun getNONE-TNBZxpw ()Ljava/lang/String;
+	public final fun getSMALL-TNBZxpw ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public abstract interface annotation class com/macedonga/visor/kit/protocol/LayoutDsl : java/lang/annotation/Annotation {
 }
 
-public final class com/macedonga/visor/kit/protocol/LayoutImage {
+public final class com/macedonga/visor/kit/protocol/LayoutEnd {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/LayoutEnd$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/macedonga/visor/kit/protocol/LayoutEnd;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/LayoutEnd$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/LayoutEnd$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-8VrjC0c (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize--a5mxng (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutEnd$Companion {
+	public final fun getBACK-bTsRGtk ()Ljava/lang/String;
+	public final fun getCLOSED-bTsRGtk ()Ljava/lang/String;
+	public final fun getFAILED-bTsRGtk ()Ljava/lang/String;
+	public final fun getREPLACED-bTsRGtk ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutIcon : com/macedonga/visor/kit/protocol/LayoutItem {
+	public final fun getStyle-S4oKjhs ()Ljava/lang/String;
+	public final fun setStyle-buIq84w (Ljava/lang/String;)V
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutIconName {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/LayoutIconName$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/macedonga/visor/kit/protocol/LayoutIconName;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/LayoutIconName$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/LayoutIconName$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-Etj4s4k (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-SIuoxjU (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutIconName$Companion {
+	public final fun getAIRPLANE-oySQJrQ ()Ljava/lang/String;
+	public final fun getARROW_DOWN_SHALLOW_U-oySQJrQ ()Ljava/lang/String;
+	public final fun getARROW_LEFT-oySQJrQ ()Ljava/lang/String;
+	public final fun getARROW_RIGHT-oySQJrQ ()Ljava/lang/String;
+	public final fun getARROW_UP_SHALLOW_U-oySQJrQ ()Ljava/lang/String;
+	public final fun getARROW_U_LEFT-oySQJrQ ()Ljava/lang/String;
+	public final fun getAVATAR-oySQJrQ ()Ljava/lang/String;
+	public final fun getAVATAR_OFF-oySQJrQ ()Ljava/lang/String;
+	public final fun getAll ()Ljava/util/List;
+	public final fun getBED_SIDE-oySQJrQ ()Ljava/lang/String;
+	public final fun getBELL-oySQJrQ ()Ljava/lang/String;
+	public final fun getBELL_DIAGONAL_RIGHT_DOT-oySQJrQ ()Ljava/lang/String;
+	public final fun getBELL_OFF-oySQJrQ ()Ljava/lang/String;
+	public final fun getBIKE_SHARE-oySQJrQ ()Ljava/lang/String;
+	public final fun getBUG-oySQJrQ ()Ljava/lang/String;
+	public final fun getBULLHORN-oySQJrQ ()Ljava/lang/String;
+	public final fun getBUS-oySQJrQ ()Ljava/lang/String;
+	public final fun getCALENDAR-oySQJrQ ()Ljava/lang/String;
+	public final fun getCAMPFIRE-oySQJrQ ()Ljava/lang/String;
+	public final fun getCARET_DOWN-oySQJrQ ()Ljava/lang/String;
+	public final fun getCARET_LEFT-oySQJrQ ()Ljava/lang/String;
+	public final fun getCARET_RIGHT-oySQJrQ ()Ljava/lang/String;
+	public final fun getCARET_UP-oySQJrQ ()Ljava/lang/String;
+	public final fun getCART-oySQJrQ ()Ljava/lang/String;
+	public final fun getCAR_FRONT_VIEW-oySQJrQ ()Ljava/lang/String;
+	public final fun getCHECKMARK-oySQJrQ ()Ljava/lang/String;
+	public final fun getCHECKMARK_CIRCLE-oySQJrQ ()Ljava/lang/String;
+	public final fun getCIRCLE_8_RAYS_LARGE-oySQJrQ ()Ljava/lang/String;
+	public final fun getCIRCLE_HANDLE-oySQJrQ ()Ljava/lang/String;
+	public final fun getCLOCK-oySQJrQ ()Ljava/lang/String;
+	public final fun getCLOUD-oySQJrQ ()Ljava/lang/String;
+	public final fun getCLOUD_CRESCENT_MOON-oySQJrQ ()Ljava/lang/String;
+	public final fun getCLOUD_DOT_FOUR_RAYS-oySQJrQ ()Ljava/lang/String;
+	public final fun getCLOUD_FIVE_DASHES-oySQJrQ ()Ljava/lang/String;
+	public final fun getCLOUD_HOOK_SWIRL-oySQJrQ ()Ljava/lang/String;
+	public final fun getCLOUD_LIGHTNING-oySQJrQ ()Ljava/lang/String;
+	public final fun getCOCKTAIL_GLASS-oySQJrQ ()Ljava/lang/String;
+	public final fun getCODE-oySQJrQ ()Ljava/lang/String;
+	public final fun getCOFFEE_CUP-oySQJrQ ()Ljava/lang/String;
+	public final fun getCOMPASS_NORTH_UP_RED-oySQJrQ ()Ljava/lang/String;
+	public final fun getCONTAINER_WITH_LID-oySQJrQ ()Ljava/lang/String;
+	public final fun getCROSS_BRIEFCASE-oySQJrQ ()Ljava/lang/String;
+	public final fun getDROPPER-oySQJrQ ()Ljava/lang/String;
+	public final fun getENVELOPE_OPEN-oySQJrQ ()Ljava/lang/String;
+	public final fun getEXCLAMATION_CIRCLE-oySQJrQ ()Ljava/lang/String;
+	public final fun getEXCLAMATION_TRIANGLE-oySQJrQ ()Ljava/lang/String;
+	public final fun getEYE-oySQJrQ ()Ljava/lang/String;
+	public final fun getFORK_KNIFE-oySQJrQ ()Ljava/lang/String;
+	public final fun getFOUR_ARCS_UP_FILLED-oySQJrQ ()Ljava/lang/String;
+	public final fun getFOUR_ARCS_UP_GRAYSCALE-oySQJrQ ()Ljava/lang/String;
+	public final fun getFOUR_CORNER_FRAME-oySQJrQ ()Ljava/lang/String;
+	public final fun getGEAR-oySQJrQ ()Ljava/lang/String;
+	public final fun getGLOBE_WESTERN_HEMISPHERE-oySQJrQ ()Ljava/lang/String;
+	public final fun getGRADUATION_CAP-oySQJrQ ()Ljava/lang/String;
+	public final fun getHASHTAG-oySQJrQ ()Ljava/lang/String;
+	public final fun getHEADPHONES-oySQJrQ ()Ljava/lang/String;
+	public final fun getHEART-oySQJrQ ()Ljava/lang/String;
+	public final fun getHOUSE-oySQJrQ ()Ljava/lang/String;
+	public final fun getI_CIRCLE-oySQJrQ ()Ljava/lang/String;
+	public final fun getLIGHT_BULB-oySQJrQ ()Ljava/lang/String;
+	public final fun getMAGIC_WAND-oySQJrQ ()Ljava/lang/String;
+	public final fun getMETA_AI-oySQJrQ ()Ljava/lang/String;
+	public final fun getMOUNTAIN_SQUARE-oySQJrQ ()Ljava/lang/String;
+	public final fun getMOUNTAIN_SQUARE_STACKED-oySQJrQ ()Ljava/lang/String;
+	public final fun getMUSEUM_BUILDING-oySQJrQ ()Ljava/lang/String;
+	public final fun getMUSIC_NOTE-oySQJrQ ()Ljava/lang/String;
+	public final fun getNINE_SQUARES_GRID-oySQJrQ ()Ljava/lang/String;
+	public final fun getPADLOCK_CLOSED-oySQJrQ ()Ljava/lang/String;
+	public final fun getPADLOCK_OPEN-oySQJrQ ()Ljava/lang/String;
+	public final fun getPALETTE-oySQJrQ ()Ljava/lang/String;
+	public final fun getPAPER_AIRPLANE-oySQJrQ ()Ljava/lang/String;
+	public final fun getPENCIL-oySQJrQ ()Ljava/lang/String;
+	public final fun getPENCIL_SQUARE-oySQJrQ ()Ljava/lang/String;
+	public final fun getPERSON-oySQJrQ ()Ljava/lang/String;
+	public final fun getPERSON_CIRCLE-oySQJrQ ()Ljava/lang/String;
+	public final fun getPHONE-oySQJrQ ()Ljava/lang/String;
+	public final fun getPHONE_HANDSET_ARROW_DOWN_LEFT-oySQJrQ ()Ljava/lang/String;
+	public final fun getPHONE_HANDSET_ARROW_UP_RIGHT-oySQJrQ ()Ljava/lang/String;
+	public final fun getPHONE_SLASH-oySQJrQ ()Ljava/lang/String;
+	public final fun getPIZZA_SLICE-oySQJrQ ()Ljava/lang/String;
+	public final fun getPLUS-oySQJrQ ()Ljava/lang/String;
+	public final fun getPLUS_CIRCLE-oySQJrQ ()Ljava/lang/String;
+	public final fun getSHOPPING_BAG-oySQJrQ ()Ljava/lang/String;
+	public final fun getSLIDERS_HORIZONTAL-oySQJrQ ()Ljava/lang/String;
+	public final fun getSMART_GLASSES-oySQJrQ ()Ljava/lang/String;
+	public final fun getSMILEY_CIRCLE-oySQJrQ ()Ljava/lang/String;
+	public final fun getSPEAKER_OFF-oySQJrQ ()Ljava/lang/String;
+	public final fun getSPEAKER_WITH_ONE_ARC-oySQJrQ ()Ljava/lang/String;
+	public final fun getSPEAKER_WITH_THREE_ARCS-oySQJrQ ()Ljava/lang/String;
+	public final fun getSPEAKER_WITH_TWO_ARCS-oySQJrQ ()Ljava/lang/String;
+	public final fun getSPEECH_BUBBLE-oySQJrQ ()Ljava/lang/String;
+	public final fun getSPEECH_BUBBLE_OFF-oySQJrQ ()Ljava/lang/String;
+	public final fun getSTADIUM-oySQJrQ ()Ljava/lang/String;
+	public final fun getSTAR-oySQJrQ ()Ljava/lang/String;
+	public final fun getSTAR_CIRCLE_TRIANGLE_AI-oySQJrQ ()Ljava/lang/String;
+	public final fun getTAXI-oySQJrQ ()Ljava/lang/String;
+	public final fun getTHREE_DOTS_HORIZONTAL-oySQJrQ ()Ljava/lang/String;
+	public final fun getTHREE_DOT_SPEECH_BUBBLE-oySQJrQ ()Ljava/lang/String;
+	public final fun getTHREE_HORIZONTAL_LINES-oySQJrQ ()Ljava/lang/String;
+	public final fun getTHREE_HORIZONTAL_LINES_STACKED_DESCENDING-oySQJrQ ()Ljava/lang/String;
+	public final fun getTHREE_PEOPLE_OVERLAPPING-oySQJrQ ()Ljava/lang/String;
+	public final fun getTRAIN-oySQJrQ ()Ljava/lang/String;
+	public final fun getTREE-oySQJrQ ()Ljava/lang/String;
+	public final fun getTRIANGLE_LEFT_VERTICAL_LINE-oySQJrQ ()Ljava/lang/String;
+	public final fun getTRIANGLE_RIGHT-oySQJrQ ()Ljava/lang/String;
+	public final fun getTRIANGLE_RIGHT_CIRCLE-oySQJrQ ()Ljava/lang/String;
+	public final fun getTRIANGLE_RIGHT_VERTICAL_LINE-oySQJrQ ()Ljava/lang/String;
+	public final fun getTWO_ARROWS_CLOCKWISE-oySQJrQ ()Ljava/lang/String;
+	public final fun getTWO_LINES_PARALLEL-oySQJrQ ()Ljava/lang/String;
+	public final fun getTWO_SQUARES_STACKED_RIGHT_DOWN-oySQJrQ ()Ljava/lang/String;
+	public final fun getTWO_TRIANGLES_LEFT-oySQJrQ ()Ljava/lang/String;
+	public final fun getTWO_TRIANGLES_RIGHT-oySQJrQ ()Ljava/lang/String;
+	public final fun getVIDEO_CAMERA-oySQJrQ ()Ljava/lang/String;
+	public final fun getVIDEO_CAMERA_OFF-oySQJrQ ()Ljava/lang/String;
+	public final fun getWRISTBAND-oySQJrQ ()Ljava/lang/String;
+	public final fun getWRISTBAND_SLASH-oySQJrQ ()Ljava/lang/String;
+	public final fun getX-oySQJrQ ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutImage : com/macedonga/visor/kit/protocol/LayoutItem {
+	public final fun getCorners-p4GT6-0 ()Ljava/lang/String;
 	public final fun getHeight ()Ljava/lang/Integer;
 	public final fun getRounded ()Z
+	public final fun getSize-LwJGDBQ ()Ljava/lang/String;
+	public final fun setCorners-eHsstNQ (Ljava/lang/String;)V
 	public final fun setHeight (Ljava/lang/Integer;)V
 	public final fun setRounded (Z)V
+	public final fun setSize-3rz5BEg (Ljava/lang/String;)V
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutImageSize {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/LayoutImageSize$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/macedonga/visor/kit/protocol/LayoutImageSize;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/LayoutImageSize$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/LayoutImageSize$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-IFHpmd8 (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-6nGgjwo (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutImageSize$Companion {
+	public final fun getFILL-Mw9mdjs ()Ljava/lang/String;
+	public final fun getICON-Mw9mdjs ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public abstract class com/macedonga/visor/kit/protocol/LayoutItem {
+	public final fun getAlignSelf-D99p7zg ()Ljava/lang/String;
+	public final fun getGrow ()Ljava/lang/Double;
+	public final fun getShrink ()Ljava/lang/Double;
+	public final fun setAlignSelf-eNpEQD4 (Ljava/lang/String;)V
+	public final fun setGrow (Ljava/lang/Double;)V
+	public final fun setShrink (Ljava/lang/Double;)V
 }
 
 public final class com/macedonga/visor/kit/protocol/LayoutKt {
@@ -1006,20 +1331,35 @@ public final class com/macedonga/visor/kit/protocol/LayoutKt {
 
 public final class com/macedonga/visor/kit/protocol/LayoutNode {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/LayoutNode$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAlign-D99p7zg ()Ljava/lang/String;
+	public final fun getAlignSelf-D99p7zg ()Ljava/lang/String;
 	public final fun getCard ()Ljava/lang/Boolean;
 	public final fun getChildren ()Ljava/util/List;
+	public final fun getColor-TXq60ac ()Ljava/lang/String;
+	public final fun getControls ()Ljava/lang/Boolean;
+	public final fun getCorners-p4GT6-0 ()Ljava/lang/String;
 	public final fun getCrossAlign-D99p7zg ()Ljava/lang/String;
 	public final fun getGap ()Ljava/lang/Integer;
+	public final fun getGrow ()Ljava/lang/Double;
 	public final fun getHeight ()Ljava/lang/Integer;
+	public final fun getIcon-bNDKGY8 ()Ljava/lang/String;
 	public final fun getId ()Ljava/lang/String;
 	public final fun getPadding ()Ljava/lang/Integer;
+	public final fun getPaddingBottom ()Ljava/lang/Integer;
+	public final fun getPaddingEnd ()Ljava/lang/Integer;
+	public final fun getPaddingStart ()Ljava/lang/Integer;
+	public final fun getPaddingTop ()Ljava/lang/Integer;
+	public final fun getPrimary ()Ljava/lang/Boolean;
+	public final fun getReverse ()Ljava/lang/Boolean;
+	public final fun getShrink ()Ljava/lang/Double;
+	public final fun getSize-LwJGDBQ ()Ljava/lang/String;
 	public final fun getStyle-S4oKjhs ()Ljava/lang/String;
 	public final fun getText ()Ljava/lang/String;
 	public final fun getType-ZNsRGrs ()Ljava/lang/String;
 	public final fun getUrl ()Ljava/lang/String;
+	public final fun getWrap ()Ljava/lang/Boolean;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -1036,6 +1376,32 @@ public final synthetic class com/macedonga/visor/kit/protocol/LayoutNode$$serial
 }
 
 public final class com/macedonga/visor/kit/protocol/LayoutNode$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutState {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/LayoutState$Companion;
+	public synthetic fun <init> (ZLjava/lang/String;JILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getReason-VUc9hL0 ()Ljava/lang/String;
+	public final fun getShowing ()Z
+	public final fun getTime ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/LayoutState$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/LayoutState$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/LayoutState;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/LayoutState;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutState$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -1067,15 +1433,19 @@ public final synthetic class com/macedonga/visor/kit/protocol/LayoutStyle$$seria
 
 public final class com/macedonga/visor/kit/protocol/LayoutStyle$Companion {
 	public final fun getBODY-i-g2Re0 ()Ljava/lang/String;
+	public final fun getFILLED-i-g2Re0 ()Ljava/lang/String;
 	public final fun getHEADING-i-g2Re0 ()Ljava/lang/String;
 	public final fun getMETA-i-g2Re0 ()Ljava/lang/String;
+	public final fun getOUTLINE-i-g2Re0 ()Ljava/lang/String;
 	public final fun getPRIMARY-i-g2Re0 ()Ljava/lang/String;
 	public final fun getSECONDARY-i-g2Re0 ()Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/macedonga/visor/kit/protocol/LayoutText {
+public final class com/macedonga/visor/kit/protocol/LayoutText : com/macedonga/visor/kit/protocol/LayoutItem {
+	public final fun getColor-TXq60ac ()Ljava/lang/String;
 	public final fun getStyle-S4oKjhs ()Ljava/lang/String;
+	public final fun setColor-cvVFFEo (Ljava/lang/String;)V
 	public final fun setStyle-buIq84w (Ljava/lang/String;)V
 }
 
@@ -1107,10 +1477,79 @@ public final synthetic class com/macedonga/visor/kit/protocol/LayoutType$$serial
 
 public final class com/macedonga/visor/kit/protocol/LayoutType$Companion {
 	public final fun getBUTTON-ZNsRGrs ()Ljava/lang/String;
+	public final fun getBUTTON_GROUP-ZNsRGrs ()Ljava/lang/String;
 	public final fun getCOLUMN-ZNsRGrs ()Ljava/lang/String;
+	public final fun getICON-ZNsRGrs ()Ljava/lang/String;
 	public final fun getIMAGE-ZNsRGrs ()Ljava/lang/String;
 	public final fun getROW-ZNsRGrs ()Ljava/lang/String;
 	public final fun getTEXT-ZNsRGrs ()Ljava/lang/String;
+	public final fun getVIDEO-ZNsRGrs ()Ljava/lang/String;
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutVideo : com/macedonga/visor/kit/protocol/LayoutItem {
+	public final fun getControls ()Z
+	public final fun setControls (Z)V
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutVideoEvent {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/LayoutVideoEvent$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;JILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getError ()Ljava/lang/String;
+	public final fun getState-ezE-y8w ()Ljava/lang/String;
+	public final fun getTime ()J
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/LayoutVideoEvent$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/LayoutVideoEvent$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/LayoutVideoEvent;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/LayoutVideoEvent;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutVideoEvent$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutVideoState {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/LayoutVideoState$Companion;
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/macedonga/visor/kit/protocol/LayoutVideoState;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/LayoutVideoState$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/LayoutVideoState$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun deserialize-SLL0ByY (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/String;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public final fun serialize-4sCFfj0 (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/String;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutVideoState$Companion {
+	public final fun getENDED-ezE-y8w ()Ljava/lang/String;
+	public final fun getFAILED-ezE-y8w ()Ljava/lang/String;
+	public final fun getPAUSED-ezE-y8w ()Ljava/lang/String;
+	public final fun getPLAYING-ezE-y8w ()Ljava/lang/String;
+	public final fun getSTARTING-ezE-y8w ()Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -2254,6 +2693,8 @@ public final class com/macedonga/visor/kit/protocol/Topics {
 	public final fun getCAPTURES_IMPORTED ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getCAPTURES_PROGRESS ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getDISPLAY_LAYOUT_CLICKS ()Lcom/macedonga/visor/kit/protocol/Topic;
+	public final fun getDISPLAY_LAYOUT_STATE ()Lcom/macedonga/visor/kit/protocol/Topic;
+	public final fun getDISPLAY_VIDEO ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getGLASSES_INPUTS ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getGLASSES_MOTION ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getGLASSES_PAIRS ()Lcom/macedonga/visor/kit/protocol/Topic;

@@ -7,6 +7,7 @@ import com.macedonga.visor.kit.protocol.InputAction
 import com.macedonga.visor.kit.protocol.InputSource
 import com.macedonga.visor.kit.protocol.KitJson
 import com.macedonga.visor.kit.protocol.LayoutNode
+import com.macedonga.visor.kit.protocol.LayoutVideoState
 import com.macedonga.visor.kit.protocol.Scope
 import com.macedonga.visor.kit.protocol.ThermalLevel
 import com.macedonga.visor.kit.server.Caller
@@ -63,6 +64,8 @@ Type here to play the glasses:
   tool NAME [JSON]          The assistant calls an app's tool with JSON arguments.
   turn QUESTION / ANSWER    The wearer asks the assistant QUESTION and it answers ANSWER.
   click ID                  A tap on an element of the layout on the Display.
+  back                      The wearer goes back: the layout on the Display goes.
+  video STATE [ERROR]       The layout's video: playing, paused, ended, or failed with an error.
   grant|revoke SCOPE...     Changes the scopes the fake person granted.
   quit
 """.trim()
@@ -124,6 +127,8 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
             } catch (e: CliError) {
                 System.err.println("visor: ${e.message}")
             } catch (e: IllegalArgumentException) {
+                System.err.println("visor: ${e.message}")
+            } catch (e: IllegalStateException) {
                 System.err.println("visor: ${e.message}")
             }
         }
@@ -201,6 +206,11 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
                 fake.assistant.turn(question.trim(), answer.trim())
             }
             "click" -> fake.display.click(words.getOrNull(1) ?: throw CliError("click needs an element id."))
+            "back" -> fake.display.back()
+            "video" -> fake.display.video(
+                LayoutVideoState(words.getOrNull(1) ?: throw CliError("video needs a state: playing, paused, ended or failed.")),
+                words.getOrNull(2),
+            )
             "grant" -> fake.granted = fake.granted + scopes(words)
             "revoke" -> fake.granted = fake.granted - scopes(words).toSet()
             else -> throw CliError("No command ${words[0]}. Type help.")
@@ -218,7 +228,10 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
             fake.display.prompter.drop(1).collect { say(if (it == null) "Display: the prompter closed" else "Display: the prompter shows \"${it.take(SHOWN)}\"") }
         }
         scope.launch {
-            fake.display.layout.drop(1).collect { say(if (it == null) "Display: the layout closed" else "Display: a layout of ${count(it.root)} elements") }
+            fake.display.layout.drop(1).collect { if (it != null) say("Display: a layout of ${count(it.root)} elements") }
+        }
+        scope.launch {
+            fake.display.state.drop(1).collect { if (!it.showing) say("Display: the layout went (${it.reason})") }
         }
         scope.launch {
             var before = fake.notify.shown.value

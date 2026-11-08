@@ -20,7 +20,12 @@ import com.macedonga.visor.kit.protocol.KitInternal
 import com.macedonga.visor.kit.protocol.KitJson
 import com.macedonga.visor.kit.protocol.Layout
 import com.macedonga.visor.kit.protocol.LayoutClick
+import com.macedonga.visor.kit.protocol.LayoutEnd
 import com.macedonga.visor.kit.protocol.LayoutNode
+import com.macedonga.visor.kit.protocol.LayoutState
+import com.macedonga.visor.kit.protocol.LayoutType
+import com.macedonga.visor.kit.protocol.LayoutVideoEvent
+import com.macedonga.visor.kit.protocol.LayoutVideoState
 import com.macedonga.visor.kit.protocol.Link
 import com.macedonga.visor.kit.protocol.Methods
 import com.macedonga.visor.kit.protocol.MotionRequest
@@ -235,6 +240,8 @@ public class FakeVisor {
             display.showLayout(null)
         }
         stream(Topics.DISPLAY_LAYOUT_CLICKS) { _, _ -> display.clicks }
+        stream(Topics.DISPLAY_LAYOUT_STATE) { _, _ -> display.state }
+        stream(Topics.DISPLAY_VIDEO) { _, _ -> display.video }
 
         stream(Topics.VOICE_REQUESTS) { _, offer -> voice.offer(offer.phrases) }
         stream(Topics.VOICE_TRANSCRIPTS) { _, request -> voice.transcripts(request) }
@@ -505,9 +512,65 @@ public class FakeDisplay internal constructor() {
         clicks.tryEmit(LayoutClick(id, System.currentTimeMillis()))
     }
 
-    internal fun showLayout(layout: Layout?) {
-        _layout.value = layout
+    private val _state = MutableStateFlow(LayoutState(showing = false, time = System.currentTimeMillis()))
+
+    /** Whether the app's layout shows, and why it went. */
+    public val state: StateFlow<LayoutState> = _state.asStateFlow()
+
+    internal val video = MutableSharedFlow<LayoutVideoEvent>(replay = 1, extraBufferCapacity = 64)
+
+    /** The wearer goes back: the layout goes, as on the real Display. */
+    public fun back() {
+        checkNotNull(_layout.value) { "The fake Display shows no layout." }
+        end(LayoutEnd.BACK)
     }
+
+    /** Another app shows its own layout over this one. */
+    public fun replace() {
+        checkNotNull(_layout.value) { "The fake Display shows no layout." }
+        end(LayoutEnd.REPLACED)
+    }
+
+    /** The layout's video moves to [state], with [error] when it fails. */
+    public fun video(state: LayoutVideoState, error: String?) {
+        checkNotNull(_layout.value?.root?.let(::videoOf)) { "The layout shown has no video." }
+        video.tryEmit(LayoutVideoEvent(state, error, System.currentTimeMillis()))
+    }
+
+    internal fun showLayout(layout: Layout?) {
+        if (layout == null) {
+            if (_layout.value != null) end(LayoutEnd.CLOSED)
+            return
+        }
+        val videos = all(layout.root).filter { it.type == LayoutType.VIDEO }
+        if (videos.size > 1) throw KitException(ErrorCode.INVALID_PARAMS, "A layout holds one video at most.", reason = "two_videos")
+        val before = _layout.value?.root?.let(::videoOf)?.url
+        _layout.value = layout
+        _state.value = LayoutState(showing = true, time = System.currentTimeMillis())
+        val url = videos.singleOrNull()?.url
+        if (url != null && url != before) {
+            video.tryEmit(LayoutVideoEvent(LayoutVideoState.STARTING, null, System.currentTimeMillis()))
+            video.tryEmit(
+                if (url.startsWith("https://")) {
+                    LayoutVideoEvent(LayoutVideoState.PLAYING, null, System.currentTimeMillis())
+                } else {
+                    LayoutVideoEvent(LayoutVideoState.FAILED, "invalid_url", System.currentTimeMillis())
+                },
+            )
+        }
+    }
+
+    private fun end(reason: LayoutEnd) {
+        if (_layout.value?.root?.let(::videoOf) != null) {
+            video.tryEmit(LayoutVideoEvent(LayoutVideoState.ENDED, null, System.currentTimeMillis()))
+        }
+        _layout.value = null
+        _state.value = LayoutState(showing = false, reason = reason, time = System.currentTimeMillis())
+    }
+
+    private fun videoOf(node: LayoutNode): LayoutNode? = all(node).firstOrNull { it.type == LayoutType.VIDEO }
+
+    private fun all(node: LayoutNode): List<LayoutNode> = listOf(node) + node.children.flatMap(::all)
 
     private fun ids(node: LayoutNode): List<String> = listOfNotNull(node.id) + node.children.flatMap(::ids)
 }

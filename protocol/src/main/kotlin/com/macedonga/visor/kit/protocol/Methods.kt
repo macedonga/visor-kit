@@ -309,6 +309,23 @@ public object Topics {
     )
 
     /**
+     * Whether the app's layout shows: now, then each change. It goes when the wearer goes back, when another app
+     * shows its own, when the app closes it, or when the glasses fail to draw it.
+     */
+    public val DISPLAY_LAYOUT_STATE: Topic<Unit, LayoutState> = Topic(
+        "display.layout.state", Scope.DISPLAY, 1,
+        "Whether the app's layout shows, and why it went.",
+        Unit.serializer(), LayoutState.serializer(),
+    )
+
+    /** The video in the app's layout: starting, playing, paused, ended or failed. */
+    public val DISPLAY_VIDEO: Topic<Unit, LayoutVideoEvent> = Topic(
+        "display.video", Scope.DISPLAY, 1,
+        "Each change of the video in the app's layout.",
+        Unit.serializer(), LayoutVideoEvent.serializer(),
+    )
+
+    /**
      * While any app subscribes, the phone borrows the band: its gestures come here and no longer reach the Display.
      * The band goes back to the Display when the last subscriber leaves. Ends with [ErrorCode.UNSUPPORTED] when no
      * band is paired, and with the reason `not_set_up` when only the Display holds it ([BandStatus.held] false).
@@ -382,7 +399,7 @@ public object Topics {
         GLASSES_STATUS, GLASSES_PAIRS, GLASSES_INPUTS, GLASSES_MOTION,
         CAPTURES_AVAILABLE, CAPTURES_PROGRESS, CAPTURES_IMPORTED, CAPTURES_FAILED,
         BAND_STATUS, BAND_GESTURES,
-        DISPLAY_LAYOUT_CLICKS,
+        DISPLAY_LAYOUT_CLICKS, DISPLAY_LAYOUT_STATE, DISPLAY_VIDEO,
         VOICE_REQUESTS, VOICE_TRANSCRIPTS,
         ASSISTANT_TOOLS, ASSISTANT_TURNS,
         SETTINGS_CHANGES,

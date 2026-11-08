@@ -11,8 +11,10 @@
 - `glasses.inputs`, with the `inputs` scope: each touch of the touchpad and each press of a button.
 - `glasses.motion`, with the `motion` scope: the accelerometer, gyroscope, magnetometer and orientation at 5 to 60
   samples a second, as Meta's toolkit gives them. FakeVisor serves it; Visor does not yet.
-- `display.layout.show`, `display.layout.close` and `display.layout.clicks`: layouts of columns, rows, text, images
-  and buttons, with clicks back. FakeVisor serves them; Visor does not yet.
+- `display.layout.show`, `display.layout.close` and `display.layout.clicks`: layouts with DAT's elements (columns
+  and rows, text, images, the Display's own icons, buttons, button bars and a video) and their styles, with clicks
+  back. `display.layout.state` says when the layout goes and why, and `display.video` follows the video. FakeVisor
+  serves them; Visor does not yet.
 - `voice.transcripts`, with the `microphone` scope: what the glasses hear, as text, from the phone's recogniser.
   The client binds with `BIND_INCLUDE_CAPABILITIES`, so Visor may record while the app is on screen.
 - Feeds, streams of binary records, over a socket for apps and as Base64 events over JSON-RPC. `camera.live`

@@ -914,6 +914,32 @@
             "x-since": 1
         },
         {
+            "name": "display.layout.state",
+            "summary": "Whether the app's layout shows, and why it went.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/LayoutState"
+                }
+            },
+            "x-scope": "display",
+            "x-since": 1
+        },
+        {
+            "name": "display.video",
+            "summary": "Each change of the video in the app's layout.",
+            "params": [],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/LayoutVideoEvent"
+                }
+            },
+            "x-scope": "display",
+            "x-since": 1
+        },
+        {
             "name": "voice.requests",
             "summary": "The wearer's questions that name one of the app's phrases, for the app to answer.",
             "params": [
@@ -1959,10 +1985,217 @@
                         "items": {
                             "$ref": "#/components/schemas/LayoutNode"
                         }
+                    },
+                    "reverse": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "wrap": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "paddingTop": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "paddingBottom": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "paddingStart": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "paddingEnd": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "grow": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "shrink": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "alignSelf": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "title": "LayoutAlign"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "color": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "title": "LayoutColor"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "size": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "title": "LayoutImageSize"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "corners": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "title": "LayoutCorners"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "icon": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "title": "LayoutIconName"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "primary": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "controls": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 },
                 "required": [
                     "type"
+                ]
+            },
+            "LayoutState": {
+                "type": "object",
+                "properties": {
+                    "showing": {
+                        "type": "boolean"
+                    },
+                    "reason": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "title": "LayoutEnd"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "time": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "showing",
+                    "time"
+                ]
+            },
+            "LayoutVideoEvent": {
+                "type": "object",
+                "properties": {
+                    "state": {
+                        "type": "string",
+                        "title": "LayoutVideoState"
+                    },
+                    "error": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "time": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "state",
+                    "time"
                 ]
             },
             "LiveHeader": {
