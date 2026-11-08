@@ -35,4 +35,7 @@ public interface Gate {
 
     /** [caller] said [hello]. */
     public fun greeted(caller: Caller, hello: Hello)
+
+    /** [caller]'s app closed its last connection: what it was granted only this time ends here. */
+    public fun left(caller: Caller) {}
 }

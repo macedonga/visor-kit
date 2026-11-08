@@ -7,7 +7,7 @@
 - `kit-protocol`: the wire contract, protocol version 1, with its OpenRPC document.
 - `kit`: `Visor.connect`, the glasses' status, photos and videos, the captures on the glasses and their import,
   the Neural Band's status, gestures and vibration, and the Display's teleprompter. `RequestScopes` asks the
-  person for scopes on Visor's consent screen.
+  person for scopes on Visor's consent screen, where they may allow them only this time.
 - `glasses.inputs`, with the `inputs` scope: each touch of the touchpad and each press of a button, and on the
   Display DAT's navigation (nav, select, back, drags) from the touchpad and the band, with a sources filter and
   `keepBack`.

@@ -29,7 +29,9 @@ it asks for them by id.
 ## Asking
 
 `RequestScopes` opens Visor's consent screen over your app. The screen names your app, as the launcher shows it,
-and lists only the scopes it does not hold yet. The person allows all of them or none.
+and lists only the scopes it does not hold yet. The person allows all of them or none: **Allow** keeps them,
+**Only this time** gives them until your app closes its last connection to Visor (DAT's Allow once), and **Don't
+allow** gives none.
 
 ```kotlin
 val ask = registerForActivityResult(RequestScopes()) { held -> }

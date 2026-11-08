@@ -89,6 +89,8 @@ public class Dispatcher(
     internal fun closed(conversation: Conversation) {
         conversations -= conversation
         if (conversation.caller === simulator) simulate(null, emptySet())
+        val caller = conversation.caller
+        if (conversations.none { it.caller.packageName == caller.packageName && it.caller.network == caller.network }) gate.left(caller)
     }
 
     internal suspend fun call(caller: Caller, method: String, params: String?): String {
