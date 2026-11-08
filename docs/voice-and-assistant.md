@@ -105,6 +105,12 @@ While transcripts run, the glasses act as a call headset, so music pauses as in 
 only while it may use the microphone: while your app is on screen, or Visor is. The VDK lends Visor your app's
 access when it binds, so keep collecting from a visible screen. From a computer, keep Visor on screen.
 
+The Meta Ray-Ban Display is no Bluetooth headset to the phone. There the Display hears the wearer itself, with the
+speech recognition of Meta's toolkit app, as DAT's speech does: in the Display's own language, which `language`
+cannot change, and each transcript says. The toolkit app must be on the screen while it listens. If your app shows
+no layout, the Display shows a Listening screen with your app's name, so the wearer knows who listens; going back on
+the glasses ends the stream with `closed`.
+
 Each `Transcript` has the `text`, the `language` it was heard in, the `time` the utterance ended, and the
 recogniser's `confidence` from 0 to 1 when it gives one. Several apps can listen at once, in one language: an app
 that asks for another language meanwhile fails with `busy`.
@@ -128,7 +134,8 @@ The stream ends with:
 | `busy` | | Another app hears in another language. |
 | `invalid_params` | | `language` is not a BCP 47 tag. |
 | `failed` | `no_headset` | The glasses are no headset to the phone, or the recording stopped. |
-| `failed` | `recognizer_failed` | The phone's recogniser stopped, for example for a language it lacks. |
+| `failed` | `recognizer_failed` | The phone's recogniser stopped, for example for a language it lacks, or the Display's failed. |
+| `closed` | `back` | On the Display, the wearer went back from the toolkit app. |
 
 ## Tools for the model
 

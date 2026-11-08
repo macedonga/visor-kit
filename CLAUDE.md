@@ -96,7 +96,8 @@ Library versions are semver. `KitProtocol.VERSION` counts separately and only go
 
 ## Roadmap
 
-Status as of 2026-11-07: phases 1 to 3 are built and checked, not yet tried with glasses.
+Status as of 2026-11-09: phases 1 to 5 are built. On the glasses, tried means on the Meta Ray-Ban Display (A024 phone)
+unless said; Visor's own record is visor/memory/vdk.md.
 
 Parity with Meta's DAT (1.0.1) is a goal: every DAT capability gets a kit equivalent, and `docs/porting-from-dat.md`
 maps all of it (written 2026-11-07 from github.com/meta/meta-wearables-dat-android). Status:
@@ -107,25 +108,31 @@ maps all of it (written 2026-11-07 from github.com/meta/meta-wearables-dat-andro
 | `DeviceSession` and its states | `VisorState` | done |
 | `DeviceSelector` | `glasses.pairs`, `glasses.select` | done |
 | `Device`: battery, charging, don, hinge, link, thermal, display | `glasses.status` | done |
-| Camera stream: quality, frame rate, HEVC or decoded | `camera.live`, `LiveVideoDecoder` | built, not tried on glasses |
+| Camera stream: quality, frame rate, HEVC or decoded | `camera.live`, `LiveVideoDecoder` | built, not tried on glasses (the camera only with the user's go) |
 | Stream audio (PCM) | `camera.live` audio, `LiveAudioDecoder` | built, not tried on glasses |
 | Photo during a stream; `PhotoResolution`, `PhotoQuality` | `camera.live.photo` (HEIC, full size) | built, not tried on glasses |
-| Speech: on-device transcription | `voice.transcripts` | built: headset mic into the phone's recogniser; not tried on glasses |
-| Voice invocations (`LaunchApp`) | `voice.requests` | done |
-| Motion: accelerometer, gyroscope, magnetometer, orientation | `glasses.motion` | API and FakeVisor built; Visor waits on the app-scope session to the DWA (installed on the Display 2026-11-08) |
-| Inputs: nav, select, back, button, capture, drag | `glasses.inputs`, `band.gestures` | built from svc28's touch and button pushes; not tried on glasses |
-| Display: FlexBox, Text, Image, Button, Icon, Video, taps back | `display.layout.*` | API and FakeVisor built; Visor waits on a DWA session (svc7009 + svc6500 display) |
+| Speech: on-device transcription | `voice.transcripts` | Ray-Ban Meta: the headset mic into the phone's recogniser, not tried. The Display: the toolkit app's speech, built 2026-11-09, not tried |
+| Voice invocations (`LaunchApp`) | `voice.requests`, `VoiceLaunch` | done |
+| Motion: accelerometer, gyroscope, magnetometer, orientation | `glasses.motion` | tried: the glasses' data collection daemon (svc1027), nothing on screen |
+| Inputs: nav, select, back, button, capture, drag | `glasses.inputs`, `band.gestures` | tried while a layout shows (the toolkit app's input capability); outside layouts, touchpad taps are not found |
+| Display: FlexBox, Text, Image, Button, Icon, Video, taps back | `display.layout.*` | tried: through Visor's own toolkit session, videos included |
 | `MockDeviceKit` | `FakeVisor` | done; add the new capabilities as they come |
 
-0. Measure on the glasses: band gestures while the Display keeps the band (RELAY lease); whether a Display web
-   app's requests take the IP tunnel or the svc41111 HTTP relay; a Visor-made svc9002 card; touchpad and capture
-   button events on glasses without a display; whether the Display carries a DWA broker.
+Beyond DAT: `display.cards.*` (Briefing cards; cards, details, pages, colours tried, clicks in details not yet),
+`voice.speak` (tried), `settings.*` (tried), `assistant.*`, `notify.post`, `display.prompter.*` (tried), webhooks
+(tried), the network door and MCP, `visor fake` and its simulator.
+
+0. Measure on the glasses, with the user: band gestures while the Display keeps the band (RELAY lease); touchpad
+   and capture button events on glasses without a display (the Gen 2 pair); `assistant.turns` live.
 1. Done: glasses status, camera, captures, band, the Display's prompter; Visor's kit service, consent screen and
    adb socket; the `visor` command; FakeVisor; the sample app.
 2. Done: voice requests and replies in the glasses' own voice, tools for the user's model, notifications on the
-   Display.
+   Display, lines the glasses say unasked.
 3. Done: JSON-RPC over WebSocket, MCP and webhooks on 127.0.0.1:7333 (LAN opt-in) with per-client tokens, the
    raw scope (Developer mode only; 36, 54, 79 and 29 refused), Python and TypeScript clients in `clients/`.
-4. The Display: `visor.js` for web apps through Visor's tunnel, Briefing cards, the band without glasses.
-5. Research: the DWA broker protocol (services 6500 to 6504), for DAT's display components without Meta AI.
+4. The Display: Briefing cards, done. `visor.js` for the Display's web apps is not built: the user stopped the
+   web-app delivery of layouts, do not revive it. The band without glasses waits on the user (pairing the band to
+   the phone alone).
+5. Done: the toolkit session (svc7009 and svc6500 through Visor's own app link), for DAT's display, input and
+   speech capabilities without the Meta AI app.
    Meta's DAT docs: https://wearables.developer.meta.com/docs/develop/dat/getting-started-toolkit

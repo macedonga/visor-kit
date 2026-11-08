@@ -140,9 +140,10 @@ Resample it if your code expects 16 kHz mono.
 | `speech.stop()` | Cancel the collection |
 | `SpeechError.UNAVAILABLE` | `unsupported` with `no_recognizer` |
 
-DAT recognises on the glasses; the VDK's text comes from the phone's speech recogniser, fed by the glasses'
-microphones as a Bluetooth headset, so music pauses while transcripts run. A confidence comes when the recogniser
-gives one.
+On the Meta Ray-Ban Display the VDK recognises on the glasses as DAT does, with the toolkit app's speech, in the
+Display's language. On Ray-Ban Meta glasses, which DAT's speech does not cover, the text comes from the phone's
+speech recogniser, fed by the glasses' microphones as a Bluetooth headset, so music pauses while transcripts run. A
+confidence comes when the recogniser gives one.
 
 ## Voice invocations
 

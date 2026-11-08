@@ -95,4 +95,4 @@ and the touchpad's gestures from a session without the toolkit app, so neither p
    clients, and raw access to the glasses' services for research.
 4. **The Display:** cards on the Display's home, done: [Briefing cards](briefing-cards.md) with details, pages,
    charts, clicks and live updates. Next, the Neural Band as an input device without glasses.
-5. **The Display's toolkit session:** the Display's own speech recognition.
+5. **The Display's toolkit session:** layouts, inputs and the Display's own speech recognition through it, done.

@@ -34,6 +34,9 @@
 - The Display simulator shows the Briefing with the app's cards and opens their details; kit-testing has
   `fake.display.briefingPreview(context)`. The `visor` command: `card FILE`, `call METHOD @FILE` and `-` for
   standard input, `--fake=PORT`, and an error that names the port and the cause when no fake answers.
+- `voice.transcripts` on the Meta Ray-Ban Display, which is no headset to the phone: the Display's own speech
+  recognition through Meta's toolkit app, as DAT's speech, with a Listening screen naming the app when it shows no
+  layout.
 - Docs: [Briefing cards](docs/briefing-cards.md), a guide with recipes (weather, a stocks watchlist, a live timer
   with buttons, photos) that the Android sample runs.
 - `kit-testing` serves FakeVisor's imported captures and live photos to the app under test, with the bytes the
