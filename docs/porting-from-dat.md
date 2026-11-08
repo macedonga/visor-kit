@@ -28,6 +28,7 @@ The two kits differ in shape more than in reach:
 | `Wearables.RequestPermissionContract()`, `Permission.CAMERA` | `RequestScopes()` with `Scope.CAMERA` |
 | `Permission.MICROPHONE` | `Scope.MICROPHONE` for transcripts; the camera's live audio needs `Scope.CAMERA` only |
 | `Wearables.checkPermissionStatus(permission)` | `visor.scopes()` |
+| "Allow once" and "Allow always" | "Only this time" and "Allow" on Visor's consent screen |
 | `Wearables.openFirmwareUpdate(activity)` | No equivalent |
 
 ```kotlin
@@ -133,13 +134,15 @@ Resample it if your code expects 16 kHz mono.
 | DAT | VDK |
 |---|---|
 | `session.addSpeech()`, `speech.start()` | `visor.voice.transcripts(TranscriptRequest { language = "en-US" })`, collected |
-| `speech.transcriptions`: `TranscriptionResult(text, isFinal, confidence)` | `Transcript(text, language, time)`, one finished utterance each |
+| `speech.transcriptions`: `TranscriptionResult(text, isFinal, confidence)` | `Transcript(text, language, time, partial, confidence)` |
+| Partial results, replaced until `isFinal` | `TranscriptRequest { partials = true }`; `partial` is `!isFinal` |
 | `speech.locale` | `TranscriptRequest.language`, or the phone's language |
 | `speech.stop()` | Cancel the collection |
 | `SpeechError.UNAVAILABLE` | `unsupported` with `no_recognizer` |
 
-The VDK sends only finished utterances, without a confidence. The phone's speech recogniser makes the text from
-the glasses' microphone as a Bluetooth headset, so music pauses while transcripts run.
+DAT recognises on the glasses; the VDK's text comes from the phone's speech recogniser, fed by the glasses'
+microphones as a Bluetooth headset, so music pauses while transcripts run. A confidence comes when the recogniser
+gives one.
 
 ## Voice invocations
 
@@ -148,26 +151,27 @@ the glasses' microphone as a Bluetooth headset, so music pauses while transcript
 | `Wearables.startVoiceInvocationsStream(selector)` | `visor.voice.requests(phrases)`, collected |
 | `LaunchApp` | `VoiceRequest(id, text, phrase, intent)` |
 | `invocation.responseHandle.sendSuccess(...)` | `visor.voice.reply(request, text)`: the glasses say `text` |
-| `isVoiceInvocationsIntent(intent)` | Nothing: the request comes to the running flow |
+| `isVoiceInvocationsIntent(intent)` | `VoiceLaunch.request(intent)`, for an activity that declares its phrases |
+| The app name as the keyword, set in the developer centre | Phrases in the activity's `com.macedonga.visor.kit.VOICE_PHRASES` meta-data |
 
-DAT opens the app when the wearer names it. The VDK sends the question itself to the app whose phrase it holds,
-and the app answers in the glasses' voice. Beyond DAT, `visor.assistant.tools(...)` gives the assistant's model
-tools to call while it answers.
+DAT opens the app when the wearer names it. The VDK does too, for an activity that declares its phrases, and sends
+the question itself to the app, which answers in the glasses' voice. Beyond DAT, `visor.assistant.tools(...)`
+gives the assistant's model tools to call while it answers.
 
 ## Inputs
 
 | DAT | VDK |
 |---|---|
-| `session.addInputs(InputsConfiguration(sources))` | `visor.glasses.inputs`, collected, scope `inputs` |
-| `InputEvent.Select` | `touchpad` `tap` |
-| `InputEvent.Nav(direction)` | `touchpad` `swipe_forward` or `swipe_backward` |
-| `InputEvent.Drag(...)` | `touchpad` `slide_forward` or `slide_backward`, between `touch` and `release` |
+| `session.addInputs(InputsConfiguration(sources, consumeBack))` | `visor.glasses.inputs(InputsRequest { sources = ...; keepBack = true })`, collected, scope `inputs` |
+| `InputEvent.Select` | `select` on the Display; on other glasses `touchpad` `double_tap`, as DAT reads it |
+| `InputEvent.Nav(direction)` | `nav_up`, `nav_down`, `nav_left`, `nav_right` on the Display; on other glasses `touchpad` `swipe_forward` or `swipe_backward` |
+| `InputEvent.Drag(action, x, y, dx, dy)` | `drag_start`, `drag_move`, `drag_end` with `x`, `y`, `dx`, `dy` on the Display; on other glasses `slide_forward` or `slide_backward`, between `touch` and `release` |
 | `InputEvent.Capture(CapturePressType.SHORT_PRESS)`, `HOLD`, `DOUBLE_PRESS` | `capture_button` `press`, `long_press`, `double_press` |
 | `InputEvent.Button(ButtonType.ACTION)` | `action_button` `press`, `release`, `long_release` |
-| `InputEvent.Back` | No touchpad gesture means back on these glasses: pick one, such as `double_tap` |
+| `InputEvent.Back` | `back` on the Display; no gesture means back on other glasses |
 | `InputSource.CAPTOUCH`, `CAPTURE_BUTTON`, `ACTION_BUTTON` | `InputSource.TOUCHPAD`, `CAPTURE_BUTTON`, `ACTION_BUTTON` |
-| `consumeBack = true` | Not possible: the glasses still act on every input |
-| Neural Band sources | `visor.band.gestures`, scope `band`: every gesture, not only navigation |
+| `InputSource.NEURAL_BAND`, `NEURAL_BAND_DRAG` | `InputSource.BAND`; every band gesture is also on `visor.band.gestures`, scope `band` |
+| `consumeBack = true` | `keepBack = true`, on the Display only: other glasses still act on every input |
 
 ## Motion
 
@@ -179,24 +183,31 @@ tools to call while it answers.
 | `MotionSource.GLASSES`, `NEURAL_BAND` | `MotionSource.GLASSES`, `BAND` |
 | `MotionError.SENSOR_UNAVAILABLE` | the stream ends with `unsupported` |
 
-> Visor does not serve motion yet: it will once it can open a session with the Display's toolkit app, as it will
-> for layouts. FakeVisor serves it now: `fake.glasses.motion(...)`.
+> On the glasses, Visor serves motion once it opens the Display's toolkit session, as DAT does. FakeVisor serves it
+> now: `fake.glasses.motion(...)`, or DAT's motion CSV with `fake.glasses.playMotion(...)`.
 
 ## Display
 
 | DAT | VDK |
 |---|---|
 | `display.sendContent { flexBox { ... } }` | `visor.display.layout.show(Layout { ... })` |
-| `flexBox(direction = Direction.COLUMN)`, `ROW` | `column { }`, `row { }` |
-| `text(..., style = TextStyle.HEADING)` | `text("...") { style = LayoutStyle.HEADING }` |
-| `image(uri = ...)`, `image(bitmap = ...)` | `image(url)`: an `https://` URL or a `data:` URI |
-| `button(label, onClick = ...)` | `button(id, label)`, and its clicks on `visor.display.layout.clicks` |
+| `flexBox(direction = Direction.COLUMN)`, `ROW`, `COLUMN_REVERSE`, `ROW_REVERSE` | `column { }`, `row { }`, with `reverse = true` |
+| `flexBox(gap, alignment, crossAlignment, wrap, padding, paddingTop, ...)` | `gap`, `align`, `crossAlign`, `wrap`, `padding`, `paddingTop`, ... |
+| `flexBox(background = FlexBoxBackground.CARD, onClick = ...)` | `card = true`, `id = "..."` |
+| `flexGrow`, `flexShrink`, `alignSelf` on any element | `grow`, `shrink`, `alignSelf` |
+| `text(..., style = TextStyle.HEADING, color = TextColor.SECONDARY)` | `text("...") { style = LayoutStyle.HEADING; color = LayoutColor.SECONDARY }` |
+| `image(uri = ..., size = ImageSize.ICON, cornerRadius = CornerRadius.SMALL)` | `image(url) { size = LayoutImageSize.ICON; corners = LayoutCorners.SMALL }`: an `https://` URL or a `data:` URI |
+| `image(bitmap = ...)` | `image("data:image/png;base64,...")` |
+| `icon(IconName.HEART, IconStyle.OUTLINE)` | `icon(LayoutIconName.HEART) { style = LayoutStyle.OUTLINE }`, the same names |
+| `button(label, style, iconName, onClick, actionRole = ActionRole.PRIMARY)` | `button(id, label) { style = ...; icon = ...; primary = true }`, and its clicks on `visor.display.layout.clicks` |
+| `buttonGroup(alignment) { button(...) }` | `buttons { align = ...; button(...) }` |
+| `video(VideoPlayer(VideoSource.Url(url), VideoCodec.MP4))`, `player.state` | `video(url) { controls = true }`, alone in its layout, and `visor.display.layout.video` |
+| `display.state`, back ending the display | `visor.display.layout.state`, with `reason` `back` |
 | `display.clearDisplay()` | `visor.display.layout.close()` |
-| `icon(...)`, `video(...)` | Not yet |
 
-Visor does not show layouts yet: it will once it can open a session with the Display's toolkit app, as DAT does.
-FakeVisor serves them already. Until then the VDK shows text on the teleprompter (`visor.display.prompter`) and
-notifications (`visor.notify`).
+On the glasses, Visor shows layouts once it opens the Display's toolkit session, as DAT does, and draws them with
+the same rules as DAT's own builder. FakeVisor, `visor fake` and its Display simulator serve them now. Meanwhile the
+VDK shows text on the teleprompter (`visor.display.prompter`) and notifications (`visor.notify`).
 
 ## Testing
 
@@ -209,9 +220,12 @@ notifications (`visor.notify`).
 | `fold()`, `unfold()` | `fake.glasses.folded` |
 | `setBatteryLevel`, `setChargingState`, `setThermalLevel` | `fake.glasses.battery`, `charging`, `thermal` |
 | `permissions.set(Permission.CAMERA, PermissionStatus.Denied)` | `fake.granted = fake.granted - Scope.CAMERA` |
-| `services.camera.setCameraFeed(uri)` | `fake.live.sendVideoConfig(...)`, `sendVideo(...)` |
-| `services.captouch.tap()`, `services.input.select(...)` | `fake.glasses.input(InputSource.TOUCHPAD, InputAction.TAP)` |
-| `services.speech.simulateTranscription(text, ...)` | `fake.voice.say(text)` |
+| `services.camera.setCameraFeed(uri)` | `fake.live.play(stream, codec, width, height, fps, loop)`, or `sendVideoConfig(...)` and `sendVideo(...)` |
+| `services.motion.setMotionFeed(csv)` | `fake.glasses.playMotion(reader, loop)`, DAT's CSV as it is |
+| `services.captouch.tap()`, `services.input.select(...)` | `fake.glasses.input(InputSource.TOUCHPAD, InputAction.TAP)`, `InputAction.SELECT` |
+| `services.display` and the Display simulator in Chrome | `fake.display.layout`, `click(id)`, `back()`, and the simulator `visor fake` serves at `/display` |
+| `createPreviewView()` | `fake.display.preview(context)` |
+| `services.speech.simulateTranscription(text, ...)` | `fake.voice.say(text)`, or `say(text, partial, confidence)` |
 | `services.voiceInvocation.simulateLaunchAppAction()` | `fake.voice.ask(question)` |
 | `startTestServer(port)` | `visor simulate` and `visor inject` from a computer, against the real Visor |
 

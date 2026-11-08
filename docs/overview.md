@@ -63,21 +63,27 @@ Visor instead, so the trade-offs differ:
 | | Meta's toolkit | VDK |
 |---|---|---|
 | Needs | The Meta AI app, a Meta account, registration | Visor, and the person's consent |
-| Gating | Meta can turn features off per user; several can't be published yet | None |
+| Gating | Meta can turn features off per user; photos, speech, inputs and motion are Beta and can't be published yet | None |
 | Telemetry | Crash reports and analytics on by default | None |
-| Camera | A video stream up to 720p over Bluetooth | A live stream up to 1080p at 30 frames over Wi-Fi Direct, encoded or decoded, with the microphones; photos and videos, imported over Wi-Fi Direct |
-| Neural Band | Navigation events only | Every gesture as the band reports it, and vibration |
-| Voice | "Hey Meta" can open an app | Questions that name an app go to it, answered in the glasses' own voice; tools for the model |
-| Display | Layouts of text, images, buttons and video | The teleprompter and notifications today; more on the roadmap |
+| Permissions | Allow once or always, in the Meta AI app | Allow, or only this time, on Visor's screen; taken back in Visor's settings |
+| Camera | A video stream up to 720p over Bluetooth; photos up to 4032 x 3024 | A live stream up to 1080p at 30 frames over Wi-Fi Direct, encoded or decoded, with the microphones; full-size photos and videos, imported over Wi-Fi Direct |
+| Speech | The glasses' own recognition, with partial results | The phone's recogniser on the glasses' microphones, with partial results and a confidence |
+| Inputs | Navigation, select, back and drags, from the touchpad and the band | Every touch and press on every model, and the Display's navigation |
+| Motion | Accelerometer, gyroscope, magnetometer and orientation, 5 to 60 Hz | The same samples and rates |
+| Neural Band | Navigation events | Every gesture as the band reports it, and vibration |
+| Voice | "Hey Meta, start {app}" opens an app | Questions that name an app go to it, answered in the glasses' own voice; a phrase also starts an app; tools for the model |
+| Display | Layouts of boxes, text, images, icons, buttons, and a video | The same layouts, from the same toolkit app; the teleprompter and notifications |
 | Settings | No | Every setting the glasses keep, readable, and the everyday ones writable |
 | The assistant's history | No | Every question and answer, as they come and from the phone's history |
-| AI agents | No | An MCP server on the phone: an agent on a computer can use the glasses |
-| Other languages | Android and iOS | Any language with WebSocket or HTTP, with clients for Python and TypeScript |
+| AI tools | A docs search over MCP; plugins and rules for coding assistants | A docs search over MCP; a plugin and guidance for coding assistants; and an MCP server on the phone, so an agent can use the glasses |
+| Other languages | Android and iOS | Android, and any language with WebSocket or HTTP, with clients for Python and TypeScript; no iOS, as Visor runs on Android |
 | From a computer | No | The `visor` command, through adb: call, watch, trace, simulate, record and replay |
-| Without the glasses | A mock device in your tests | FakeVisor in your tests, and `visor fake`: a fake Visor on your computer for every language and for MCP |
+| Without the glasses | The Mock Device Kit in tests, with a camera from a video file and motion from a CSV; a Display simulator in Chrome | FakeVisor in tests, with the same feeds; `visor fake` on a computer for every language and MCP, with a Display simulator in any browser and a preview in the app; record and replay |
 
-DAT does some things the VDK does not do yet: live motion data, and full layouts on the Display. Those are on the
-roadmap below. [Porting from Meta's DAT](porting-from-dat.md) maps each part of DAT to the VDK.
+On the glasses, motion, layouts, the Display's navigation and its own speech recognition need the session that
+DAT opens with Meta's toolkit app on the Display. Visor installs that app and speaks its protocol; it serves these
+once it can open the session. Until then they run on FakeVisor, `visor fake` and the simulator. [Porting from
+Meta's DAT](porting-from-dat.md) maps each part of DAT to the VDK.
 
 ## Roadmap
 
@@ -89,4 +95,5 @@ roadmap below. [Porting from Meta's DAT](porting-from-dat.md) maps each part of 
    clients, and raw access to the glasses' services for research.
 4. **The Display:** a JavaScript library for the Display's web apps, cards on the Display's home, and the Neural
    Band as an input device without glasses.
-5. **Research:** the protocol of Meta's on-glasses toolkit program, for full layouts on the Display.
+5. **The Display's toolkit session:** motion, layouts with video, the Display's navigation and its speech
+   recognition, through the toolkit app Visor installs on the Display.
