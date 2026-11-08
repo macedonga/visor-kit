@@ -39,6 +39,7 @@ public final class com/macedonga/visor/kit/testing/FakeFeedsKt {
 }
 
 public final class com/macedonga/visor/kit/testing/FakeGlasses {
+	public final fun add-PoqYJ58 (Ljava/lang/String;[BLjava/lang/String;)Lcom/macedonga/visor/kit/protocol/Capture;
 	public final fun add-xT_bGyA (Ljava/lang/String;)Lcom/macedonga/visor/kit/protocol/Capture;
 	public final fun drag-QrAvdTI (Ljava/lang/String;Ljava/lang/String;DDDD)V
 	public final fun getBattery ()Ljava/lang/Integer;
@@ -74,6 +75,8 @@ public final class com/macedonga/visor/kit/testing/FakeLive {
 	public final fun getConfig ()Lcom/macedonga/visor/kit/protocol/LiveConfig;
 	public final fun getPhotos ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getWatching ()Lkotlinx/coroutines/flow/StateFlow;
+	public final fun photo ([BLjava/lang/String;)V
+	public static synthetic fun photo$default (Lcom/macedonga/visor/kit/testing/FakeLive;[BLjava/lang/String;ILjava/lang/Object;)V
 	public final fun sendAudio ([BJ)V
 	public final fun sendAudioConfig ([BII)V
 	public final fun sendVideo ([BJZ)V

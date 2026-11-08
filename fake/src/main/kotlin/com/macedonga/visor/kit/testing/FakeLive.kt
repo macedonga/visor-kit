@@ -104,16 +104,24 @@ public class FakeLive internal constructor(private val glasses: FakeGlasses) {
             .filter { config.audio || it.first.kind != LiveKind.AUDIO }
     }
 
+    @Volatile
+    private var photo: Pair<String, ByteArray> = FakeFiles.PNG to FakeFiles.PLACEHOLDER
+
+    /** The photo the next live photos bring, `image/heic` as the glasses take them; a 1x1 PNG until set. */
+    public fun photo(bytes: ByteArray, mime: String = HEIC) {
+        photo = mime to bytes
+    }
+
     internal fun photo(): LivePhoto {
         if (!_watching.value) throw KitException(ErrorCode.BUSY, "The fake Live is not running.")
         val n = _photos.updateAndGet { it + 1 }
-        return LivePhoto(HEIC, uri = "content://$AUTHORITY/live/$n")
+        val (mime, bytes) = photo
+        return LivePhoto(mime, uri = FakeFiles.put("live/$n", mime, bytes))
     }
 
     private companion object {
         const val HEVC = "video/hevc"
         const val AAC = "audio/mp4a-latm"
         const val HEIC = "image/heic"
-        const val AUTHORITY = "com.macedonga.visor.kit.testing"
     }
 }

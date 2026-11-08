@@ -178,7 +178,7 @@ What the fake offers:
 | | |
 |---|---|
 | `fake.granted` | The scopes the fake person granted; all at first. Taking one back ends the streams that need it. |
-| `fake.glasses` | `paired`, `connected`, `display`, `model`, `battery`, `charging`, `worn`, `folded`, `thermal`: each change reaches `glasses.status`. `add(type)` puts a capture on the fake glasses. `input(source, action)` sends a touch or a press. |
+| `fake.glasses` | `paired`, `connected`, `display`, `model`, `battery`, `charging`, `worn`, `folded`, `thermal`: each change reaches `glasses.status`. `add(type)` puts a capture on the fake glasses, and `add(type, bytes, mime)` one with those bytes. `input(source, action)` sends a touch or a press. |
 | `fake.band` | `paired`, `battery`, `charging`, `leftHanded`; `gesture(...)` sends a gesture; `buzzes` lists the buzzes asked for. |
 | `fake.display` | `prompter`: the script on the teleprompter, null while closed; `layout`: the layout shown; `click(id)` taps one of its elements. |
 | `fake.notify` | `shown`: the app's notifications on the Display, by id. |
@@ -186,10 +186,12 @@ What the fake offers:
 | `fake.assistant` turns | `turn(question, answer)` adds a turn the app gets on `assistant.turns`; `history` lists them. |
 | `fake.assistant` | `tools` the app offers; `call(tool, arguments)` calls one as the model would and returns the answer. |
 | `fake.voice` | `ask(question)` asks as the wearer would and returns the app's reply; `say(text)` is an utterance the glasses hear, for `voice.transcripts`; `listening` counts the apps that collect transcripts. |
-| `fake.live` | `watching` and `config` while the app collects `camera.live`; `sendVideoConfig`, `sendVideo`, `sendAudioConfig`, `sendAudio` send samples; `stop()` ends it as the person would; `photos` counts live photos. |
+| `fake.live` | `watching` and `config` while the app collects `camera.live`; `sendVideoConfig`, `sendVideo`, `sendAudioConfig`, `sendAudio` send samples; `stop()` ends it as the person would; `photos` counts live photos, and `photo(bytes, mime)` sets what they hold. |
 | `fake.calls` | The name of every method the app called, in order. |
 
-Photos taken on the fake have `content://com.macedonga.visor.kit.testing/captures/...` URIs, which open nothing.
+In an app with `kit-testing`, the fake's imported captures and live photos open with the app's `ContentResolver`,
+as Visor's do: their `content://` URIs point at a provider that `kit-testing` adds to the app. Without bytes given,
+each holds a 1x1 PNG. In a plain JVM test the URIs open nothing.
 
 The fake films nothing: your test sends each live sample. Wait until the app watches, or the sample is lost:
 

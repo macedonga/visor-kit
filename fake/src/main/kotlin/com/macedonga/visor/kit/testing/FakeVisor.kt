@@ -362,10 +362,17 @@ public class FakeGlasses internal constructor() {
         return samples.onStart { _motionRate.value = request.rateHz }.onCompletion { _motionRate.value = null }
     }
 
+    // The bytes each capture imports as; a 1x1 PNG for one added without them.
+    private val contents = HashMap<String, Pair<String, ByteArray>>()
+
     /** Puts a capture of [type] on the fake glasses, as if their button took it, and returns it. */
-    public fun add(type: CaptureType): Capture = synchronized(captures) {
-        val capture = Capture(id = "${type.id}-${++next}", type = type, time = System.currentTimeMillis(), size = SIZE)
+    public fun add(type: CaptureType): Capture = add(type, FakeFiles.PLACEHOLDER, FakeFiles.PNG)
+
+    /** Puts a capture of [type] holding [bytes], of type [mime], on the fake glasses, and returns it. */
+    public fun add(type: CaptureType, bytes: ByteArray, mime: String): Capture = synchronized(captures) {
+        val capture = Capture(id = "${type.id}-${++next}", type = type, time = System.currentTimeMillis(), size = bytes.size.toLong())
         captures[capture.id] = capture
+        contents[capture.id] = mime to bytes
         capture
     }.also { available.tryEmit(it) }
 
@@ -376,9 +383,11 @@ public class FakeGlasses internal constructor() {
             val capture = captures[id]
                 ?: throw KitException(ErrorCode.FAILED, "The fake glasses have no capture $id.", reason = "not_found")
             capture.uri?.let { return capture }
-            Capture(capture.id, capture.type, capture.time, capture.size, "content://$AUTHORITY/captures/$id").also { captures[id] = it }
+            val (mime, bytes) = contents[id] ?: (FakeFiles.PNG to FakeFiles.PLACEHOLDER)
+            Capture(capture.id, capture.type, capture.time, capture.size, FakeFiles.put("captures/$id", mime, bytes)).also { captures[id] = it }
         }
-        progress.tryEmit(CaptureProgress(id, SIZE, SIZE))
+        val size = done.size ?: 0L
+        progress.tryEmit(CaptureProgress(id, size, size))
         imported.tryEmit(done)
         return done
     }
@@ -413,11 +422,6 @@ public class FakeGlasses internal constructor() {
     }
 
     private fun <T> published(initial: T) = Delegates.observable(initial) { _, _, _ -> status.value = build() }
-
-    private companion object {
-        const val AUTHORITY = "com.macedonga.visor.kit.testing"
-        const val SIZE = 1024L
-    }
 }
 
 /** The fake Neural Band. */

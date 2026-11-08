@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- FakeVisor's captures and live photos, for the app under test only. -->
+        <provider
+            android:name="com.macedonga.visor.kit.testing.FakeFilesProvider"
+            android:authorities="${applicationId}.visorkit.fake"
+            android:exported="false" />
+    </application>
+</manifest>
