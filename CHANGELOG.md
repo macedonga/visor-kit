@@ -14,6 +14,8 @@
 - `glasses.motion`, with the `motion` scope: the accelerometer, gyroscope, magnetometer and orientation at 5 to 60
   samples a second. Visor reads them from the glasses' own sensor service, with nothing on their screen, and fuses
   the orientation on the phone; FakeVisor also serves the band's motion.
+- `display.cards.set` and `display.cards.remove`: an app's own cards on the Display home's Briefing, beside Meta's
+  weather and sports, kept until the app removes them. FakeVisor keeps them in `fake.display.cards`.
 - `kit-testing` serves FakeVisor's imported captures and live photos to the app under test, with the bytes the
   test gives them: `fake.glasses.add(type, bytes, mime)`, `fake.live.photo(bytes, mime)`.
 - `voice.speak`, with the `voice` scope: the glasses say a line in their own voice, unasked. On the Display;

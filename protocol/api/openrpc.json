@@ -322,6 +322,72 @@
             "x-since": 1
         },
         {
+            "name": "display.cards.set",
+            "summary": "Puts a card of the app's on the Display home's Briefing.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "name",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "icon",
+                    "required": false,
+                    "schema": {
+                        "type": "string",
+                        "title": "LayoutIconName"
+                    }
+                },
+                {
+                    "name": "layout",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/components/schemas/Layout"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "display",
+            "x-since": 1
+        },
+        {
+            "name": "display.cards.remove",
+            "summary": "Takes one of the app's cards off the Display home's Briefing.",
+            "paramStructure": "by-name",
+            "params": [
+                {
+                    "name": "id",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "result": {
+                "name": "result",
+                "schema": {
+                    "type": "object"
+                }
+            },
+            "x-scope": "display",
+            "x-since": 1
+        },
+        {
             "name": "voice.reply",
             "summary": "Answers a question the wearer asked the app, in the glasses' own voice.",
             "paramStructure": "by-name",
@@ -1948,6 +2014,17 @@
                 "required": [
                     "paired",
                     "link"
+                ]
+            },
+            "Layout": {
+                "type": "object",
+                "properties": {
+                    "root": {
+                        "$ref": "#/components/schemas/LayoutNode"
+                    }
+                },
+                "required": [
+                    "root"
                 ]
             },
             "LayoutClick": {

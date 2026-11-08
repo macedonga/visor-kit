@@ -49,7 +49,7 @@ The glasses' own safeguards stay in place: the capture light turns on for every 
 | [Camera](camera-and-captures.md) | `camera.photo`, `camera.video.start`, `camera.video.stop`, `camera.live`, `camera.live.photo` | All |
 | [Captures](camera-and-captures.md) | `captures.list`, `captures.import`, `captures.available`, `captures.progress`, `captures.imported`, `captures.failed` | All |
 | [Neural Band](neural-band.md) | `band.status`, `band.gestures`, `band.buzz` | Meta Ray-Ban Display with a Neural Band |
-| [Display](display.md) | `display.prompter.show`, `display.prompter.close` | Meta Ray-Ban Display |
+| [Display](display.md) | `display.prompter.show`, `display.prompter.close`, `display.layout.*`, `display.cards.set`, `display.cards.remove` | Meta Ray-Ban Display |
 | [Voice](voice-and-assistant.md) | `voice.requests`, `voice.reply`, `voice.speak`, `voice.transcripts` | All; `voice.speak` on the Meta Ray-Ban Display, soon |
 | [Assistant](voice-and-assistant.md) | `assistant.tools`, `assistant.tools.answer`, `assistant.turns`, `assistant.history` | All |
 | [Notifications](voice-and-assistant.md) | `notify.post`, `notify.remove` | Meta Ray-Ban Display |

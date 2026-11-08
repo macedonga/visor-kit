@@ -132,6 +132,25 @@ public object Methods {
         Layout.serializer(), Unit.serializer(),
     )
 
+    /**
+     * Puts a card on the Display home's Briefing, after Meta's own, or replaces the app's card with the same id. It
+     * stays, whether or not the app runs, until [DISPLAY_CARDS_REMOVE]; the Display shows a change within about a
+     * minute. Fails with [ErrorCode.INVALID_PARAMS] for an empty id or name, or a name over [BriefingCard.MAX_NAME]
+     * characters.
+     */
+    public val DISPLAY_CARDS_SET: Method<BriefingCard, Unit> = Method(
+        "display.cards.set", Scope.DISPLAY, 1,
+        "Puts a card of the app's on the Display home's Briefing.",
+        BriefingCard.serializer(), Unit.serializer(),
+    )
+
+    /** Takes the app's card [CardRemoval.id] off the Briefing; nothing happens when there is none. */
+    public val DISPLAY_CARDS_REMOVE: Method<CardRemoval, Unit> = Method(
+        "display.cards.remove", Scope.DISPLAY, 1,
+        "Takes one of the app's cards off the Display home's Briefing.",
+        CardRemoval.serializer(), Unit.serializer(),
+    )
+
     /** Empties the page, and stops serving it. The wearer leaves it as any other app. */
     public val DISPLAY_LAYOUT_CLOSE: Method<Unit, Unit> = Method(
         "display.layout.close", Scope.DISPLAY, 1,
@@ -233,6 +252,7 @@ public object Methods {
         CAPTURES_LIST, CAPTURES_IMPORT,
         BAND_STATUS, BAND_BUZZ,
         DISPLAY_PROMPTER_SHOW, DISPLAY_PROMPTER_CLOSE, DISPLAY_LAYOUT_SHOW, DISPLAY_LAYOUT_CLOSE,
+        DISPLAY_CARDS_SET, DISPLAY_CARDS_REMOVE,
         VOICE_REPLY, VOICE_SPEAK,
         ASSISTANT_TOOLS_ANSWER, ASSISTANT_HISTORY,
         NOTIFY_POST, NOTIFY_REMOVE,

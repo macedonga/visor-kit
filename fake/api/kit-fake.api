@@ -25,6 +25,7 @@ public final class com/macedonga/visor/kit/testing/FakeBand {
 public final class com/macedonga/visor/kit/testing/FakeDisplay {
 	public final fun back ()V
 	public final fun click (Ljava/lang/String;)V
+	public final fun getCards ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getLayout ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getPrompter ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getPrompterStyle ()Lcom/macedonga/visor/kit/protocol/PrompterStyle;

@@ -94,6 +94,34 @@ public final class com/macedonga/visor/kit/protocol/BandStatus$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
+public final class com/macedonga/visor/kit/protocol/BriefingCard {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/BriefingCard$Companion;
+	public static final field MAX_NAME I
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/macedonga/visor/kit/protocol/Layout;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getIcon-oySQJrQ ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/String;
+	public final fun getLayout ()Lcom/macedonga/visor/kit/protocol/Layout;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/BriefingCard$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/BriefingCard$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/BriefingCard;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/BriefingCard;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/BriefingCard$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
 public final class com/macedonga/visor/kit/protocol/BuzzRequest {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/BuzzRequest$Companion;
 	public static final field DEFAULT_DURATION_MS I
@@ -253,6 +281,34 @@ public final class com/macedonga/visor/kit/protocol/CaptureType$Companion {
 	public final fun getPHOTO-AKd1Xv4 ()Ljava/lang/String;
 	public final fun getVIDEO-AKd1Xv4 ()Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/CardRemoval {
+	public static final field Companion Lcom/macedonga/visor/kit/protocol/CardRemoval$Companion;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final synthetic class com/macedonga/visor/kit/protocol/CardRemoval$$serializer : kotlinx/serialization/internal/GeneratedSerializer {
+	public static final field INSTANCE Lcom/macedonga/visor/kit/protocol/CardRemoval$$serializer;
+	public final fun childSerializers ()[Lkotlinx/serialization/KSerializer;
+	public final fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Lcom/macedonga/visor/kit/protocol/CardRemoval;
+	public synthetic fun deserialize (Lkotlinx/serialization/encoding/Decoder;)Ljava/lang/Object;
+	public final fun getDescriptor ()Lkotlinx/serialization/descriptors/SerialDescriptor;
+	public final fun serialize (Lkotlinx/serialization/encoding/Encoder;Lcom/macedonga/visor/kit/protocol/CardRemoval;)V
+	public synthetic fun serialize (Lkotlinx/serialization/encoding/Encoder;Ljava/lang/Object;)V
+	public fun typeParametersSerializers ()[Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/CardRemoval$Companion {
+	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/CardsKt {
+	public static final fun BriefingCard-VHGnYE0 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lcom/macedonga/visor/kit/protocol/BriefingCard;
+	public static synthetic fun BriefingCard-VHGnYE0$default (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/macedonga/visor/kit/protocol/BriefingCard;
 }
 
 public final class com/macedonga/visor/kit/protocol/DisplayKt {
@@ -1827,6 +1883,8 @@ public final class com/macedonga/visor/kit/protocol/Methods {
 	public final fun getCAMERA_VIDEO_STOP ()Lcom/macedonga/visor/kit/protocol/Method;
 	public final fun getCAPTURES_IMPORT ()Lcom/macedonga/visor/kit/protocol/Method;
 	public final fun getCAPTURES_LIST ()Lcom/macedonga/visor/kit/protocol/Method;
+	public final fun getDISPLAY_CARDS_REMOVE ()Lcom/macedonga/visor/kit/protocol/Method;
+	public final fun getDISPLAY_CARDS_SET ()Lcom/macedonga/visor/kit/protocol/Method;
 	public final fun getDISPLAY_LAYOUT_CLOSE ()Lcom/macedonga/visor/kit/protocol/Method;
 	public final fun getDISPLAY_LAYOUT_SHOW ()Lcom/macedonga/visor/kit/protocol/Method;
 	public final fun getDISPLAY_PROMPTER_CLOSE ()Lcom/macedonga/visor/kit/protocol/Method;

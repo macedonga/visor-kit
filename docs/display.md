@@ -98,6 +98,30 @@ wearer goes back.
 In a test, `fake.display.layout` holds the layout shown, `fake.display.click(id)` clicks an element,
 `fake.display.back()` goes back, and `fake.display.video(LayoutVideoState.ENDED, null)` moves the video along.
 
+## Cards on the Briefing
+
+The Display's home has a Briefing panel with Meta's glanceable cards: reminders, weather, sports and stocks. An app
+can keep cards of its own there, after Meta's. A card stays, whether or not the app runs, until the app removes it,
+so the wearer sees it whenever they look at the Briefing. Meta's toolkit has nothing like it.
+
+```kotlin
+visor.display.cards.set("coffee", "Coffee", LayoutIconName.CLOCK) {
+    row {
+        gap = 12
+        crossAlign = LayoutAlign.CENTER
+        icon(LayoutIconName.CLOCK)
+        text("Coffee") { style = LayoutStyle.HEADING }
+    }
+    text("Ready in 2 minutes")
+}
+visor.display.cards.remove("coffee")
+```
+
+A card is a layout, drawn in the Briefing's own card style and padded as Meta's cards are unless it sets its
+padding. Setting a card with the same id replaces it; the Display shows the change the next time it asks, within
+about a minute. The name and the icon show in the Display's list of Briefing cards, where the wearer can turn a card
+off. A card shows and takes no clicks: buttons and videos do nothing on the Briefing.
+
 ## JSON-RPC
 
 | | Name | Params | Answer |
@@ -106,6 +130,8 @@ In a test, `fake.display.layout` holds the layout shown, `fake.display.click(id)
 | Method | `display.prompter.close` | none | `{}` |
 | Method | `display.layout.show` | `root`: a `LayoutNode` tree | `{}` |
 | Method | `display.layout.close` | none | `{}` |
+| Method | `display.cards.set` | `id`, `name`, `icon` (default `bell`), `layout` | `{}` |
+| Method | `display.cards.remove` | `id` | `{}` |
 | Topic | `display.layout.clicks` | none | `LayoutClick`: `id`, `time` |
 | Topic | `display.layout.state` | none | `LayoutState`: `showing`, `reason`, `time` |
 | Topic | `display.video` | none | `LayoutVideoEvent`: `state`, `error`, `time` |

@@ -1,7 +1,11 @@
 package com.macedonga.visor.kit
 
+import com.macedonga.visor.kit.protocol.BriefingCard
+import com.macedonga.visor.kit.protocol.CardRemoval
 import com.macedonga.visor.kit.protocol.Layout
+import com.macedonga.visor.kit.protocol.LayoutBox
 import com.macedonga.visor.kit.protocol.LayoutClick
+import com.macedonga.visor.kit.protocol.LayoutIconName
 import com.macedonga.visor.kit.protocol.LayoutState
 import com.macedonga.visor.kit.protocol.LayoutVideoEvent
 import com.macedonga.visor.kit.protocol.Methods
@@ -15,6 +19,27 @@ import kotlinx.coroutines.flow.Flow
 public class Display internal constructor(visor: Visor) {
     public val prompter: Prompter = Prompter(visor)
     public val layout: DisplayLayout = DisplayLayout(visor)
+    public val cards: DisplayCards = DisplayCards(visor)
+}
+
+/**
+ * The app's cards on the Display home's Briefing, beside Meta's weather and sports. A card stays, whether or not the
+ * app runs, until the app removes it; the Display shows a change within about a minute. Cards show, and take no
+ * clicks.
+ *
+ * ```
+ * visor.display.cards.set("coffee", "Coffee") { text("Coffee") { style = LayoutStyle.HEADING }; text("Ready in 2 minutes") }
+ * ```
+ */
+public class DisplayCards internal constructor(private val visor: Visor) {
+    public suspend fun set(card: BriefingCard): Unit = visor.call(Methods.DISPLAY_CARDS_SET, card)
+
+    public suspend fun set(id: String, name: String, block: LayoutBox.() -> Unit): Unit = set(BriefingCard(id, name, block = block))
+
+    public suspend fun set(id: String, name: String, icon: LayoutIconName, block: LayoutBox.() -> Unit): Unit =
+        set(BriefingCard(id, name, icon, block))
+
+    public suspend fun remove(id: String): Unit = visor.call(Methods.DISPLAY_CARDS_REMOVE, CardRemoval(id))
 }
 
 /**

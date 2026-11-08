@@ -35,8 +35,16 @@ public final class com/macedonga/visor/kit/Captures {
 }
 
 public final class com/macedonga/visor/kit/Display {
+	public final fun getCards ()Lcom/macedonga/visor/kit/DisplayCards;
 	public final fun getLayout ()Lcom/macedonga/visor/kit/DisplayLayout;
 	public final fun getPrompter ()Lcom/macedonga/visor/kit/Prompter;
+}
+
+public final class com/macedonga/visor/kit/DisplayCards {
+	public final fun remove (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun set (Lcom/macedonga/visor/kit/protocol/BriefingCard;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun set (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun set-dIgmIfs (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public final class com/macedonga/visor/kit/DisplayLayout {

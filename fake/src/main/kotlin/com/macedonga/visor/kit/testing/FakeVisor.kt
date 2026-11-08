@@ -2,6 +2,7 @@ package com.macedonga.visor.kit.testing
 
 import com.macedonga.visor.kit.KitException
 import com.macedonga.visor.kit.protocol.BandStatus
+import com.macedonga.visor.kit.protocol.BriefingCard
 import com.macedonga.visor.kit.protocol.Capture
 import com.macedonga.visor.kit.protocol.CaptureProgress
 import com.macedonga.visor.kit.protocol.CaptureType
@@ -55,6 +56,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -239,6 +241,16 @@ public class FakeVisor {
             called(Methods.DISPLAY_LAYOUT_CLOSE.name)
             glasses.withDisplay()
             display.showLayout(null)
+        }
+        answer(Methods.DISPLAY_CARDS_SET) { _, card ->
+            called(Methods.DISPLAY_CARDS_SET.name)
+            glasses.withDisplay()
+            display.setCard(card)
+        }
+        answer(Methods.DISPLAY_CARDS_REMOVE) { _, removal ->
+            called(Methods.DISPLAY_CARDS_REMOVE.name)
+            glasses.withDisplay()
+            display.removeCard(removal.id)
         }
         stream(Topics.DISPLAY_LAYOUT_CLICKS) { _, _ -> display.clicks }
         stream(Topics.DISPLAY_LAYOUT_STATE) { _, _ -> display.state }
@@ -549,6 +561,22 @@ public class FakeDisplay internal constructor() {
     public fun video(state: LayoutVideoState, error: String?) {
         checkNotNull(_layout.value?.root?.let(::videoOf)) { "The layout shown has no video." }
         video.tryEmit(LayoutVideoEvent(state, error, System.currentTimeMillis()))
+    }
+
+    private val _cards = MutableStateFlow<List<BriefingCard>>(emptyList())
+
+    /** The app's cards on the Briefing, in the order it first set them. */
+    public val cards: StateFlow<List<BriefingCard>> = _cards.asStateFlow()
+
+    internal fun setCard(card: BriefingCard) {
+        if (card.id.isBlank() || card.name.isBlank() || card.name.length > BriefingCard.MAX_NAME) {
+            throw KitException(ErrorCode.INVALID_PARAMS, "A card needs an id and a name of 1 to ${BriefingCard.MAX_NAME} characters.")
+        }
+        _cards.update { cards -> if (cards.any { it.id == card.id }) cards.map { if (it.id == card.id) card else it } else cards + card }
+    }
+
+    internal fun removeCard(id: String) {
+        _cards.update { cards -> cards.filterNot { it.id == id } }
     }
 
     internal fun showLayout(layout: Layout?) {
