@@ -220,15 +220,19 @@ function wake() {
 }
 document.getElementById("dim").addEventListener("change", wake);
 
-document.querySelectorAll("[data-move]").forEach((b) => b.addEventListener("click", () => { wake(); view?.move(b.dataset.move); }));
-document.getElementById("select").addEventListener("click", () => { wake(); view?.select(); });
-document.getElementById("back").addEventListener("click", () => view?.back());
+// Each move also reaches apps on glasses.inputs, as the Display's touchpad navigation does.
+function move(direction) { wake(); send({ input: `nav_${direction}` }); view?.move(direction); }
+function select() { wake(); send({ input: "select" }); view?.select(); }
+function back() { send({ input: "back" }); view?.back(); }
+document.querySelectorAll("[data-move]").forEach((b) => b.addEventListener("click", () => move(b.dataset.move)));
+document.getElementById("select").addEventListener("click", select);
+document.getElementById("back").addEventListener("click", back);
 document.addEventListener("keydown", (event) => {
   if (event.target.closest("select, input")) return;
-  const move = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" }[event.key];
-  if (move) { wake(); view?.move(move); event.preventDefault(); }
-  else if (event.key === "Enter" || event.key === " ") { wake(); view?.select(); event.preventDefault(); }
-  else if (event.key === "Backspace" || event.key === "Escape") { view?.back(); event.preventDefault(); }
+  const direction = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" }[event.key];
+  if (direction) { move(direction); event.preventDefault(); }
+  else if (event.key === "Enter" || event.key === " ") { select(); event.preventDefault(); }
+  else if (event.key === "Backspace" || event.key === "Escape") { back(); event.preventDefault(); }
 });
 
 document.getElementById("brightness").addEventListener("input", (event) => {

@@ -254,7 +254,8 @@ Open `http://127.0.0.1:7333/display` while `visor fake` runs. It draws the layou
 at 600 by 600, by the same rules Visor uses to send it to the glasses, and it plays the wearer:
 
 - the arrow keys move the focus as the touchpad and the band do, Enter selects, Backspace or Esc goes back; a
-  click on an element selects it too. The app gets the clicks and the `back` as from the glasses;
+  click on an element selects it too. The app gets the clicks and the `back` as from the glasses, and each move on
+  `glasses.inputs` as `nav_*`, `select` and `back` from the touchpad;
 - the Display adds light, so its black is clear: the page draws it over a background (black, a room, a street in
   daylight, a night street, or your webcam) with a brightness slider;
 - a checkbox makes it dim and sleep after 20 and 25 seconds, as the Display does;

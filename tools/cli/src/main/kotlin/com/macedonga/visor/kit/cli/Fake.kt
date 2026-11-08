@@ -297,6 +297,7 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
                 val message = runCatching { KitJson.parseToJsonElement(frame.readText()).jsonObject }.getOrNull() ?: continue
                 runCatching {
                     message["click"]?.jsonPrimitive?.contentOrNull?.let(fake.display::click)
+                    message["input"]?.jsonPrimitive?.contentOrNull?.let { fake.glasses.input(InputSource.TOUCHPAD, InputAction(it)) }
                     if (message["back"] != null) fake.display.back()
                     message["video"]?.jsonObject?.let { video ->
                         val state = video["state"]?.jsonPrimitive?.contentOrNull ?: return@let
