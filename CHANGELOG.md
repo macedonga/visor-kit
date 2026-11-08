@@ -29,5 +29,6 @@
   and its answers, as they come and from the history Visor keeps on the phone.
 - Python client: `open()` subscribes before the app acts and returns a `Stream`. Python samples in
   `samples/python`: a prompter pager, an assistant journal and a settings tool.
+- `samples/web`: a console for the glasses in one page, on JSON-RPC over WebSocket.
 - `visor record` saves topics' events as JSON lines, and `visor replay` plays them into the apps at their pace,
   on a phone or on `visor fake`.

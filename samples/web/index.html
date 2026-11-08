@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glasses console</title>
+<style>
+  :root { --bg: #fafafa; --fg: #1b1b1f; --muted: #6b6b75; --line: #dcdce2; --accent: #3557d6; color-scheme: light dark; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #131316; --fg: #ececf1; --muted: #9a9aa6; --line: #2c2c33; --accent: #8aa2ff; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px; display: grid; gap: 20px; }
+  h1 { font-size: 20px; margin: 0; }
+  section { border-top: 1px solid var(--line); padding-top: 16px; display: grid; gap: 8px; }
+  h2 { font-size: 14px; margin: 0; color: var(--muted); font-weight: 600; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  input, textarea, button { font: inherit; color: inherit; background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; }
+  input { flex: 1; min-width: 0; }
+  textarea { width: 100%; box-sizing: border-box; min-height: 64px; }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  #status { font-variant-numeric: tabular-nums; }
+  #events { margin: 0; padding: 0; list-style: none; font: 13px/1.6 ui-monospace, monospace; max-height: 320px; overflow-y: auto; }
+  #events li { border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+  .muted { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Glasses console</h1>
+  <p class="muted">A page on Visor's network door: JSON-RPC over a WebSocket. Run <code>visor fake</code> to try it without a phone.</p>
+
+  <section>
+    <h2>Connection</h2>
+    <div class="row">
+      <input id="url" value="ws://127.0.0.1:7333/rpc" aria-label="Door address">
+      <input id="token" value="fake" aria-label="Client token">
+      <button id="connect">Connect</button>
+    </div>
+    <div id="link" class="muted">Not connected</div>
+  </section>
+
+  <section>
+    <h2>Glasses</h2>
+    <div id="status" class="muted">-</div>
+  </section>
+
+  <section>
+    <h2>Teleprompter</h2>
+    <textarea id="script" aria-label="Script">Hello from a web page.</textarea>
+    <div class="row">
+      <button id="show">Show</button>
+      <button id="close">Close</button>
+      <button id="buzz">Buzz the band</button>
+      <button id="band">Watch the band</button>
+    </div>
+    <p class="muted">Watching the band borrows it from the Display until the page closes.</p>
+  </section>
+
+  <section>
+    <h2>Events</h2>
+    <ul id="events"></ul>
+  </section>
+</main>
+<script type="module">
+// A JSON-RPC 2.0 connection to Visor's door: calls by id, events by subscription id.
+class Door {
+  constructor(socket) {
+    this.socket = socket;
+    this.ids = 0;
+    this.calls = new Map();
+    this.streams = new Map();
+    socket.addEventListener("message", (e) => this.dispatch(JSON.parse(e.data)));
+  }
+
+  static open(url, token) {
+    const socket = new WebSocket(`${url}?token=${encodeURIComponent(token)}`);
+    return new Promise((resolve, reject) => {
+      socket.addEventListener("open", () => resolve(new Door(socket)), { once: true });
+      socket.addEventListener("error", () => reject(new Error(`No door at ${url}`)), { once: true });
+    });
+  }
+
+  call(method, params = {}) {
+    const id = ++this.ids;
+    this.socket.send(JSON.stringify({ jsonrpc: "2.0", id, method, params }));
+    return new Promise((resolve, reject) => this.calls.set(id, { resolve, reject }));
+  }
+
+  async subscribe(topic, params, onEvent) {
+    const { subscription } = await this.call("kit.subscribe", { topic, params });
+    this.streams.set(subscription, onEvent);
+  }
+
+  dispatch(m) {
+    if (m.method === "kit.event") return this.streams.get(m.params.subscription)?.(m.params.event);
+    if (m.method === "kit.ended") return this.streams.delete(m.params.subscription);
+    const call = this.calls.get(m.id);
+    if (!call) return;
+    this.calls.delete(m.id);
+    if (m.error) call.reject(new Error(m.error.data?.code ?? m.error.message));
+    else call.resolve(m.result);
+  }
+}
+
+const $ = (id) => document.getElementById(id);
+let door = null;
+
+function note(text) {
+  const item = document.createElement("li");
+  item.textContent = `${new Date().toLocaleTimeString()}  ${text}`;
+  $("events").prepend(item);
+}
+
+function describe(s) {
+  if (!s.paired) return "No glasses set up";
+  return [s.model ?? s.name, s.link, s.battery != null && `battery ${s.battery}%`, s.charging && "charging", s.worn && "worn", s.folded && "folded"]
+    .filter(Boolean).join(" · ");
+}
+
+async function attempt(what, work) {
+  try {
+    await work();
+  } catch (e) {
+    note(`${what} failed: ${e.message}`);
+  }
+}
+
+$("connect").addEventListener("click", () => attempt("Connecting", async () => {
+  door?.socket.close();
+  door = await Door.open($("url").value, $("token").value);
+  door.socket.addEventListener("close", () => { $("link").textContent = "Disconnected"; });
+  const welcome = await door.call("kit.hello", { protocol: 1, kit: "web-sample" });
+  $("link").textContent = `Connected to Visor ${welcome.visor}`;
+  // Each on its own: a client without one of the scopes still gets the others.
+  await attempt("Status", () => door.subscribe("glasses.status", {}, (s) => { $("status").textContent = describe(s); }));
+  await attempt("Touches", () => door.subscribe("glasses.inputs", {}, (i) => note(`glasses: ${i.source} ${i.action}`)));
+  await attempt("Questions", () => door.subscribe("assistant.turns", {}, (t) => note(`asked: ${t.question} -> ${t.answer || t.failure}`)));
+}));
+
+$("band").addEventListener("click", () => attempt("Watching the band", () =>
+  door.subscribe("band.gestures", {}, (g) => note(`band: ${g.finger} ${g.derived ?? g.action}`))));
+
+$("show").addEventListener("click", () => attempt("Showing", () => door.call("display.prompter.show", { text: $("script").value })));
+$("close").addEventListener("click", () => attempt("Closing", () => door.call("display.prompter.close")));
+$("buzz").addEventListener("click", () => attempt("Buzzing", () => door.call("band.buzz")));
+</script>
+</body>
+</html>
