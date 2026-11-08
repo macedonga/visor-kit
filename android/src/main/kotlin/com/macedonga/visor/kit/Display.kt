@@ -3,7 +3,7 @@ package com.macedonga.visor.kit
 import com.macedonga.visor.kit.protocol.BriefingCard
 import com.macedonga.visor.kit.protocol.CardRemoval
 import com.macedonga.visor.kit.protocol.Layout
-import com.macedonga.visor.kit.protocol.LayoutBox
+import com.macedonga.visor.kit.protocol.LayoutCard
 import com.macedonga.visor.kit.protocol.LayoutClick
 import com.macedonga.visor.kit.protocol.LayoutIconName
 import com.macedonga.visor.kit.protocol.LayoutState
@@ -34,9 +34,9 @@ public class Display internal constructor(visor: Visor) {
 public class DisplayCards internal constructor(private val visor: Visor) {
     public suspend fun set(card: BriefingCard): Unit = visor.call(Methods.DISPLAY_CARDS_SET, card)
 
-    public suspend fun set(id: String, name: String, block: LayoutBox.() -> Unit): Unit = set(BriefingCard(id, name, block = block))
+    public suspend fun set(id: String, name: String, block: LayoutCard.() -> Unit): Unit = set(BriefingCard(id, name, block))
 
-    public suspend fun set(id: String, name: String, icon: LayoutIconName, block: LayoutBox.() -> Unit): Unit =
+    public suspend fun set(id: String, name: String, icon: LayoutIconName, block: LayoutCard.() -> Unit): Unit =
         set(BriefingCard(id, name, icon, block))
 
     public suspend fun remove(id: String): Unit = visor.call(Methods.DISPLAY_CARDS_REMOVE, CardRemoval(id))

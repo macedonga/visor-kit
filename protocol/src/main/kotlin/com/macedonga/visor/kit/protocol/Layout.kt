@@ -27,12 +27,18 @@ public class LayoutNode @KitInternal constructor(
     public val style: LayoutStyle? = null,
     /** An image or a video: an `https://` URL; an image may also be a `data:` URI. */
     public val url: String? = null,
-    /** An image's height in pixels; null to fit its width. */
+    /**
+     * An image's height in pixels, null to fit its width; an icon's size, 32 when null; a box's or a chart's height,
+     * null for what its content needs.
+     */
     public val height: Int? = null,
     /** A box's space between its children, and around them, in pixels. */
     public val gap: Int? = null,
     public val padding: Int? = null,
-    /** Where a box puts its children along its direction, and across it; a button group, where its buttons go. */
+    /**
+     * Where a box puts its children along its direction, and across it; a button group, where its buttons go; a text,
+     * where its lines sit in its width.
+     */
     public val align: LayoutAlign? = null,
     public val crossAlign: LayoutAlign? = null,
     /** True to draw a box on a card, or an image with rounded corners. */
@@ -52,7 +58,7 @@ public class LayoutNode @KitInternal constructor(
     public val shrink: Double? = null,
     /** Where this element sits across its box, instead of the box's [crossAlign]. */
     public val alignSelf: LayoutAlign? = null,
-    /** A text's colour. */
+    /** A text's or an icon's colour. */
     public val color: LayoutColor? = null,
     /** An image's size: a small square, or the width it is given. */
     public val size: LayoutImageSize? = null,
@@ -64,6 +70,20 @@ public class LayoutNode @KitInternal constructor(
     public val primary: Boolean? = null,
     /** True to show a video's play and pause controls. */
     public val controls: Boolean? = null,
+    /** The most lines a text takes, cut with an ellipsis; null for as many as it needs. */
+    public val maxLines: Int? = null,
+    /** A box's fill behind its children. */
+    public val background: LayoutColor? = null,
+    /** A chart's values, left to right. */
+    public val values: List<Double>? = null,
+    /**
+     * Pins the element to its box's edges, this many pixels in, over the box's other children instead of in line with
+     * them. Null on all four for an element in line.
+     */
+    public val pinTop: Int? = null,
+    public val pinBottom: Int? = null,
+    public val pinStart: Int? = null,
+    public val pinEnd: Int? = null,
 )
 
 /** What a [LayoutNode] is. */
@@ -88,6 +108,12 @@ public value class LayoutType(public val id: String) {
         /** A row of buttons, the Display's own button bar. Its children are buttons. */
         public val BUTTON_GROUP: LayoutType = LayoutType("button_group")
 
+        /** Pages side by side, which the wearer swipes through, with dots under them. Its children are columns, one a page. */
+        public val PAGER: LayoutType = LayoutType("pager")
+
+        /** [LayoutNode.values] drawn as a line or as bars, across the width it is given. Visor draws it on the phone. */
+        public val CHART: LayoutType = LayoutType("chart")
+
         /**
          * A video from [LayoutNode.url]: MP4 over `https://`, at most 400 pixels a side. It fills the screen alone: a
          * layout with a video holds nothing else, as on DAT.
@@ -106,6 +132,9 @@ public value class LayoutStyle(public val id: String) {
         /** Text: 40 px, bold. */
         public val HEADING: LayoutStyle = LayoutStyle("heading")
 
+        /** Text: 24 px, bold: the first line of Meta's Briefing cards. */
+        public val TITLE: LayoutStyle = LayoutStyle("title")
+
         /** Text: 28 px, the default. */
         public val BODY: LayoutStyle = LayoutStyle("body")
 
@@ -123,6 +152,12 @@ public value class LayoutStyle(public val id: String) {
 
         /** An icon: filled, the default. */
         public val FILLED: LayoutStyle = LayoutStyle("filled")
+
+        /** A chart: a line through the values, the default. */
+        public val LINE: LayoutStyle = LayoutStyle("line")
+
+        /** A chart: a bar for each value. */
+        public val BARS: LayoutStyle = LayoutStyle("bars")
     }
 }
 
@@ -145,7 +180,7 @@ public value class LayoutAlign(public val id: String) {
     }
 }
 
-/** A text's colour on the Display. */
+/** A colour on the Display: one of its own, or any as `#RRGGBB`. */
 @Serializable
 @JvmInline
 public value class LayoutColor(public val id: String) {
@@ -157,6 +192,21 @@ public value class LayoutColor(public val id: String) {
 
         /** Light grey. */
         public val SECONDARY: LayoutColor = LayoutColor("secondary")
+
+        /** The green of a rise in Meta's Stocks card. */
+        public val GREEN: LayoutColor = LayoutColor("#009914")
+
+        /** A red for a fall, beside [GREEN]. */
+        public val RED: LayoutColor = LayoutColor("#E5484D")
+
+        /** A blue for charts and bars. */
+        public val BLUE: LayoutColor = LayoutColor("#4DA3FF")
+
+        /** The dark grey under a [progress] bar. */
+        public val TRACK: LayoutColor = LayoutColor("#2A2D33")
+
+        /** The colour [rgb] says, as `0xRRGGBB`. */
+        public fun rgb(rgb: Int): LayoutColor = LayoutColor("#" + (rgb and 0xFFFFFF).toString(16).padStart(6, '0').uppercase())
     }
 }
 
@@ -282,11 +332,17 @@ public abstract class LayoutItem internal constructor() {
 
     /** Where it sits across the box, instead of the box's own [LayoutBox.crossAlign]. */
     public var alignSelf: LayoutAlign? = null
+
+    /** Pins it this many pixels in from its box's edges, over the box's other children. */
+    public var pinTop: Int? = null
+    public var pinBottom: Int? = null
+    public var pinStart: Int? = null
+    public var pinEnd: Int? = null
 }
 
 /** A column or a row being built, and its children. */
 @LayoutDsl
-public class LayoutBox internal constructor(private val type: LayoutType) : LayoutItem() {
+public open class LayoutBox internal constructor(private val type: LayoutType) : LayoutItem() {
     public var gap: Int? = null
     public var padding: Int? = null
     public var paddingTop: Int? = null
@@ -306,6 +362,12 @@ public class LayoutBox internal constructor(private val type: LayoutType) : Layo
     /** Makes the whole box a click target with this id. */
     public var id: String? = null
 
+    /** Fills the box behind its children. */
+    public var background: LayoutColor? = null
+
+    /** Its height in pixels, instead of what its children need. */
+    public var height: Int? = null
+
     private val children = mutableListOf<LayoutNode>()
 
     public fun column(block: LayoutBox.() -> Unit) {
@@ -323,8 +385,9 @@ public class LayoutBox internal constructor(private val type: LayoutType) : Layo
     public fun text(text: String, block: LayoutText.() -> Unit) {
         val spec = LayoutText().apply(block)
         children += LayoutNode(
-            LayoutType.TEXT, text = text, style = spec.style, color = spec.color,
-            grow = spec.grow, shrink = spec.shrink, alignSelf = spec.alignSelf,
+            LayoutType.TEXT, text = text, style = spec.style, color = spec.color, align = spec.align,
+            maxLines = spec.maxLines, grow = spec.grow, shrink = spec.shrink, alignSelf = spec.alignSelf, pinTop = spec.pinTop,
+            pinBottom = spec.pinBottom, pinStart = spec.pinStart, pinEnd = spec.pinEnd,
         )
     }
 
@@ -336,7 +399,8 @@ public class LayoutBox internal constructor(private val type: LayoutType) : Layo
         val spec = LayoutImage().apply(block)
         children += LayoutNode(
             LayoutType.IMAGE, url = url, height = spec.height, card = spec.rounded.takeIf { it }, size = spec.size,
-            corners = spec.corners, grow = spec.grow, shrink = spec.shrink, alignSelf = spec.alignSelf,
+            corners = spec.corners, grow = spec.grow, shrink = spec.shrink, alignSelf = spec.alignSelf, pinTop = spec.pinTop,
+            pinBottom = spec.pinBottom, pinStart = spec.pinStart, pinEnd = spec.pinEnd,
         )
     }
 
@@ -348,8 +412,9 @@ public class LayoutBox internal constructor(private val type: LayoutType) : Layo
     public fun icon(name: LayoutIconName, block: LayoutIcon.() -> Unit) {
         val spec = LayoutIcon().apply(block)
         children += LayoutNode(
-            LayoutType.ICON, icon = name, style = spec.style, grow = spec.grow, shrink = spec.shrink,
-            alignSelf = spec.alignSelf,
+            LayoutType.ICON, icon = name, style = spec.style, color = spec.color, height = spec.size,
+            grow = spec.grow, shrink = spec.shrink, alignSelf = spec.alignSelf, pinTop = spec.pinTop,
+            pinBottom = spec.pinBottom, pinStart = spec.pinStart, pinEnd = spec.pinEnd,
         )
     }
 
@@ -365,6 +430,25 @@ public class LayoutBox internal constructor(private val type: LayoutType) : Layo
     /** A bar of buttons, as the Display draws them at the foot of its own screens. */
     public fun buttons(block: LayoutButtons.() -> Unit) {
         children += LayoutButtons().apply(block).build()
+    }
+
+    /** Pages the wearer swipes through, one [LayoutPager.page] each. */
+    public fun pager(block: LayoutPager.() -> Unit) {
+        children += LayoutPager().apply(block).build()
+    }
+
+    /** [values] as a line, 120 pixels high, in [LayoutColor.BLUE]. */
+    public fun chart(values: List<Double>) {
+        chart(values) {}
+    }
+
+    public fun chart(values: List<Double>, block: LayoutChart.() -> Unit) {
+        val spec = LayoutChart().apply(block)
+        children += LayoutNode(
+            LayoutType.CHART, values = values, style = spec.style, color = spec.color, height = spec.height,
+            grow = spec.grow, shrink = spec.shrink, alignSelf = spec.alignSelf, pinTop = spec.pinTop,
+            pinBottom = spec.pinBottom, pinStart = spec.pinStart, pinEnd = spec.pinEnd,
+        )
     }
 
     /** A video: MP4 over `https://`, at most 400 pixels a side. It fills the screen alone, as on DAT. */
@@ -385,6 +469,8 @@ public class LayoutBox internal constructor(private val type: LayoutType) : Layo
         card = card.takeIf { it }, children = children.toList(), reverse = reverse.takeIf { it },
         wrap = wrap.takeIf { it }, paddingTop = paddingTop, paddingBottom = paddingBottom,
         paddingStart = paddingStart, paddingEnd = paddingEnd, grow = grow, shrink = shrink, alignSelf = alignSelf,
+        background = background, pinTop = pinTop, pinBottom = pinBottom, pinStart = pinStart, pinEnd = pinEnd,
+        height = height,
     )
 }
 
@@ -392,6 +478,12 @@ public class LayoutBox internal constructor(private val type: LayoutType) : Layo
 public class LayoutText internal constructor() : LayoutItem() {
     public var style: LayoutStyle? = null
     public var color: LayoutColor? = null
+
+    /** [LayoutAlign.START], the default, [LayoutAlign.CENTER] or [LayoutAlign.END]. */
+    public var align: LayoutAlign? = null
+
+    /** The most lines it takes, cut with an ellipsis. */
+    public var maxLines: Int? = null
 }
 
 @LayoutDsl
@@ -406,6 +498,12 @@ public class LayoutImage internal constructor() : LayoutItem() {
 public class LayoutIcon internal constructor() : LayoutItem() {
     /** [LayoutStyle.FILLED], the default, or [LayoutStyle.OUTLINE]. */
     public var style: LayoutStyle? = null
+
+    /** White unless set. */
+    public var color: LayoutColor? = null
+
+    /** Its width and height in pixels, 32 unless set. */
+    public var size: Int? = null
 }
 
 @LayoutDsl
@@ -420,7 +518,8 @@ public class LayoutButton internal constructor() : LayoutItem() {
 
     internal fun node(id: String, label: String) = LayoutNode(
         LayoutType.BUTTON, id = id, text = label, style = style, icon = icon, primary = primary.takeIf { it },
-        grow = grow, shrink = shrink, alignSelf = alignSelf,
+        grow = grow, shrink = shrink, alignSelf = alignSelf, pinTop = pinTop, pinBottom = pinBottom, pinStart = pinStart,
+        pinEnd = pinEnd,
     )
 }
 
@@ -442,8 +541,36 @@ public class LayoutButtons internal constructor() : LayoutItem() {
 
     internal fun build() = LayoutNode(
         LayoutType.BUTTON_GROUP, align = align, children = buttons.toList(), grow = grow, shrink = shrink,
-        alignSelf = alignSelf,
+        alignSelf = alignSelf, pinTop = pinTop, pinBottom = pinBottom, pinStart = pinStart, pinEnd = pinEnd,
     )
+}
+
+/** A pager being built, and its pages. */
+@LayoutDsl
+public class LayoutPager internal constructor() : LayoutItem() {
+    private val pages = mutableListOf<LayoutNode>()
+
+    /** One page: a column. */
+    public fun page(block: LayoutBox.() -> Unit) {
+        pages += LayoutBox(LayoutType.COLUMN).apply(block).build()
+    }
+
+    internal fun build() = LayoutNode(
+        LayoutType.PAGER, children = pages.toList(), grow = grow, shrink = shrink, alignSelf = alignSelf,
+        pinTop = pinTop, pinBottom = pinBottom, pinStart = pinStart, pinEnd = pinEnd,
+    )
+}
+
+@LayoutDsl
+public class LayoutChart internal constructor() : LayoutItem() {
+    /** [LayoutStyle.LINE], the default, or [LayoutStyle.BARS]. */
+    public var style: LayoutStyle? = null
+
+    /** [LayoutColor.BLUE] unless set. */
+    public var color: LayoutColor? = null
+
+    /** In pixels, 120 unless set. */
+    public var height: Int? = null
 }
 
 @LayoutDsl

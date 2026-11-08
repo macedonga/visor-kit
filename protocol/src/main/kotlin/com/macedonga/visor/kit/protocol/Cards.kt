@@ -15,6 +15,8 @@ public class BriefingCard @KitInternal constructor(
     public val icon: LayoutIconName = LayoutIconName.BELL,
     /** What the card shows. On the Briefing a video, buttons and clicks do nothing. */
     public val layout: Layout,
+    /** What a click on the card opens, full screen, as Meta's cards open their own; null for a card without one. */
+    public val detail: Layout? = null,
 ) {
     public companion object {
         public const val MAX_NAME: Int = 40
@@ -30,14 +32,43 @@ public class CardRemoval @KitInternal constructor(
 )
 
 /**
+ * A Briefing card being built: its column, as any [LayoutBox], and what a click on it opens, set by [detail] or
+ * [pages].
+ */
+public class LayoutCard internal constructor() : LayoutBox(LayoutType.COLUMN) {
+    private var detail: Layout? = null
+
+    /** What a click on the card opens, full screen, as Meta's cards open theirs. */
+    public fun detail(block: LayoutBox.() -> Unit) {
+        detail = Layout(block)
+    }
+
+    /** A detail of pages the wearer swipes through, as Meta's Weather and Stocks cards open. */
+    public fun pages(block: LayoutPager.() -> Unit) {
+        detail = Layout { pager(block) }
+    }
+
+    internal fun card(id: String, name: String, icon: LayoutIconName) = BriefingCard(id, name, icon, Layout(build()), detail)
+}
+
+/**
  * A [BriefingCard] whose column [block] fills, for example:
  *
  * ```
- * BriefingCard("coffee", "Coffee") {
- *     text("Coffee") { style = LayoutStyle.HEADING }
- *     text("Ready in 2 minutes")
+ * BriefingCard("pasta", "Kitchen timer", LayoutIconName.CLOCK) {
+ *     header(LayoutIconName.CLOCK, "Kitchen timer")
+ *     stat("4:00", "Pasta")
+ *     progress(0.6)
+ *     detail {
+ *         field("Started", "19:42")
+ *         field("Ends", "19:52")
+ *     }
  * }
  * ```
  */
-public fun BriefingCard(id: String, name: String, icon: LayoutIconName = LayoutIconName.BELL, block: LayoutBox.() -> Unit): BriefingCard =
-    BriefingCard(id, name, icon, Layout(block))
+public fun BriefingCard(id: String, name: String, icon: LayoutIconName, block: LayoutCard.() -> Unit): BriefingCard =
+    LayoutCard().apply(block).card(id, name, icon)
+
+/** A [BriefingCard] with the bell icon. */
+public fun BriefingCard(id: String, name: String, block: LayoutCard.() -> Unit): BriefingCard =
+    BriefingCard(id, name, LayoutIconName.BELL, block)

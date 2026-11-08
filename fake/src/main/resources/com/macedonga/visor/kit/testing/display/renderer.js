@@ -8,6 +8,7 @@ const VisorDisplay = (() => {
   const SECONDARY = "#CFD3D9";
   const TEXT = {
     heading: { size: 40, line: 48, weight: 700 },
+    title: { size: 24, line: 32, weight: 700 },
     body: { size: 28, line: 36, weight: 400 },
     meta: { size: 22, line: 28, weight: 400 },
   };
@@ -15,6 +16,10 @@ const VisorDisplay = (() => {
   const ITEMS = { center: "center", end: "flex-end", stretch: "stretch" };
   const CORNERS = { small: "8px", medium: "16px" };
   const GAP_MARGIN = { column: "marginTop", "column-reverse": "marginBottom", row: "marginLeft", "row-reverse": "marginRight" };
+  const BLUE = "#4DA3FF";
+  const PAGE_INSET = 24;
+  // Meta's weather illustrations, in colour, from the CDN the Display falls back to.
+  const ICON_CDN = "https://static.xx.fbcdn.net/assets/?set=wearables_icons&name=";
 
   // DAT's icon names, drawn with the nearest Material Symbol; the Display draws its own glyphs.
   const GLYPHS = {
@@ -60,11 +65,42 @@ const VisorDisplay = (() => {
     return node;
   }
 
-  function glyph(name, outline) {
+  // A kit colour: one of the Display's names or #RRGGBB; null for none or an unknown one.
+  function colour(c) {
+    if (c === "primary") return PRIMARY;
+    if (c === "secondary") return SECONDARY;
+    return /^#[0-9a-f]{6}$/i.test(c || "") ? c : null;
+  }
+
+  // A glyph [size] pixels square, in [color]; a weather illustration as Meta draws it, untinted.
+  function glyph(name, outline, color, size) {
+    const side = size || 32;
+    if (name.startsWith("bks_")) {
+      const img = el("img", "vd-illustration");
+      img.src = `${ICON_CDN}${name.replace(/_/g, "-")}&density=1`;
+      img.alt = name;
+      img.title = name;
+      Object.assign(img.style, { width: `${side}px`, height: `${side}px` });
+      return img;
+    }
+    if (!GLYPHS[name]) {
+      // A name DAT does not have: Meta's own glyph from its CDN, tinted through a mask, as the Display fetches it.
+      const node = el("span", "vd-masked");
+      const url = `${ICON_CDN}${name.replace(/_/g, "-")}-${outline ? "outline" : "filled"}-32-light&density=1`;
+      Object.assign(node.style, {
+        width: `${side}px`, height: `${side}px`, backgroundColor: color || PRIMARY,
+        maskImage: `url("${url}")`, webkitMaskImage: `url("${url}")`,
+      });
+      node.title = name;
+      return node;
+    }
     const node = el("span", "vd-glyph");
-    node.textContent = GLYPHS[name] || "help";
+    node.textContent = GLYPHS[name];
     node.title = name;
-    node.style.fontVariationSettings = `"FILL" ${outline ? 0 : 1}`;
+    Object.assign(node.style, {
+      fontVariationSettings: `"FILL" ${outline ? 0 : 1}`, fontSize: `${side}px`, width: `${side}px`, height: `${side}px`,
+    });
+    if (color) node.style.color = color;
     return node;
   }
 
@@ -74,11 +110,13 @@ const VisorDisplay = (() => {
     const focusables = [];
     let focused = -1;
     let primary = null;
+    let firstPage = null;
 
     function focusable(node, id) {
       node.classList.add("vd-focusable");
       node.dataset.id = id;
-      node.addEventListener("click", () => { focus(focusables.indexOf(node)); on.click(id); });
+      // A page of a pager takes the focus and sends no click.
+      node.addEventListener("click", () => { focus(focusables.indexOf(node)); if (id) on.click(id); });
       focusables.push(node);
     }
 
@@ -87,8 +125,86 @@ const VisorDisplay = (() => {
       const node = el("div", "vd-text");
       node.textContent = n.text || "";
       Object.assign(node.style, { fontSize: `${t.size}px`, lineHeight: `${t.line}px`, fontWeight: t.weight });
-      const color = n.color || (n.style === "meta" ? "secondary" : "primary");
-      node.style.color = color === "secondary" ? SECONDARY : PRIMARY;
+      node.style.color = colour(n.color) || (n.style === "meta" ? SECONDARY : PRIMARY);
+      if (n.align === "center" || n.align === "end") node.style.textAlign = n.align;
+      if (n.maxLines > 0) {
+        node.classList.add("vd-clamp");
+        node.style.webkitLineClamp = String(n.maxLines);
+      }
+      return node;
+    }
+
+    // As Visor draws it on the phone: a line from the lowest value to the highest with a wash under it, or bars
+    // from zero.
+    function chart(n) {
+      const values = (n.values || []).filter((v) => Number.isFinite(v));
+      if (!values.length) return null;
+      const h = Math.max(16, Math.min(600, n.height || 120));
+      const color = colour(n.color) || BLUE;
+      const w = 1000;
+      const ns = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("class", "vd-chart");
+      svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+      svg.setAttribute("preserveAspectRatio", "none");
+      svg.style.height = `${h}px`;
+      const add = (parent, tag, attrs) => {
+        const node = document.createElementNS(ns, tag);
+        Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, v));
+        parent.append(node);
+        return node;
+      };
+      if (n.style === "bars") {
+        const base = Math.min(0, ...values);
+        const span = Math.max(0, ...values) - base || 1;
+        const slot = w / values.length;
+        values.forEach((v, i) => {
+          const top = Math.min(h - 1, Math.max(0, h - ((v - base) / span) * h));
+          add(svg, "rect", { x: i * slot + slot * 0.2, y: top, width: slot * 0.6, height: h - top, rx: 6, fill: color });
+        });
+        return svg;
+      }
+      const lo = Math.min(...values);
+      const span = Math.max(...values) - lo;
+      const x = (i) => (values.length === 1 ? w / 2 : 4 + (i * (w - 8)) / (values.length - 1));
+      const y = (v) => (span ? h - 4 - ((v - lo) / span) * (h - 8) : h / 2);
+      const points = values.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+      const id = `vd-wash-${Math.random().toString(36).slice(2)}`;
+      const gradient = add(add(svg, "defs", {}), "linearGradient", { id, x1: 0, y1: 0, x2: 0, y2: 1 });
+      add(gradient, "stop", { offset: 0, "stop-color": color, "stop-opacity": 0.33 });
+      add(gradient, "stop", { offset: 1, "stop-color": color, "stop-opacity": 0 });
+      add(svg, "polygon", { points: `${x(0)},${h} ${points} ${x(values.length - 1)},${h}`, fill: `url(#${id})` });
+      add(svg, "polyline", {
+        points, fill: "none", stroke: color, "stroke-width": 4, "stroke-linecap": "round", "stroke-linejoin": "round",
+        "vector-effect": "non-scaling-stroke",
+      });
+      return svg;
+    }
+
+    // Meta's Weather and Stocks details: pages side by side, each a card inset 24 px, dots under them. The arrows
+    // move the focus from page to page, as the wearer's swipes do.
+    function pager(n) {
+      const node = el("div", "vd-pager");
+      const strip = el("div", "vd-pages");
+      const dots = el("div", "vd-dots");
+      const pages = (n.children || []).filter((c) => c.type === "column" || c.type === "row");
+      pages.forEach((page, i) => {
+        const slot = el("div", "vd-page");
+        slot.style.padding = `0 ${PAGE_INSET}px`;
+        const own = page.padding != null || page.paddingTop != null || page.paddingBottom != null || page.paddingStart != null || page.paddingEnd != null;
+        const card = box(own ? page : { ...page, padding: 24 });
+        card.classList.add("vd-card", "vd-page-card");
+        focusable(card, "");
+        if (!firstPage) firstPage = card;
+        slot.append(card);
+        strip.append(slot);
+        dots.append(el("span", i === 0 ? "vd-dot vd-dot-on" : "vd-dot"));
+      });
+      strip.addEventListener("scroll", () => {
+        const at = Math.round(strip.scrollLeft / strip.clientWidth);
+        [...dots.children].forEach((dot, i) => dot.classList.toggle("vd-dot-on", i === at));
+      });
+      node.append(strip, dots);
       return node;
     }
 
@@ -137,6 +253,9 @@ const VisorDisplay = (() => {
       const row = direction.startsWith("row");
       const node = el("div", "vd-box");
       const pad = n.padding || 0;
+      const inset = { top: n.paddingTop ?? pad, bottom: n.paddingBottom ?? pad, start: n.paddingStart ?? pad, end: n.paddingEnd ?? pad };
+      if (colour(n.background)) node.style.background = colour(n.background);
+      if (n.height > 0) node.style.height = `${n.height}px`;
       Object.assign(node.style, {
         flexDirection: direction,
         justifyContent: JUSTIFY[n.align] || "flex-start",
@@ -155,6 +274,15 @@ const VisorDisplay = (() => {
         drawn.style.flexShrink = child.shrink || 0;
         if (grow && row) drawn.style.flexBasis = "0";
         if (child.alignSelf) drawn.style.alignSelf = ITEMS[child.alignSelf] || "flex-start";
+        const pins = { top: child.pinTop, bottom: child.pinBottom, left: child.pinStart, right: child.pinEnd };
+        if (Object.values(pins).some((v) => v != null)) {
+          // Pinned from inside the padding, over the other children; it takes no space and no gap.
+          const edge = { top: inset.top, bottom: inset.bottom, left: inset.start, right: inset.end };
+          drawn.style.position = "absolute";
+          Object.entries(pins).forEach(([side, v]) => { if (v != null) drawn.style[side] = `${v + edge[side]}px`; });
+          node.append(drawn);
+          continue;
+        }
         if (i > 0 && n.gap) drawn.style[GAP_MARGIN[direction]] = `${n.gap}px`;
         node.append(drawn);
         i++;
@@ -184,7 +312,9 @@ const VisorDisplay = (() => {
         case "column": case "row": return box(n);
         case "text": return text(n);
         case "image": return image(n);
-        case "icon": return n.icon ? glyph(n.icon, n.style === "outline") : null;
+        case "icon": return n.icon ? glyph(n.icon, n.style === "outline", colour(n.color), n.height) : null;
+        case "pager": return pager(n);
+        case "chart": return chart(n);
         case "button": return button(n, false);
         case "button_group": return buttons(n);
         case "video": return video(n);
@@ -209,7 +339,9 @@ const VisorDisplay = (() => {
       host.querySelectorAll(".vd-bar").forEach((bar) => {
         if (bar.scrollWidth > bar.clientWidth) bar.classList.add("vd-tight");
       });
+      // As Visor's pager focuses its first page when it binds.
       if (primary) focus(focusables.indexOf(primary));
+      else if (firstPage) focus(focusables.indexOf(firstPage));
     }
 
     // The nearest focusable element in [direction], judged from the centres; off-axis distance weighs double.
@@ -237,7 +369,7 @@ const VisorDisplay = (() => {
 
     return {
       move,
-      select() { const node = focusables[focused]; if (node) on.click(node.dataset.id); },
+      select() { const node = focusables[focused]; if (node && node.dataset.id) on.click(node.dataset.id); },
       back() { on.back(); },
     };
   }

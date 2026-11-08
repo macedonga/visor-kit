@@ -97,8 +97,9 @@ public final class com/macedonga/visor/kit/protocol/BandStatus$Companion {
 public final class com/macedonga/visor/kit/protocol/BriefingCard {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/BriefingCard$Companion;
 	public static final field MAX_NAME I
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/macedonga/visor/kit/protocol/Layout;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/macedonga/visor/kit/protocol/Layout;Lcom/macedonga/visor/kit/protocol/Layout;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDetail ()Lcom/macedonga/visor/kit/protocol/Layout;
 	public final fun getIcon-oySQJrQ ()Ljava/lang/String;
 	public final fun getId ()Ljava/lang/String;
 	public final fun getLayout ()Lcom/macedonga/visor/kit/protocol/Layout;
@@ -307,8 +308,8 @@ public final class com/macedonga/visor/kit/protocol/CardRemoval$Companion {
 }
 
 public final class com/macedonga/visor/kit/protocol/CardsKt {
+	public static final fun BriefingCard (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lcom/macedonga/visor/kit/protocol/BriefingCard;
 	public static final fun BriefingCard-VHGnYE0 (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lcom/macedonga/visor/kit/protocol/BriefingCard;
-	public static synthetic fun BriefingCard-VHGnYE0$default (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/macedonga/visor/kit/protocol/BriefingCard;
 }
 
 public final class com/macedonga/visor/kit/protocol/DisplayKt {
@@ -1047,15 +1048,30 @@ public final class com/macedonga/visor/kit/protocol/LayoutAlign$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
-public final class com/macedonga/visor/kit/protocol/LayoutBox : com/macedonga/visor/kit/protocol/LayoutItem {
+public final class com/macedonga/visor/kit/protocol/LayoutBlocksKt {
+	public static final fun change (Lcom/macedonga/visor/kit/protocol/LayoutBox;Ljava/lang/String;Z)V
+	public static final fun field (Lcom/macedonga/visor/kit/protocol/LayoutBox;Ljava/lang/String;Ljava/lang/String;)V
+	public static final fun header (Lcom/macedonga/visor/kit/protocol/LayoutBox;Ljava/lang/String;)V
+	public static final fun header-F7isyFw (Lcom/macedonga/visor/kit/protocol/LayoutBox;Ljava/lang/String;Ljava/lang/String;)V
+	public static final fun progress (Lcom/macedonga/visor/kit/protocol/LayoutBox;D)V
+	public static final fun progress-quxnxxg (Lcom/macedonga/visor/kit/protocol/LayoutBox;DLjava/lang/String;)V
+	public static final fun stat (Lcom/macedonga/visor/kit/protocol/LayoutBox;Ljava/lang/String;)V
+	public static final fun stat (Lcom/macedonga/visor/kit/protocol/LayoutBox;Ljava/lang/String;Ljava/lang/String;)V
+}
+
+public class com/macedonga/visor/kit/protocol/LayoutBox : com/macedonga/visor/kit/protocol/LayoutItem {
 	public final fun button (Ljava/lang/String;Ljava/lang/String;)V
 	public final fun button (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public final fun buttons (Lkotlin/jvm/functions/Function1;)V
+	public final fun chart (Ljava/util/List;)V
+	public final fun chart (Ljava/util/List;Lkotlin/jvm/functions/Function1;)V
 	public final fun column (Lkotlin/jvm/functions/Function1;)V
 	public final fun getAlign-D99p7zg ()Ljava/lang/String;
+	public final fun getBackground-TXq60ac ()Ljava/lang/String;
 	public final fun getCard ()Z
 	public final fun getCrossAlign-D99p7zg ()Ljava/lang/String;
 	public final fun getGap ()Ljava/lang/Integer;
+	public final fun getHeight ()Ljava/lang/Integer;
 	public final fun getId ()Ljava/lang/String;
 	public final fun getPadding ()Ljava/lang/Integer;
 	public final fun getPaddingBottom ()Ljava/lang/Integer;
@@ -1068,11 +1084,14 @@ public final class com/macedonga/visor/kit/protocol/LayoutBox : com/macedonga/vi
 	public final fun icon-SPylG5c (Ljava/lang/String;)V
 	public final fun image (Ljava/lang/String;)V
 	public final fun image (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
+	public final fun pager (Lkotlin/jvm/functions/Function1;)V
 	public final fun row (Lkotlin/jvm/functions/Function1;)V
 	public final fun setAlign-eNpEQD4 (Ljava/lang/String;)V
+	public final fun setBackground-cvVFFEo (Ljava/lang/String;)V
 	public final fun setCard (Z)V
 	public final fun setCrossAlign-eNpEQD4 (Ljava/lang/String;)V
 	public final fun setGap (Ljava/lang/Integer;)V
+	public final fun setHeight (Ljava/lang/Integer;)V
 	public final fun setId (Ljava/lang/String;)V
 	public final fun setPadding (Ljava/lang/Integer;)V
 	public final fun setPaddingBottom (Ljava/lang/Integer;)V
@@ -1101,6 +1120,20 @@ public final class com/macedonga/visor/kit/protocol/LayoutButtons : com/macedong
 	public final fun button (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public final fun getAlign-D99p7zg ()Ljava/lang/String;
 	public final fun setAlign-eNpEQD4 (Ljava/lang/String;)V
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutCard : com/macedonga/visor/kit/protocol/LayoutBox {
+	public final fun detail (Lkotlin/jvm/functions/Function1;)V
+	public final fun pages (Lkotlin/jvm/functions/Function1;)V
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutChart : com/macedonga/visor/kit/protocol/LayoutItem {
+	public final fun getColor-TXq60ac ()Ljava/lang/String;
+	public final fun getHeight ()Ljava/lang/Integer;
+	public final fun getStyle-S4oKjhs ()Ljava/lang/String;
+	public final fun setColor-cvVFFEo (Ljava/lang/String;)V
+	public final fun setHeight (Ljava/lang/Integer;)V
+	public final fun setStyle-buIq84w (Ljava/lang/String;)V
 }
 
 public final class com/macedonga/visor/kit/protocol/LayoutClick {
@@ -1154,8 +1187,13 @@ public final synthetic class com/macedonga/visor/kit/protocol/LayoutColor$$seria
 }
 
 public final class com/macedonga/visor/kit/protocol/LayoutColor$Companion {
+	public final fun getBLUE-xhdXsNg ()Ljava/lang/String;
+	public final fun getGREEN-xhdXsNg ()Ljava/lang/String;
 	public final fun getPRIMARY-xhdXsNg ()Ljava/lang/String;
+	public final fun getRED-xhdXsNg ()Ljava/lang/String;
 	public final fun getSECONDARY-xhdXsNg ()Ljava/lang/String;
+	public final fun getTRACK-xhdXsNg ()Ljava/lang/String;
+	public final fun rgb-7z57i5s (I)Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
@@ -1230,7 +1268,11 @@ public final class com/macedonga/visor/kit/protocol/LayoutEnd$Companion {
 }
 
 public final class com/macedonga/visor/kit/protocol/LayoutIcon : com/macedonga/visor/kit/protocol/LayoutItem {
+	public final fun getColor-TXq60ac ()Ljava/lang/String;
+	public final fun getSize ()Ljava/lang/Integer;
 	public final fun getStyle-S4oKjhs ()Ljava/lang/String;
+	public final fun setColor-cvVFFEo (Ljava/lang/String;)V
+	public final fun setSize (Ljava/lang/Integer;)V
 	public final fun setStyle-buIq84w (Ljava/lang/String;)V
 }
 
@@ -1278,6 +1320,7 @@ public final class com/macedonga/visor/kit/protocol/LayoutIconName$Companion {
 	public final fun getBUG-oySQJrQ ()Ljava/lang/String;
 	public final fun getBULLHORN-oySQJrQ ()Ljava/lang/String;
 	public final fun getBUS-oySQJrQ ()Ljava/lang/String;
+	public final fun getBriefing ()Ljava/util/List;
 	public final fun getCALENDAR-oySQJrQ ()Ljava/lang/String;
 	public final fun getCAMPFIRE-oySQJrQ ()Ljava/lang/String;
 	public final fun getCARET_DOWN-oySQJrQ ()Ljava/lang/String;
@@ -1286,8 +1329,10 @@ public final class com/macedonga/visor/kit/protocol/LayoutIconName$Companion {
 	public final fun getCARET_UP-oySQJrQ ()Ljava/lang/String;
 	public final fun getCART-oySQJrQ ()Ljava/lang/String;
 	public final fun getCAR_FRONT_VIEW-oySQJrQ ()Ljava/lang/String;
+	public final fun getCHART_LINE-oySQJrQ ()Ljava/lang/String;
 	public final fun getCHECKMARK-oySQJrQ ()Ljava/lang/String;
 	public final fun getCHECKMARK_CIRCLE-oySQJrQ ()Ljava/lang/String;
+	public final fun getCHECKMARK_STACKED_FOLDER-oySQJrQ ()Ljava/lang/String;
 	public final fun getCIRCLE_8_RAYS_LARGE-oySQJrQ ()Ljava/lang/String;
 	public final fun getCIRCLE_HANDLE-oySQJrQ ()Ljava/lang/String;
 	public final fun getCLOCK-oySQJrQ ()Ljava/lang/String;
@@ -1304,6 +1349,7 @@ public final class com/macedonga/visor/kit/protocol/LayoutIconName$Companion {
 	public final fun getCONTAINER_WITH_LID-oySQJrQ ()Ljava/lang/String;
 	public final fun getCROSS_BRIEFCASE-oySQJrQ ()Ljava/lang/String;
 	public final fun getDROPPER-oySQJrQ ()Ljava/lang/String;
+	public final fun getDat ()Ljava/util/List;
 	public final fun getENVELOPE_OPEN-oySQJrQ ()Ljava/lang/String;
 	public final fun getEXCLAMATION_CIRCLE-oySQJrQ ()Ljava/lang/String;
 	public final fun getEXCLAMATION_TRIANGLE-oySQJrQ ()Ljava/lang/String;
@@ -1318,6 +1364,7 @@ public final class com/macedonga/visor/kit/protocol/LayoutIconName$Companion {
 	public final fun getHASHTAG-oySQJrQ ()Ljava/lang/String;
 	public final fun getHEADPHONES-oySQJrQ ()Ljava/lang/String;
 	public final fun getHEART-oySQJrQ ()Ljava/lang/String;
+	public final fun getHORIZONTAL_LINE_CIRCLE-oySQJrQ ()Ljava/lang/String;
 	public final fun getHOUSE-oySQJrQ ()Ljava/lang/String;
 	public final fun getI_CIRCLE-oySQJrQ ()Ljava/lang/String;
 	public final fun getLIGHT_BULB-oySQJrQ ()Ljava/lang/String;
@@ -1345,6 +1392,8 @@ public final class com/macedonga/visor/kit/protocol/LayoutIconName$Companion {
 	public final fun getPLUS_CIRCLE-oySQJrQ ()Ljava/lang/String;
 	public final fun getSHOPPING_BAG-oySQJrQ ()Ljava/lang/String;
 	public final fun getSLIDERS_HORIZONTAL-oySQJrQ ()Ljava/lang/String;
+	public final fun getSMALL_TRIANGLE_DOWN-oySQJrQ ()Ljava/lang/String;
+	public final fun getSMALL_TRIANGLE_UP-oySQJrQ ()Ljava/lang/String;
 	public final fun getSMART_GLASSES-oySQJrQ ()Ljava/lang/String;
 	public final fun getSMILEY_CIRCLE-oySQJrQ ()Ljava/lang/String;
 	public final fun getSPEAKER_OFF-oySQJrQ ()Ljava/lang/String;
@@ -1368,6 +1417,7 @@ public final class com/macedonga/visor/kit/protocol/LayoutIconName$Companion {
 	public final fun getTRIANGLE_RIGHT-oySQJrQ ()Ljava/lang/String;
 	public final fun getTRIANGLE_RIGHT_CIRCLE-oySQJrQ ()Ljava/lang/String;
 	public final fun getTRIANGLE_RIGHT_VERTICAL_LINE-oySQJrQ ()Ljava/lang/String;
+	public final fun getTROPHY-oySQJrQ ()Ljava/lang/String;
 	public final fun getTWO_ARROWS_CLOCKWISE-oySQJrQ ()Ljava/lang/String;
 	public final fun getTWO_LINES_PARALLEL-oySQJrQ ()Ljava/lang/String;
 	public final fun getTWO_SQUARES_STACKED_RIGHT_DOWN-oySQJrQ ()Ljava/lang/String;
@@ -1375,8 +1425,23 @@ public final class com/macedonga/visor/kit/protocol/LayoutIconName$Companion {
 	public final fun getTWO_TRIANGLES_RIGHT-oySQJrQ ()Ljava/lang/String;
 	public final fun getVIDEO_CAMERA-oySQJrQ ()Ljava/lang/String;
 	public final fun getVIDEO_CAMERA_OFF-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_CLOUDY-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_FOGGY-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_NIGHT_CLEAR-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_NIGHT_CLOUDY-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_NIGHT_FOGGY-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_NIGHT_PARTLY_CLOUDY-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_NIGHT_RAINY-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_NIGHT_SNOW-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_NIGHT_THUNDERSTORM-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_PARTLY_CLOUDY-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_RAINY-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_SNOW-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_SUNNY-oySQJrQ ()Ljava/lang/String;
+	public final fun getWEATHER_THUNDERSTORM-oySQJrQ ()Ljava/lang/String;
 	public final fun getWRISTBAND-oySQJrQ ()Ljava/lang/String;
 	public final fun getWRISTBAND_SLASH-oySQJrQ ()Ljava/lang/String;
+	public final fun getWeather ()Ljava/util/List;
 	public final fun getX-oySQJrQ ()Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
@@ -1427,9 +1492,17 @@ public final class com/macedonga/visor/kit/protocol/LayoutImageSize$Companion {
 public abstract class com/macedonga/visor/kit/protocol/LayoutItem {
 	public final fun getAlignSelf-D99p7zg ()Ljava/lang/String;
 	public final fun getGrow ()Ljava/lang/Double;
+	public final fun getPinBottom ()Ljava/lang/Integer;
+	public final fun getPinEnd ()Ljava/lang/Integer;
+	public final fun getPinStart ()Ljava/lang/Integer;
+	public final fun getPinTop ()Ljava/lang/Integer;
 	public final fun getShrink ()Ljava/lang/Double;
 	public final fun setAlignSelf-eNpEQD4 (Ljava/lang/String;)V
 	public final fun setGrow (Ljava/lang/Double;)V
+	public final fun setPinBottom (Ljava/lang/Integer;)V
+	public final fun setPinEnd (Ljava/lang/Integer;)V
+	public final fun setPinStart (Ljava/lang/Integer;)V
+	public final fun setPinTop (Ljava/lang/Integer;)V
 	public final fun setShrink (Ljava/lang/Double;)V
 }
 
@@ -1439,10 +1512,11 @@ public final class com/macedonga/visor/kit/protocol/LayoutKt {
 
 public final class com/macedonga/visor/kit/protocol/LayoutNode {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/LayoutNode$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/lang/String;Ljava/util/List;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAlign-D99p7zg ()Ljava/lang/String;
 	public final fun getAlignSelf-D99p7zg ()Ljava/lang/String;
+	public final fun getBackground-TXq60ac ()Ljava/lang/String;
 	public final fun getCard ()Ljava/lang/Boolean;
 	public final fun getChildren ()Ljava/util/List;
 	public final fun getColor-TXq60ac ()Ljava/lang/String;
@@ -1454,11 +1528,16 @@ public final class com/macedonga/visor/kit/protocol/LayoutNode {
 	public final fun getHeight ()Ljava/lang/Integer;
 	public final fun getIcon-bNDKGY8 ()Ljava/lang/String;
 	public final fun getId ()Ljava/lang/String;
+	public final fun getMaxLines ()Ljava/lang/Integer;
 	public final fun getPadding ()Ljava/lang/Integer;
 	public final fun getPaddingBottom ()Ljava/lang/Integer;
 	public final fun getPaddingEnd ()Ljava/lang/Integer;
 	public final fun getPaddingStart ()Ljava/lang/Integer;
 	public final fun getPaddingTop ()Ljava/lang/Integer;
+	public final fun getPinBottom ()Ljava/lang/Integer;
+	public final fun getPinEnd ()Ljava/lang/Integer;
+	public final fun getPinStart ()Ljava/lang/Integer;
+	public final fun getPinTop ()Ljava/lang/Integer;
 	public final fun getPrimary ()Ljava/lang/Boolean;
 	public final fun getReverse ()Ljava/lang/Boolean;
 	public final fun getShrink ()Ljava/lang/Double;
@@ -1467,6 +1546,7 @@ public final class com/macedonga/visor/kit/protocol/LayoutNode {
 	public final fun getText ()Ljava/lang/String;
 	public final fun getType-ZNsRGrs ()Ljava/lang/String;
 	public final fun getUrl ()Ljava/lang/String;
+	public final fun getValues ()Ljava/util/List;
 	public final fun getWrap ()Ljava/lang/Boolean;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -1485,6 +1565,10 @@ public final synthetic class com/macedonga/visor/kit/protocol/LayoutNode$$serial
 
 public final class com/macedonga/visor/kit/protocol/LayoutNode$Companion {
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
+}
+
+public final class com/macedonga/visor/kit/protocol/LayoutPager : com/macedonga/visor/kit/protocol/LayoutItem {
+	public final fun page (Lkotlin/jvm/functions/Function1;)V
 }
 
 public final class com/macedonga/visor/kit/protocol/LayoutState {
@@ -1540,20 +1624,27 @@ public final synthetic class com/macedonga/visor/kit/protocol/LayoutStyle$$seria
 }
 
 public final class com/macedonga/visor/kit/protocol/LayoutStyle$Companion {
+	public final fun getBARS-i-g2Re0 ()Ljava/lang/String;
 	public final fun getBODY-i-g2Re0 ()Ljava/lang/String;
 	public final fun getFILLED-i-g2Re0 ()Ljava/lang/String;
 	public final fun getHEADING-i-g2Re0 ()Ljava/lang/String;
+	public final fun getLINE-i-g2Re0 ()Ljava/lang/String;
 	public final fun getMETA-i-g2Re0 ()Ljava/lang/String;
 	public final fun getOUTLINE-i-g2Re0 ()Ljava/lang/String;
 	public final fun getPRIMARY-i-g2Re0 ()Ljava/lang/String;
 	public final fun getSECONDARY-i-g2Re0 ()Ljava/lang/String;
+	public final fun getTITLE-i-g2Re0 ()Ljava/lang/String;
 	public final fun serializer ()Lkotlinx/serialization/KSerializer;
 }
 
 public final class com/macedonga/visor/kit/protocol/LayoutText : com/macedonga/visor/kit/protocol/LayoutItem {
+	public final fun getAlign-D99p7zg ()Ljava/lang/String;
 	public final fun getColor-TXq60ac ()Ljava/lang/String;
+	public final fun getMaxLines ()Ljava/lang/Integer;
 	public final fun getStyle-S4oKjhs ()Ljava/lang/String;
+	public final fun setAlign-eNpEQD4 (Ljava/lang/String;)V
 	public final fun setColor-cvVFFEo (Ljava/lang/String;)V
+	public final fun setMaxLines (Ljava/lang/Integer;)V
 	public final fun setStyle-buIq84w (Ljava/lang/String;)V
 }
 
@@ -1586,9 +1677,11 @@ public final synthetic class com/macedonga/visor/kit/protocol/LayoutType$$serial
 public final class com/macedonga/visor/kit/protocol/LayoutType$Companion {
 	public final fun getBUTTON-ZNsRGrs ()Ljava/lang/String;
 	public final fun getBUTTON_GROUP-ZNsRGrs ()Ljava/lang/String;
+	public final fun getCHART-ZNsRGrs ()Ljava/lang/String;
 	public final fun getCOLUMN-ZNsRGrs ()Ljava/lang/String;
 	public final fun getICON-ZNsRGrs ()Ljava/lang/String;
 	public final fun getIMAGE-ZNsRGrs ()Ljava/lang/String;
+	public final fun getPAGER-ZNsRGrs ()Ljava/lang/String;
 	public final fun getROW-ZNsRGrs ()Ljava/lang/String;
 	public final fun getTEXT-ZNsRGrs ()Ljava/lang/String;
 	public final fun getVIDEO-ZNsRGrs ()Ljava/lang/String;

@@ -3,8 +3,9 @@ package com.macedonga.visor.kit.protocol
 import kotlinx.serialization.Serializable
 
 /**
- * An icon the Display draws from its own set, by name: the names Meta's DAT has. A Visor that does not know a name
- * leaves the icon out.
+ * An icon the Display draws from its own set, by name: the names Meta's DAT has, the glyphs of Meta's Briefing cards
+ * and its weather illustrations. Any other name of Meta's wearables icon set works too: a Display without it fetches
+ * it from Meta's servers.
  */
 @Serializable
 @JvmInline
@@ -129,8 +130,33 @@ public value class LayoutIconName(public val id: String) {
         public val WRISTBAND_SLASH: LayoutIconName = LayoutIconName("wristband_slash")
         public val X: LayoutIconName = LayoutIconName("x")
 
-        /** Every name above, in order. */
-        public val all: List<LayoutIconName> = listOf(
+        // Beyond DAT's names: the glyphs Meta's own Briefing cards use.
+        public val CHART_LINE: LayoutIconName = LayoutIconName("chart_line")
+        public val CHECKMARK_STACKED_FOLDER: LayoutIconName = LayoutIconName("checkmark_stacked_folder")
+        public val HORIZONTAL_LINE_CIRCLE: LayoutIconName = LayoutIconName("horizontal_line_circle")
+        public val SMALL_TRIANGLE_DOWN: LayoutIconName = LayoutIconName("small_triangle_down")
+        public val SMALL_TRIANGLE_UP: LayoutIconName = LayoutIconName("small_triangle_up")
+        public val TROPHY: LayoutIconName = LayoutIconName("trophy")
+
+        // The weather illustrations of Meta's Weather card: in colour, so a colour does not tint them. Draw them at
+        // 48 pixels or more; the night ones show a moon.
+        public val WEATHER_SUNNY: LayoutIconName = LayoutIconName("bks_sunny")
+        public val WEATHER_PARTLY_CLOUDY: LayoutIconName = LayoutIconName("bks_partly_cloudy")
+        public val WEATHER_CLOUDY: LayoutIconName = LayoutIconName("bks_cloudy")
+        public val WEATHER_RAINY: LayoutIconName = LayoutIconName("bks_rainy")
+        public val WEATHER_SNOW: LayoutIconName = LayoutIconName("bks_snow")
+        public val WEATHER_THUNDERSTORM: LayoutIconName = LayoutIconName("bks_thunderstorm")
+        public val WEATHER_FOGGY: LayoutIconName = LayoutIconName("bks_foggy")
+        public val WEATHER_NIGHT_CLEAR: LayoutIconName = LayoutIconName("bks_nt_clear")
+        public val WEATHER_NIGHT_PARTLY_CLOUDY: LayoutIconName = LayoutIconName("bks_nt_partly_cloudy")
+        public val WEATHER_NIGHT_CLOUDY: LayoutIconName = LayoutIconName("bks_nt_cloudy")
+        public val WEATHER_NIGHT_RAINY: LayoutIconName = LayoutIconName("bks_nt_rainy")
+        public val WEATHER_NIGHT_SNOW: LayoutIconName = LayoutIconName("bks_nt_snow")
+        public val WEATHER_NIGHT_THUNDERSTORM: LayoutIconName = LayoutIconName("bks_nt_thunderstorm")
+        public val WEATHER_NIGHT_FOGGY: LayoutIconName = LayoutIconName("bks_nt_foggy")
+
+        /** The names Meta's DAT has, which every Display draws from its own set. */
+        public val dat: List<LayoutIconName> = listOf(
             AIRPLANE, ARROW_DOWN_SHALLOW_U, ARROW_LEFT, ARROW_RIGHT, ARROW_U_LEFT, ARROW_UP_SHALLOW_U, AVATAR,
             AVATAR_OFF, BED_SIDE, BELL, BELL_DIAGONAL_RIGHT_DOT, BELL_OFF, BIKE_SHARE, BUG, BULLHORN, BUS, CALENDAR,
             CAMPFIRE, CARET_DOWN, CARET_LEFT, CARET_RIGHT, CARET_UP, CAR_FRONT_VIEW, CART, CHECKMARK,
@@ -151,5 +177,20 @@ public value class LayoutIconName(public val id: String) {
             TWO_SQUARES_STACKED_RIGHT_DOWN, TWO_TRIANGLES_LEFT, TWO_TRIANGLES_RIGHT, VIDEO_CAMERA, VIDEO_CAMERA_OFF,
             WRISTBAND, WRISTBAND_SLASH, X,
         )
+
+        /** The glyphs of Meta's Briefing cards. */
+        public val briefing: List<LayoutIconName> = listOf(
+            CHART_LINE, CHECKMARK_STACKED_FOLDER, HORIZONTAL_LINE_CIRCLE, SMALL_TRIANGLE_DOWN, SMALL_TRIANGLE_UP, TROPHY,
+        )
+
+        /** The weather illustrations, by day and by night. */
+        public val weather: List<LayoutIconName> = listOf(
+            WEATHER_SUNNY, WEATHER_PARTLY_CLOUDY, WEATHER_CLOUDY, WEATHER_RAINY, WEATHER_SNOW, WEATHER_THUNDERSTORM,
+            WEATHER_FOGGY, WEATHER_NIGHT_CLEAR, WEATHER_NIGHT_PARTLY_CLOUDY, WEATHER_NIGHT_CLOUDY, WEATHER_NIGHT_RAINY,
+            WEATHER_NIGHT_SNOW, WEATHER_NIGHT_THUNDERSTORM, WEATHER_NIGHT_FOGGY,
+        )
+
+        /** Every name above, in order. */
+        public val all: List<LayoutIconName> = dat + briefing + weather
     }
 }

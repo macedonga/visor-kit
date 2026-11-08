@@ -354,6 +354,20 @@
                     "schema": {
                         "$ref": "#/components/schemas/Layout"
                     }
+                },
+                {
+                    "name": "detail",
+                    "required": false,
+                    "schema": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/Layout"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
                 }
             ],
             "result": {
@@ -2307,6 +2321,80 @@
                         "anyOf": [
                             {
                                 "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "maxLines": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "background": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "title": "LayoutColor"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "values": {
+                        "anyOf": [
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "number"
+                                }
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "pinTop": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "pinBottom": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "pinStart": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "pinEnd": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
                             },
                             {
                                 "type": "null"

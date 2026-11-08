@@ -22,6 +22,7 @@
 .vd-root::-webkit-scrollbar { display: none; }
 
 .vd-box {
+  position: relative;
   display: flex;
   box-sizing: border-box;
   min-width: 0;
@@ -95,4 +96,71 @@
   height: 600px;
   object-fit: contain;
   background: #000;
+}
+
+.vd-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+}
+
+.vd-illustration {
+  display: block;
+  object-fit: contain;
+}
+
+.vd-chart {
+  display: block;
+  width: 100%;
+}
+
+/* A pager: one page a screen, snapping, with dots under it. */
+.vd-pager {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vd-pages {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.vd-pages::-webkit-scrollbar { display: none; }
+
+.vd-page {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  scroll-snap-align: start;
+}
+
+.vd-page-card { width: 100%; }
+
+.vd-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.vd-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.vd-dot-on { background: #fff; }
+
+.vd-masked {
+  display: block;
+  flex-shrink: 0;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 }

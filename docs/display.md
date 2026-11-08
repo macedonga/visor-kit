@@ -52,16 +52,30 @@ is a column; boxes nest. The elements are DAT's, with the same sizes and styles:
 
 | Element | Builder | Fields |
 |---|---|---|
-| Column, row | `column { }`, `row { }` | `gap`; `padding`, or `paddingTop`, `paddingBottom`, `paddingStart`, `paddingEnd`, in pixels; `align` along the box: `start`, `center`, `end`, `space_between`; `crossAlign` across it: `start`, `center`, `end`, `stretch`; `reverse` to lay the children out from the end; `wrap`; `card` to draw it on a card; `id` to make the whole box a click target |
-| Text | `text("...") { }` | `style`: `heading` (40 px, bold), `body` (28 px, the default), `meta` (22 px); `color`: `primary` (white) or `secondary` (grey, the default for `meta`) |
+| Column, row | `column { }`, `row { }` | `gap`; `padding`, or `paddingTop`, `paddingBottom`, `paddingStart`, `paddingEnd`, in pixels; `align` along the box: `start`, `center`, `end`, `space_between`; `crossAlign` across it: `start`, `center`, `end`, `stretch`; `reverse` to lay the children out from the end; `wrap`; `card` to draw it on a card; `background`, a colour behind its children; `height` in pixels; `id` to make the whole box a click target |
+| Text | `text("...") { }` | `style`: `heading` (40 px, bold), `title` (24 px, bold, the first line of Meta's Briefing cards), `body` (28 px, the default), `meta` (22 px); `color` (below; `secondary` is the default for `meta`); `maxLines`, cut with an ellipsis; `align`: `start`, `center`, `end` |
 | Image | `image(url) { }` | An `https://` URL or a `data:` URI; `size`: `fill` (the width it gets, the default) or `icon` (a 32 px square); `corners`: `none`, `small`, `medium`; `height` in pixels |
-| Icon | `icon(LayoutIconName.HEART) { }` | One of the Display's own icons, by the names DAT has (`LayoutIconName.all`); `style`: `filled` (the default) or `outline` |
+| Icon | `icon(LayoutIconName.HEART) { }` | One of the Display's own icons (below); `style`: `filled` (the default) or `outline`; `color`, white unless set; `size` in pixels, 32 unless set |
 | Button | `button(id, label) { }` | `style`: `primary` (the default), `secondary`, `outline`; `icon`; `primary = true` for the button the Display focuses first |
 | Button bar | `buttons { button(...) }` | The Display's own bar of buttons; `align`: `start`, `center`, `end` |
+| Pages | `pager { page { }; page { } }` | Pages side by side that the wearer swipes through, with dots under them, as Meta's Weather and Stocks details: each page a card of the Display's own material, inset 24 px, and padded 24 px unless it sets its padding |
+| Chart | `chart(values) { }` | A line through the values (the default, from the lowest to the highest, with a wash under it) or `style = LayoutStyle.BARS` (bars from zero); `color`, blue unless set; `height` in pixels, 120 unless set. Visor draws it on the phone at the width it shows |
 | Video | `video(url) { }` | MP4 over `https://`, at most 400 pixels a side and 70,000 pixels in all; it fills the layout alone, as on DAT; `controls` to show play and pause |
 
 Every element also takes `grow` and `shrink`, its share of the free space along its box, and `alignSelf`, its own
-place across the box.
+place across the box. `pinTop`, `pinBottom`, `pinStart` and `pinEnd` pin an element that many pixels in from its
+box's edges, inside the box's padding, over the box's other children: the big weather icon in the corner of Meta's
+Weather card is one.
+
+A colour is `LayoutColor.PRIMARY` (white), `SECONDARY` (light grey), `GREEN` (the green of a rise on Meta's
+Stocks card), `RED`, `BLUE`, `TRACK` (the grey under a progress bar), or any colour as `LayoutColor.rgb(0xFFC83D)`,
+which is `"#FFC83D"` on the wire. A Visor that does not know a colour uses the default.
+
+Icons are the Display's own, by name. `LayoutIconName.dat` holds the names DAT has, `LayoutIconName.briefing` the
+glyphs of Meta's Briefing cards (`SMALL_TRIANGLE_UP`, `SMALL_TRIANGLE_DOWN`, `CHART_LINE`, `TROPHY` and more), and
+`LayoutIconName.weather` the 14 weather illustrations of Meta's Weather card (`WEATHER_SUNNY`, `WEATHER_RAINY`,
+`WEATHER_NIGHT_CLEAR` and the rest), which are in colour and keep it unless a `color` is set; draw them at 48 px or
+more. Any other name from Meta's wearables icon set works too: a Display that lacks it fetches it from Meta.
 
 On the Display the three button styles look alike: Meta's renderer keeps only an icon's outline from them. A
 button bar shows its labels while they fit, and only its icons when they do not.
@@ -101,26 +115,67 @@ In a test, `fake.display.layout` holds the layout shown, `fake.display.click(id)
 ## Cards on the Briefing
 
 The Display's home has a Briefing panel with Meta's glanceable cards: reminders, weather, sports and stocks. An app
-can keep cards of its own there, after Meta's. A card stays, whether or not the app runs, until the app removes it,
-so the wearer sees it whenever they look at the Briefing. Meta's toolkit has nothing like it.
+can keep cards of its own there, after Meta's, and give each one a detail that a click opens, full screen, as
+Meta's cards open theirs. A card stays, whether or not the app runs, until the app removes it, so the wearer sees
+it whenever they look at the Briefing. Meta's toolkit has nothing like it.
 
 ```kotlin
-visor.display.cards.set("coffee", "Coffee", LayoutIconName.CLOCK) {
-    row {
-        gap = 12
-        crossAlign = LayoutAlign.CENTER
-        icon(LayoutIconName.CLOCK)
-        text("Coffee") { style = LayoutStyle.HEADING }
+visor.display.cards.set("pasta", "Kitchen timer", LayoutIconName.CLOCK) {
+    header(LayoutIconName.CLOCK, "Kitchen timer")
+    stat("4:00", "Pasta")
+    progress(0.6)
+    detail {
+        header("Pasta")
+        field("Started", "19:42")
+        field("Ends", "19:52")
+        chart(listOf(100.0, 96.0, 90.0, 82.0)) { style = LayoutStyle.BARS }
     }
-    text("Ready in 2 minutes")
 }
-visor.display.cards.remove("coffee")
+visor.display.cards.remove("pasta")
 ```
 
-A card is a layout, drawn in the Briefing's own card style and padded as Meta's cards are unless it sets its
+A card is a layout, drawn in the Briefing's own card style and padded 24 px as Meta's cards are unless it sets its
 padding. Setting a card with the same id replaces it; the Display shows the change the next time it asks, within
 about a minute. The name and the icon show in the Display's list of Briefing cards, where the wearer can turn a card
-off. A card shows and takes no clicks: buttons and videos do nothing on the Briefing.
+off. On the card itself buttons and videos do nothing: a click on the card opens its detail.
+
+`detail { }` is the screen a click opens, padded as a card. `pages { page { }; page { } }` makes the detail a set of
+pages the wearer swipes through, as Meta's Weather (now, the next hours, the week) and Stocks (one page a stock).
+
+### Building blocks
+
+The pieces of Meta's own cards, sized and coloured as the Display draws them:
+
+| Block | What it draws |
+|---|---|
+| `header(icon, "Title")`, `header("Title")` | The first line: a 24 px icon beside a bold 24 px title |
+| `stat("18°")`, `stat("18°", "Low 9°")` | A figure in large type, and a grey caption under it |
+| `change("+1.8%", rising = true)` | A green triangle up and green text, or a red triangle down and red text |
+| `field("Wind", "12 km/h")` | A grey label and its value on one line, the value at the end |
+| `progress(0.6)`, `progress(0.6, color)` | A bar filled that far, from 0 to 1 |
+| `chart(values)` | A line or bars (see the layout elements above) |
+
+They are rows and texts of the layout above, so they mix with anything else. A card that looks like Meta's Weather:
+
+```kotlin
+visor.display.cards.set("weather", "Lake weather", LayoutIconName.CLOUD) {
+    header(LayoutIconName.CLOUD, "Lake weather")
+    stat("18°", "Low 9°")
+    text("Partly cloudy") { style = LayoutStyle.META; maxLines = 1 }
+    icon(LayoutIconName.WEATHER_PARTLY_CLOUDY) { size = 104; pinTop = 0; pinEnd = 0 }
+    pages {
+        page {
+            header("Next hours")
+            chart(listOf(18.0, 19.0, 18.0, 16.0, 14.0, 13.0))
+        }
+        page {
+            header("This week")
+            field("Mon", "9° to 21°")
+            field("Tue", "11° to 23°")
+        }
+    }
+}
+```
 
 ## JSON-RPC
 
@@ -130,7 +185,7 @@ off. A card shows and takes no clicks: buttons and videos do nothing on the Brie
 | Method | `display.prompter.close` | none | `{}` |
 | Method | `display.layout.show` | `root`: a `LayoutNode` tree | `{}` |
 | Method | `display.layout.close` | none | `{}` |
-| Method | `display.cards.set` | `id`, `name`, `icon` (default `bell`), `layout` | `{}` |
+| Method | `display.cards.set` | `id`, `name`, `icon` (default `bell`), `layout`, `detail` (a layout, optional) | `{}` |
 | Method | `display.cards.remove` | `id` | `{}` |
 | Topic | `display.layout.clicks` | none | `LayoutClick`: `id`, `time` |
 | Topic | `display.layout.state` | none | `LayoutState`: `showing`, `reason`, `time` |

@@ -15,7 +15,13 @@
   samples a second. Visor reads them from the glasses' own sensor service, with nothing on their screen, and fuses
   the orientation on the phone; FakeVisor also serves the band's motion.
 - `display.cards.set` and `display.cards.remove`: an app's own cards on the Display home's Briefing, beside Meta's
-  weather and sports, kept until the app removes them. FakeVisor keeps them in `fake.display.cards`.
+  weather and sports, kept until the app removes them, each with an optional `detail` that a click opens full
+  screen, or pages the wearer swipes through. FakeVisor keeps them in `fake.display.cards`.
+- Layouts look like Meta's own cards: the `title` text style, any colour (`LayoutColor.rgb`), `maxLines` and text
+  `align`, icon `color` and `size`, box `background` and `height`, `pin*` to place an element over the others, a
+  `pager` of pages with dots, and `chart` (a line or bars, drawn by Visor on the phone). The building blocks
+  `header`, `stat`, `change`, `field` and `progress`; Meta's Briefing glyphs and its 14 weather illustrations in
+  `LayoutIconName`.
 - `kit-testing` serves FakeVisor's imported captures and live photos to the app under test, with the bytes the
   test gives them: `fake.glasses.add(type, bytes, mime)`, `fake.live.photo(bytes, mime)`.
 - `voice.speak`, with the `voice` scope: the glasses say a line in their own voice, unasked. On the Display;
