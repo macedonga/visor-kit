@@ -83,13 +83,15 @@ your app needs no media permission to show it.
 
 ## 6. Try it without the glasses
 
-While you build, two tools save you from wearing the glasses:
+While you build, these tools save you from wearing the glasses:
 
 - The `visor` command on your computer shows what your app sends and receives, and can stand in for the band or
   the glasses: `visor simulate band.gestures`, then type `index double_tap`.
+- `visor record` saves what the wearer does once, and `visor replay` plays it back as often as you like.
 - `FakeVisor` runs Visor inside your tests.
+- `visor fake` runs a fake Visor on your computer, for scripts, web pages and MCP clients, with no phone at all.
 
-Both are in [Testing](testing.md).
+All of them are in [Testing](testing.md).
 
 ## Next
 

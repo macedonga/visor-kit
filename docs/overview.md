@@ -51,8 +51,9 @@ The glasses' own safeguards stay in place: the capture light turns on for every 
 | [Neural Band](neural-band.md) | `band.status`, `band.gestures`, `band.buzz` | Meta Ray-Ban Display with a Neural Band |
 | [Display](display.md) | `display.prompter.show`, `display.prompter.close` | Meta Ray-Ban Display |
 | [Voice](voice-and-assistant.md) | `voice.requests`, `voice.reply`, `voice.transcripts` | All |
-| [Assistant](voice-and-assistant.md) | `assistant.tools`, `assistant.tools.answer` | All |
+| [Assistant](voice-and-assistant.md) | `assistant.tools`, `assistant.tools.answer`, `assistant.turns`, `assistant.history` | All |
 | [Notifications](voice-and-assistant.md) | `notify.post`, `notify.remove` | Meta Ray-Ban Display |
+| [Settings](settings.md) | `settings.list`, `settings.get`, `settings.set`, `settings.changes` | All |
 
 ## Compared with Meta's Wearables Device Access Toolkit
 
@@ -67,8 +68,13 @@ Visor instead, so the trade-offs differ:
 | Camera | A video stream up to 720p over Bluetooth | A live stream up to 1080p at 30 frames over Wi-Fi Direct, encoded or decoded, with the microphones; photos and videos, imported over Wi-Fi Direct |
 | Neural Band | Navigation events only | Every gesture as the band reports it, and vibration |
 | Voice | "Hey Meta" can open an app | Questions that name an app go to it, answered in the glasses' own voice; tools for the model |
-| Display | Layouts of text, images, buttons and video | The teleprompter today; more on the roadmap |
-| From a computer | No | Yes, through adb |
+| Display | Layouts of text, images, buttons and video | The teleprompter and notifications today; more on the roadmap |
+| Settings | No | Every setting the glasses keep, readable, and the everyday ones writable |
+| The assistant's history | No | Every question and answer, as they come and from the phone's history |
+| AI agents | No | An MCP server on the phone: an agent on a computer can use the glasses |
+| Other languages | Android and iOS | Any language with WebSocket or HTTP, with clients for Python and TypeScript |
+| From a computer | No | The `visor` command, through adb: call, watch, trace, simulate, record and replay |
+| Without the glasses | A mock device in your tests | FakeVisor in your tests, and `visor fake`: a fake Visor on your computer for every language and for MCP |
 
 DAT does some things the VDK does not do yet: live motion data, and full layouts on the Display. Those are on the
 roadmap below. [Porting from Meta's DAT](porting-from-dat.md) maps each part of DAT to the VDK.

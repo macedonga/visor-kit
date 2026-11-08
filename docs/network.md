@@ -36,6 +36,12 @@ With Claude Code:
 claude mcp add --transport http visor http://127.0.0.1:7333/mcp --header "Authorization: Bearer <token>"
 ```
 
+To try an agent with no phone, run `visor fake` and point the agent at it, with no token:
+
+```
+claude mcp add --transport http visor-fake http://127.0.0.1:7333/mcp
+```
+
 Give an agent's client only the scopes it needs. An agent with `camera` takes photos when it decides to; the
 glasses' capture light still turns on for each one.
 
