@@ -802,6 +802,27 @@
             "x-since": 1
         },
         {
+            "name": "glasses.motion",
+            "summary": "The glasses' accelerometer, gyroscope, magnetometer and orientation, sample by sample.",
+            "params": [
+                {
+                    "name": "rateHz",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/MotionSample"
+                }
+            },
+            "x-scope": "motion",
+            "x-since": 1
+        },
+        {
             "name": "captures.available",
             "summary": "Each new photo or video on the glasses that the phone does not have yet.",
             "params": [],
@@ -2041,6 +2062,61 @@
                     "mime"
                 ]
             },
+            "MotionSample": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "type": "integer"
+                    },
+                    "accelerometer": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/Vector3"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "gyroscope": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/Vector3"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "magnetometer": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/Vector3"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "orientation": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/Quaternion"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "source": {
+                        "type": "string",
+                        "title": "MotionSource"
+                    }
+                },
+                "required": [
+                    "time"
+                ]
+            },
             "PrompterStyle": {
                 "type": "object",
                 "properties": {
@@ -2058,6 +2134,29 @@
                     }
                 },
                 "required": []
+            },
+            "Quaternion": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "y": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    },
+                    "w": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "x",
+                    "y",
+                    "z",
+                    "w"
+                ]
             },
             "RawMessage": {
                 "type": "object",
@@ -2251,6 +2350,25 @@
                     "text",
                     "language",
                     "time"
+                ]
+            },
+            "Vector3": {
+                "type": "object",
+                "properties": {
+                    "x": {
+                        "type": "number"
+                    },
+                    "y": {
+                        "type": "number"
+                    },
+                    "z": {
+                        "type": "number"
+                    }
+                },
+                "required": [
+                    "x",
+                    "y",
+                    "z"
                 ]
             },
             "VoiceRequest": {

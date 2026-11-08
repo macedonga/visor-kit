@@ -37,6 +37,7 @@ public final class com/macedonga/visor/kit/testing/FakeGlasses {
 	public final fun getDisplay ()Z
 	public final fun getFolded ()Ljava/lang/Boolean;
 	public final fun getModel ()Ljava/lang/String;
+	public final fun getMotionRate ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getPaired ()Z
 	public final fun getRecording ()Z
@@ -44,6 +45,8 @@ public final class com/macedonga/visor/kit/testing/FakeGlasses {
 	public final fun getThermal-Uu5FLH8 ()Ljava/lang/String;
 	public final fun getWorn ()Ljava/lang/Boolean;
 	public final fun input-F_h0UPo (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun motion (FFF)V
+	public final fun motion (Lcom/macedonga/visor/kit/protocol/MotionSample;)V
 	public final fun setBattery (Ljava/lang/Integer;)V
 	public final fun setCharging (Ljava/lang/Boolean;)V
 	public final fun setConnected (Z)V

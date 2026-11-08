@@ -9,6 +9,8 @@
   the Neural Band's status, gestures and vibration, and the Display's teleprompter. `RequestScopes` asks the
   person for scopes on Visor's consent screen.
 - `glasses.inputs`, with the `inputs` scope: each touch of the touchpad and each press of a button.
+- `glasses.motion`, with the `motion` scope: the accelerometer, gyroscope, magnetometer and orientation at 5 to 60
+  samples a second, as Meta's toolkit gives them. FakeVisor serves it; Visor does not yet.
 - `display.layout.show`, `display.layout.close` and `display.layout.clicks`: layouts of columns, rows, text, images
   and buttons, with clicks back. FakeVisor serves them; Visor does not yet.
 - `voice.transcripts`, with the `microphone` scope: what the glasses hear, as text, from the phone's recogniser.

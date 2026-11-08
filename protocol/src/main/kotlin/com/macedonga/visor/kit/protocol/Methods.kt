@@ -257,6 +257,16 @@ public object Topics {
         Unit.serializer(), GlassesInput.serializer(),
     )
 
+    /**
+     * The glasses' motion sensors at the rate asked for, while collected. Ends with [ErrorCode.INVALID_PARAMS] for a
+     * rate not in [MotionRequest.RATES], and with [ErrorCode.UNSUPPORTED] on glasses whose toolkit app is missing.
+     */
+    public val GLASSES_MOTION: Topic<MotionRequest, MotionSample> = Topic(
+        "glasses.motion", Scope.MOTION, 1,
+        "The glasses' accelerometer, gyroscope, magnetometer and orientation, sample by sample.",
+        MotionRequest.serializer(), MotionSample.serializer(),
+    )
+
     /** Sends each capture once. After Visor restarts, it sends again the ones still waiting. */
     public val CAPTURES_AVAILABLE: Topic<Unit, Capture> = Topic(
         "captures.available", Scope.CAMERA, 1,
@@ -369,7 +379,7 @@ public object Topics {
 
     /** Every topic, in the order of the reference. */
     public val all: List<Topic<*, *>> = listOf(
-        GLASSES_STATUS, GLASSES_PAIRS, GLASSES_INPUTS,
+        GLASSES_STATUS, GLASSES_PAIRS, GLASSES_INPUTS, GLASSES_MOTION,
         CAPTURES_AVAILABLE, CAPTURES_PROGRESS, CAPTURES_IMPORTED, CAPTURES_FAILED,
         BAND_STATUS, BAND_GESTURES,
         DISPLAY_LAYOUT_CLICKS,

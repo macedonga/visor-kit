@@ -22,6 +22,9 @@ public value class Scope(public val id: String) {
         /** Taps and swipes on the glasses' touchpad, and presses of their buttons. */
         public val INPUTS: Scope = Scope("inputs")
 
+        /** How the glasses and the band move: their accelerometer, gyroscope, magnetometer and orientation. */
+        public val MOTION: Scope = Scope("motion")
+
         /** What the glasses' microphones hear, as text. */
         public val MICROPHONE: Scope = Scope("microphone")
 

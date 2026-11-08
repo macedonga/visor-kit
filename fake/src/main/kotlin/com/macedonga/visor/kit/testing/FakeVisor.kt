@@ -23,10 +23,13 @@ import com.macedonga.visor.kit.protocol.LayoutClick
 import com.macedonga.visor.kit.protocol.LayoutNode
 import com.macedonga.visor.kit.protocol.Link
 import com.macedonga.visor.kit.protocol.Methods
+import com.macedonga.visor.kit.protocol.MotionRequest
+import com.macedonga.visor.kit.protocol.MotionSample
 import com.macedonga.visor.kit.protocol.PrompterStyle
 import com.macedonga.visor.kit.protocol.Scope
 import com.macedonga.visor.kit.protocol.ThermalLevel
 import com.macedonga.visor.kit.protocol.Topics
+import com.macedonga.visor.kit.protocol.Vector3
 import com.macedonga.visor.kit.server.Caller
 import com.macedonga.visor.kit.server.Dispatcher
 import com.macedonga.visor.kit.server.Gate
@@ -63,7 +66,7 @@ import kotlinx.serialization.json.longOrNull
  */
 public class FakeVisor {
     /** The scopes the fake person granted: all of them at first. Taking one back ends the streams that need it. */
-    public var granted: Set<Scope> by Delegates.observable(setOf(Scope.STATE, Scope.PAIRS, Scope.INPUTS, Scope.MICROPHONE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.VOICE, Scope.ASSISTANT, Scope.NOTIFY, Scope.SETTINGS, Scope.CONVERSATIONS)) { _, _, _ ->
+    public var granted: Set<Scope> by Delegates.observable(setOf(Scope.STATE, Scope.PAIRS, Scope.INPUTS, Scope.MOTION, Scope.MICROPHONE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.VOICE, Scope.ASSISTANT, Scope.NOTIFY, Scope.SETTINGS, Scope.CONVERSATIONS)) { _, _, _ ->
         dispatcher.recheck()
     }
 
@@ -155,6 +158,7 @@ public class FakeVisor {
         }
         stream(Topics.GLASSES_PAIRS) { _, _ -> pairs.list }
         stream(Topics.GLASSES_INPUTS) { _, _ -> glasses.inputs }
+        stream(Topics.GLASSES_MOTION) { _, request -> glasses.motion(request) }
         answer(Methods.GLASSES_SELECT) { _, selection ->
             called(Methods.GLASSES_SELECT.name)
             pairs.select(selection.serial)
@@ -316,6 +320,29 @@ public class FakeGlasses internal constructor() {
     /** Sends a touch or a press to every app that collects inputs now, for example `input(TOUCHPAD, TAP)`. */
     public fun input(source: InputSource, action: InputAction) {
         inputs.tryEmit(GlassesInput(source, action, System.currentTimeMillis()))
+    }
+
+    private val samples = MutableSharedFlow<MotionSample>(extraBufferCapacity = 256)
+    private val _motionRate = MutableStateFlow<Int?>(null)
+
+    /** The rate the app collects motion at, null while it does not. Wait for it before [motion], or the sample is lost. */
+    public val motionRate: StateFlow<Int?> = _motionRate.asStateFlow()
+
+    /** Sends [sample] to every app that collects motion now. */
+    public fun motion(sample: MotionSample) {
+        samples.tryEmit(sample)
+    }
+
+    /** Sends an accelerometer reading, in m/s², to every app that collects motion now. */
+    public fun motion(ax: Float, ay: Float, az: Float) {
+        motion(MotionSample(System.nanoTime(), accelerometer = Vector3(ax, ay, az)))
+    }
+
+    internal fun motion(request: MotionRequest): Flow<MotionSample> {
+        if (request.rateHz !in MotionRequest.RATES) {
+            throw KitException(ErrorCode.INVALID_PARAMS, "The glasses sample at ${MotionRequest.RATES.joinToString()} Hz, not ${request.rateHz}.")
+        }
+        return samples.onStart { _motionRate.value = request.rateHz }.onCompletion { _motionRate.value = null }
     }
 
     /** Puts a capture of [type] on the fake glasses, as if their button took it, and returns it. */

@@ -229,6 +229,7 @@ ask what is on the calendar today
 | `charging`, `worn`, `folded`, `connected`, `display` with `on` or `off` | That part of `glasses.status`. |
 | `thermal LEVEL` | `normal`, `light`, `moderate`, `severe` or `critical`. |
 | `input SOURCE ACTION` | A touch or a press for `glasses.inputs`, such as `touchpad tap`. |
+| `motion AX AY AZ` | An accelerometer reading in m/s² for `glasses.motion`, such as `motion 0 9.8 0`. |
 | `gesture FINGER ACTION` | A band gesture for `band.gestures`, such as `index double_tap`. |
 | `photo`, `video` | A new capture on the glasses. |
 | `ask QUESTION` | The wearer asks; the app whose phrase the question holds answers. |

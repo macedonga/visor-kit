@@ -171,9 +171,16 @@ tools to call while it answers.
 
 ## Motion
 
-DAT's `session.addMotion(...)` and `motion.samples` have no VDK equivalent yet: no live motion source on the glasses
-is known to the phone. The glasses do record their IMU at about 960 Hz with each photo and video, and Visor keeps
-that log with the capture.
+| DAT | VDK |
+|---|---|
+| `session.addMotion(MotionConfiguration(samplingRate))` and `motion.samples` | `visor.glasses.motion(rateHz)`, scope `motion` |
+| `MotionSamplingRate` 5, 10, 15, 24, 30, 60 Hz | `rateHz`, the same six values |
+| `MotionSample` (timestamp, accelerometer, gyroscope, magnetometer, orientation, source) | `MotionSample` with the same fields and units |
+| `MotionSource.GLASSES`, `NEURAL_BAND` | `MotionSource.GLASSES`, `BAND` |
+| `MotionError.SENSOR_UNAVAILABLE` | the stream ends with `unsupported` |
+
+> Visor does not serve motion yet: it will once it can open a session with the Display's toolkit app, as it will
+> for layouts. FakeVisor serves it now: `fake.glasses.motion(...)`.
 
 ## Display
 

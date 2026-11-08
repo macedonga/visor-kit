@@ -56,6 +56,7 @@ Type here to play the glasses:
   thermal LEVEL             normal, light, moderate, severe, critical.
   input SOURCE ACTION       A touch or a press: touchpad tap, capture press, ...
   gesture FINGER ACTION     A band gesture: index tap, middle double_tap, ...
+  motion AX AY AZ           An accelerometer reading in m/s², for glasses.motion: motion 0 9.8 0.
   photo|video               A new capture on the glasses.
   ask QUESTION              The wearer asks; the app whose phrase the question holds answers.
   say TEXT                  The glasses hear TEXT, for voice.transcripts.
@@ -171,6 +172,12 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
             "thermal" -> glasses.thermal = ThermalLevel(rest.ifEmpty { throw CliError("thermal needs a level.") })
             "input" -> pair(words, "input SOURCE ACTION").let { (a, b) -> glasses.input(InputSource(a), InputAction(b)) }
             "gesture" -> pair(words, "gesture FINGER ACTION").let { (a, b) -> fake.band.gesture(Finger(a), GestureAction(b)) }
+            "motion" -> {
+                val axes = words.drop(1).joinToString(" ").split(Regex("\\s+")).mapNotNull(String::toFloatOrNull)
+                if (axes.size != 3) throw CliError("Type motion AX AY AZ, in m/s².")
+                if (glasses.motionRate.value == null) say("Motion: no app collects motion; nobody got it")
+                glasses.motion(axes[0], axes[1], axes[2])
+            }
             "photo" -> say("Glasses: ${glasses.add(CaptureType.PHOTO).id} taken")
             "video" -> say("Glasses: ${glasses.add(CaptureType.VIDEO).id} filmed")
             "ask" -> {

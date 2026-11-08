@@ -47,8 +47,10 @@ public final class com/macedonga/visor/kit/DisplayLayout {
 
 public final class com/macedonga/visor/kit/Glasses {
 	public final fun getInputs ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getMotion ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getPairs ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getStatus ()Lkotlinx/coroutines/flow/Flow;
+	public final fun motion (I)Lkotlinx/coroutines/flow/Flow;
 	public final fun select (Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 

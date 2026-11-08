@@ -112,7 +112,7 @@ maps all of it (written 2026-11-07 from github.com/meta/meta-wearables-dat-andro
 | Photo during a stream; `PhotoResolution`, `PhotoQuality` | `camera.live.photo` (HEIC, full size) | built, not tried on glasses |
 | Speech: on-device transcription | `voice.transcripts` | built: headset mic into the phone's recogniser; not tried on glasses |
 | Voice invocations (`LaunchApp`) | `voice.requests` | done |
-| Motion: accelerometer, gyroscope, magnetometer, orientation | | waits on a DWA session (svc7009 + svc6500 IMU) |
+| Motion: accelerometer, gyroscope, magnetometer, orientation | `glasses.motion` | API and FakeVisor built; Visor waits on the app-scope session to the DWA (installed on the Display 2026-11-08) |
 | Inputs: nav, select, back, button, capture, drag | `glasses.inputs`, `band.gestures` | built from svc28's touch and button pushes; not tried on glasses |
 | Display: FlexBox, Text, Image, Button, Icon, Video, taps back | `display.layout.*` | API and FakeVisor built; Visor waits on a DWA session (svc7009 + svc6500 display) |
 | `MockDeviceKit` | `FakeVisor` | done; add the new capabilities as they come |

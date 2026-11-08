@@ -89,6 +89,32 @@ it leaves; `slide_*` is a finger that moves while it rests there. `time` is when
 actions a pair reports depends on its model and firmware: treat an action you do not know as unknown, and a source
 you do not know too.
 
+## Motion
+
+```kotlin
+visor.glasses.motion.collect { sample -> }          // 30 samples a second
+visor.glasses.motion(rateHz = 60).collect { sample -> }
+```
+
+> Visor does not serve motion yet: it will once it can open a session with the Display's toolkit app, the way
+> Meta's toolkit does. Until then the stream ends with `unknown_method`; FakeVisor serves it now.
+
+Motion needs the `motion` scope. The rate is one of 5, 10, 15, 24, 30 or 60 samples a second. A `MotionSample`:
+
+| Field | Type | Meaning |
+|---|---|---|
+| `time` | `Long` | When the sensors read it, in nanoseconds on the glasses' clock. Only differences mean something. |
+| `accelerometer` | `Vector3?` | Acceleration, gravity included, in m/s². |
+| `gyroscope` | `Vector3?` | Rotation speed, in rad/s. |
+| `magnetometer` | `Vector3?` | The magnetic field, in µT. |
+| `orientation` | `Quaternion?` | The sensors combined, as a unit quaternion. |
+| `source` | `MotionSource` | `glasses` or `band`. |
+
+The axes are Android's, in the sensor's frame. A sensor the glasses did not read for a sample is null.
+
+In a test, wait for `fake.glasses.motionRate` to be set, then send readings with `fake.glasses.motion(ax, ay, az)`
+or a whole `MotionSample` with `fake.glasses.motion(sample)`.
+
 ## JSON-RPC
 
 | | Name | Params | Answer |
@@ -99,6 +125,7 @@ you do not know too.
 | Topic | `glasses.pairs` | none | the list now, then on each change |
 | Method | `glasses.select` | `serial` | the new active `GlassesPair` |
 | Topic | `glasses.inputs` | none | a `GlassesInput` for each touch or press |
+| Topic | `glasses.motion` | `rateHz` (default 30) | a `MotionSample` for each reading |
 
 ```
 $ visor call glasses.status

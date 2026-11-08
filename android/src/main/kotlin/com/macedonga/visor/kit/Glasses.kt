@@ -4,6 +4,8 @@ import com.macedonga.visor.kit.protocol.GlassesInput
 import com.macedonga.visor.kit.protocol.GlassesPair
 import com.macedonga.visor.kit.protocol.GlassesStatus
 import com.macedonga.visor.kit.protocol.Methods
+import com.macedonga.visor.kit.protocol.MotionRequest
+import com.macedonga.visor.kit.protocol.MotionSample
 import com.macedonga.visor.kit.protocol.PairSelection
 import com.macedonga.visor.kit.protocol.Scope
 import com.macedonga.visor.kit.protocol.Topics
@@ -28,6 +30,13 @@ public class Glasses internal constructor(private val visor: Visor) {
      */
     public val inputs: Flow<GlassesInput>
         get() = visor.subscribe(Topics.GLASSES_INPUTS, Unit)
+
+    /** The motion sensors, 30 samples a second, while collected. Needs [Scope.MOTION]. */
+    public val motion: Flow<MotionSample>
+        get() = visor.subscribe(Topics.GLASSES_MOTION, MotionRequest())
+
+    /** The motion sensors at [rateHz] samples a second, one of [MotionRequest.RATES], while collected. */
+    public fun motion(rateHz: Int): Flow<MotionSample> = visor.subscribe(Topics.GLASSES_MOTION, MotionRequest(rateHz))
 
     /**
      * Makes the pair [serial] the active one, which every other call then acts on. Returns once Visor has switched,
