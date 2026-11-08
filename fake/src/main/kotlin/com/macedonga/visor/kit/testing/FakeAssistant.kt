@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -72,7 +73,9 @@ public class FakeVoice internal constructor() {
             ?: throw KitException(ErrorCode.INVALID_PARAMS, "No question ${reply.request} is waiting.", reason = "expired")
     }
 
-    private val heard = MutableSharedFlow<String>(extraBufferCapacity = 64)
+    private class Heard(val text: String, val partial: Boolean, val confidence: Double?)
+
+    private val heard = MutableSharedFlow<Heard>(extraBufferCapacity = 64)
     private val _listening = MutableStateFlow(0)
 
     /** How many apps collect transcripts now. Wait for one before [say], as a transcript nobody hears is lost. */
@@ -80,12 +83,21 @@ public class FakeVoice internal constructor() {
 
     /** The glasses hear [text], as one utterance, and every app that collects transcripts gets it. */
     public fun say(text: String) {
-        heard.tryEmit(text)
+        heard.tryEmit(Heard(text, partial = false, confidence = null))
+    }
+
+    /**
+     * The glasses hear [text] with the recogniser's [confidence], from 0 to 1, or null. With [partial] true it is the
+     * text so far, which only apps that asked for partials get.
+     */
+    public fun say(text: String, partial: Boolean, confidence: Double?) {
+        heard.tryEmit(Heard(text, partial, confidence))
     }
 
     internal fun transcripts(request: TranscriptRequest): Flow<Transcript> {
         val language = request.language ?: Locale.getDefault().toLanguageTag()
-        return heard.map { Transcript(it, language, System.currentTimeMillis()) }
+        return heard.filter { request.partials || !it.partial }
+            .map { Transcript(it.text, language, System.currentTimeMillis(), it.partial, it.confidence) }
             .onStart { _listening.update { it + 1 } }
             .onCompletion { _listening.update { it - 1 } }
     }

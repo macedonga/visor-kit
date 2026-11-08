@@ -2827,7 +2827,9 @@ public final class com/macedonga/visor/kit/protocol/TraceRecord$Companion {
 public final class com/macedonga/visor/kit/protocol/Transcript {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/Transcript$Companion;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getConfidence ()Ljava/lang/Double;
 	public final fun getLanguage ()Ljava/lang/String;
+	public final fun getPartial ()Z
 	public final fun getText ()Ljava/lang/String;
 	public final fun getTime ()J
 	public fun hashCode ()I
@@ -2853,6 +2855,7 @@ public final class com/macedonga/visor/kit/protocol/TranscriptRequest {
 	public static final field Companion Lcom/macedonga/visor/kit/protocol/TranscriptRequest$Companion;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getLanguage ()Ljava/lang/String;
+	public final fun getPartials ()Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -2872,7 +2875,9 @@ public final class com/macedonga/visor/kit/protocol/TranscriptRequest$Builder {
 	public fun <init> ()V
 	public final fun build ()Lcom/macedonga/visor/kit/protocol/TranscriptRequest;
 	public final fun getLanguage ()Ljava/lang/String;
+	public final fun getPartials ()Z
 	public final fun setLanguage (Ljava/lang/String;)V
+	public final fun setPartials (Z)V
 }
 
 public final class com/macedonga/visor/kit/protocol/TranscriptRequest$Companion {

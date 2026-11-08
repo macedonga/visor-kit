@@ -17,7 +17,8 @@
   and rows, text, images, the Display's own icons, buttons, button bars and a video) and their styles, with clicks
   back. `display.layout.state` says when the layout goes and why, and `display.video` follows the video. FakeVisor
   serves them; Visor does not yet.
-- `voice.transcripts`, with the `microphone` scope: what the glasses hear, as text, from the phone's recogniser.
+- `voice.transcripts`, with the `microphone` scope: what the glasses hear, as text, from the phone's recogniser,
+  with its confidence, and the text so far while the wearer speaks when the app asks for partials.
   The client binds with `BIND_INCLUDE_CAPABILITIES`, so Visor may record while the app is on screen.
 - Feeds, streams of binary records, over a socket for apps and as Base64 events over JSON-RPC. `camera.live`
   streams the glasses' camera, encoded, with their microphones when asked; `LiveVideoDecoder` and

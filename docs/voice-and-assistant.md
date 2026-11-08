@@ -61,8 +61,18 @@ While transcripts run, the glasses act as a call headset, so music pauses as in 
 only while it may use the microphone: while your app is on screen, or Visor is. The VDK lends Visor your app's
 access when it binds, so keep collecting from a visible screen. From a computer, keep Visor on screen.
 
-Each `Transcript` has the `text`, the `language` it was heard in, and the `time` the utterance ended. Several apps
-can listen at once, in one language: an app that asks for another language meanwhile fails with `busy`.
+Each `Transcript` has the `text`, the `language` it was heard in, the `time` the utterance ended, and the
+recogniser's `confidence` from 0 to 1 when it gives one. Several apps can listen at once, in one language: an app
+that asks for another language meanwhile fails with `busy`.
+
+Ask for `partials` to get the text while the wearer speaks, as DAT gives it. A partial transcript has `partial`
+true, and the next one replaces it; the finished utterance comes last with `partial` false:
+
+```kotlin
+visor.voice.transcripts(TranscriptRequest { partials = true }).collect { t ->
+    if (t.partial) caption.text = t.text else log.append(t.text)
+}
+```
 
 The stream ends with:
 
@@ -153,7 +163,7 @@ there `post` fails with `unsupported`.
 |---|---|---|---|
 | Topic | `voice.requests` | `phrases` | `VoiceRequest` |
 | Method | `voice.reply` | `request`, `text`, `listen` (default false) | `{}` |
-| Topic | `voice.transcripts` | `language` (optional) | `Transcript` |
+| Topic | `voice.transcripts` | `language`, `partials` (optional) | `Transcript`: `text`, `language`, `time`, `partial`, `confidence` |
 | Topic | `assistant.tools` | `tools`: a list of `{name, description, schema}` | `ToolCall` |
 | Method | `assistant.tools.answer` | `call`, `text`, `error` (default false) | `{}` |
 | Topic | `assistant.turns` | none | `AssistantTurn` |

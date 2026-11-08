@@ -35,11 +35,14 @@ public class VoiceRequest @KitInternal constructor(
 public class TranscriptRequest @KitInternal constructor(
     /** The language to hear, as a BCP 47 tag such as `en-US`; null for the phone's language. */
     public val language: String? = null,
+    /** True to get the text while the wearer speaks, as [Transcript.partial] transcripts, as DAT gives it. */
+    public val partials: Boolean = false,
 ) {
     public class Builder {
         public var language: String? = null
+        public var partials: Boolean = false
 
-        public fun build(): TranscriptRequest = TranscriptRequest(language)
+        public fun build(): TranscriptRequest = TranscriptRequest(language, partials)
     }
 }
 
@@ -47,15 +50,22 @@ public class TranscriptRequest @KitInternal constructor(
 public fun TranscriptRequest(block: TranscriptRequest.Builder.() -> Unit): TranscriptRequest =
     TranscriptRequest.Builder().apply(block).build()
 
-/** One finished utterance, from [Topics.VOICE_TRANSCRIPTS]. */
+/**
+ * One utterance, from [Topics.VOICE_TRANSCRIPTS]: finished, or while it is spoken when the app asked for
+ * [TranscriptRequest.partials]. Each partial replaces the one before; keep only the finished ones.
+ */
 @Poko
 @Serializable
 public class Transcript @KitInternal constructor(
     public val text: String,
     /** The language it was heard in, as a BCP 47 tag. */
     public val language: String,
-    /** When the utterance ended, in milliseconds since 1970. */
+    /** When the utterance ended, or when this part was heard, in milliseconds since 1970. */
     public val time: Long,
+    /** True while the wearer still speaks: the text so far, which the next transcript replaces. */
+    public val partial: Boolean = false,
+    /** How sure the recogniser is, from 0 to 1; null when it does not say. */
+    public val confidence: Double? = null,
 )
 
 /** The params of [Methods.VOICE_REPLY]. */

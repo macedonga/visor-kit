@@ -72,6 +72,7 @@ Type here to play the glasses:
   photo|video               A new capture on the glasses.
   ask QUESTION              The wearer asks; the app whose phrase the question holds answers.
   say TEXT                  The glasses hear TEXT, for voice.transcripts.
+  partial TEXT              The text so far of an utterance, for apps that asked for partials.
   tool NAME [JSON]          The assistant calls an app's tool with JSON arguments.
   turn QUESTION / ANSWER    The wearer asks the assistant QUESTION and it answers ANSWER.
   click ID                  A tap on an element of the layout on the Display.
@@ -226,6 +227,7 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
                 if (fake.voice.listening.value == 0) say("Voice: no app collects transcripts; nobody heard it")
                 fake.voice.say(rest)
             }
+            "partial" -> fake.voice.say(rest, partial = true, confidence = null)
             "tool" -> {
                 val name = words.getOrNull(1) ?: throw CliError("tool needs a name.")
                 val arguments = words.getOrNull(2)?.let { parseObject(it) } ?: JsonObject(emptyMap())

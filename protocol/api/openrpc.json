@@ -991,7 +991,7 @@
         },
         {
             "name": "voice.transcripts",
-            "summary": "What the glasses' microphones hear, as text, one utterance at a time.",
+            "summary": "What the glasses' microphones hear, as text, one utterance at a time, and as it is spoken when asked.",
             "params": [
                 {
                     "name": "language",
@@ -1005,6 +1005,13 @@
                                 "type": "null"
                             }
                         ]
+                    }
+                },
+                {
+                    "name": "partials",
+                    "required": false,
+                    "schema": {
+                        "type": "boolean"
                     }
                 }
             ],
@@ -2643,6 +2650,19 @@
                     },
                     "time": {
                         "type": "integer"
+                    },
+                    "partial": {
+                        "type": "boolean"
+                    },
+                    "confidence": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
                     }
                 },
                 "required": [

@@ -358,7 +358,7 @@ public object Topics {
      */
     public val VOICE_TRANSCRIPTS: Topic<TranscriptRequest, Transcript> = Topic(
         "voice.transcripts", Scope.MICROPHONE, 1,
-        "What the glasses' microphones hear, as text, one utterance at a time.",
+        "What the glasses' microphones hear, as text, one utterance at a time, and as it is spoken when asked.",
         TranscriptRequest.serializer(), Transcript.serializer(),
     )
 
