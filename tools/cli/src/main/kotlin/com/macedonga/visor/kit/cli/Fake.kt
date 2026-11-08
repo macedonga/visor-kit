@@ -6,7 +6,9 @@ import com.macedonga.visor.kit.protocol.GestureAction
 import com.macedonga.visor.kit.protocol.InputAction
 import com.macedonga.visor.kit.protocol.InputSource
 import com.macedonga.visor.kit.protocol.KitJson
+import com.macedonga.visor.kit.protocol.Layout
 import com.macedonga.visor.kit.protocol.LayoutNode
+import com.macedonga.visor.kit.protocol.LayoutState
 import com.macedonga.visor.kit.protocol.LayoutVideoState
 import com.macedonga.visor.kit.protocol.Scope
 import com.macedonga.visor.kit.protocol.ThermalLevel
@@ -22,8 +24,10 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
+import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
+import io.ktor.server.websocket.DefaultWebSocketServerSession
 import io.ktor.server.websocket.WebSockets
 import io.ktor.server.websocket.webSocket
 import io.ktor.websocket.Frame
@@ -38,10 +42,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 internal val FAKE_USAGE = """
 Usage: visor fake [--port PORT] [--lan]
@@ -49,7 +58,8 @@ Usage: visor fake [--port PORT] [--lan]
 FakeVisor on this computer, for building without a phone or glasses. Apps and scripts reach it as they reach
 Visor's network door: JSON-RPC over WebSocket on ws://127.0.0.1:PORT/rpc and MCP on http://127.0.0.1:PORT/mcp
 (7333 by default; no token). The visor command reaches it with --fake, for example: visor --fake watch
-band.gestures. Every scope is granted; grant and revoke below change that.
+band.gestures. The Display simulator is at http://127.0.0.1:PORT/display. Every scope is granted; grant and
+revoke below change that.
 
 Type here to play the glasses:
   battery N                 The glasses' battery, 0 to 100.
@@ -69,6 +79,12 @@ Type here to play the glasses:
   grant|revoke SCOPE...     Changes the scopes the fake person granted.
   quit
 """.trim()
+
+private val SIMULATOR_FILES = mapOf(
+    "renderer.js" to ContentType.Text.JavaScript,
+    "display.css" to ContentType.Text.CSS,
+    "simulator.html" to ContentType.Text.Html,
+)
 
 /** The port the visor command reaches the fake on, next to the network door's. */
 internal fun fakeShellPort(port: Int): Int = port + 1
@@ -108,6 +124,13 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
                     val answer = mcp.answer(fake.caller, call.receiveText())
                     if (answer == null) call.respond(HttpStatusCode.Accepted) else call.respondText(answer, ContentType.Application.Json)
                 }
+                get("/display") { call.respondText(simulatorFile("simulator.html"), ContentType.Text.Html) }
+                get("/display/{file}") {
+                    val name = call.parameters["file"]
+                    val type = SIMULATOR_FILES[name] ?: return@get call.respond(HttpStatusCode.NotFound)
+                    call.respondText(simulatorFile(name!!), type)
+                }
+                webSocket("/display/ws") { simulator(this) }
             }
         }.start(wait = false)
         val shell = try {
@@ -118,6 +141,7 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
         Thread({ accept(shell) }, "visor-fake-shell").apply { isDaemon = true }.start()
         report()
         System.err.println("FakeVisor on ws://$host:$port/rpc and http://$host:$port/mcp; visor --fake on port ${fakeShellPort(port)}. Type help.")
+        System.err.println("The Display simulator: http://127.0.0.1:$port/display")
         while (true) {
             val line = readlnOrNull()?.trim() ?: return
             if (line.isEmpty()) continue
@@ -247,6 +271,38 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
         scope.launch { fake.live.watching.drop(1).collect { say(if (it) "Camera: live" else "Camera: live stopped") } }
         scope.launch { fake.voice.listening.drop(1).collect { say("Voice: $it collecting transcripts") } }
     }
+
+    /** The Display simulator's page: the fake Display's layout as it changes, and the wearer's clicks, back and video back. */
+    private suspend fun simulator(socket: DefaultWebSocketServerSession) {
+        val updates = socket.launch {
+            combine(fake.display.layout, fake.display.state) { layout, state ->
+                buildJsonObject {
+                    put("layout", layout?.let { KitJson.encodeToJsonElement(Layout.serializer(), it) } ?: JsonNull)
+                    put("state", KitJson.encodeToJsonElement(LayoutState.serializer(), state))
+                }.toString()
+            }.collect { socket.outgoing.send(Frame.Text(it)) }
+        }
+        try {
+            for (frame in socket.incoming) {
+                if (frame !is Frame.Text) continue
+                val message = runCatching { KitJson.parseToJsonElement(frame.readText()).jsonObject }.getOrNull() ?: continue
+                runCatching {
+                    message["click"]?.jsonPrimitive?.contentOrNull?.let(fake.display::click)
+                    if (message["back"] != null) fake.display.back()
+                    message["video"]?.jsonObject?.let { video ->
+                        val state = video["state"]?.jsonPrimitive?.contentOrNull ?: return@let
+                        fake.display.video(LayoutVideoState(state), video["error"]?.jsonPrimitive?.contentOrNull)
+                    }
+                }.onFailure { say("Simulator: ${it.message}") }
+            }
+        } finally {
+            updates.cancel()
+        }
+    }
+
+    private fun simulatorFile(name: String): String =
+        checkNotNull(FakeVisor::class.java.getResourceAsStream("display/$name")) { "The simulator's $name is missing from the build." }
+            .use { it.readBytes().decodeToString() }
 
     private fun count(node: LayoutNode): Int = 1 + node.children.orEmpty().sumOf(::count)
 

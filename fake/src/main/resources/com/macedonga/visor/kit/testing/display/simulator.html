@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Display simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<link rel="stylesheet" href="/display/display.css">
+<style>
+  :root {
+    --page: #16171a;
+    --panel: #1f2024;
+    --line: #2e3035;
+    --ink: #e9eaec;
+    --muted: #9a9ca3;
+    --accent: #7fb2ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--page);
+    color: var(--ink);
+    font: 14px/1.45 system-ui, sans-serif;
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .stage {
+    position: relative;
+    width: 640px;
+    height: 640px;
+    border-radius: 36px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    flex: none;
+  }
+  .scene, .scene video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .scene[data-scene="black"] { background: #000; }
+  .scene[data-scene="room"] { background: radial-gradient(circle at 30% 30%, #6b4b32, #2b1f17 55%, #120d0a); }
+  .scene[data-scene="street"] { background: linear-gradient(#a9cdf0, #dfe6ec 55%, #8c8f93 56%, #5d6166); }
+  .scene[data-scene="night"] { background: radial-gradient(circle at 70% 75%, #3a3f6b, #12142a 50%, #05060d); }
+  /* The Display adds light: its black is clear, so it is blended onto the scene. */
+  .lens {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    mix-blend-mode: screen;
+    transition: opacity 0.4s;
+  }
+  .lens.dim { opacity: 0.45; }
+  .lens.asleep { opacity: 0; }
+  aside {
+    width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  section {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  h1 { font-size: 16px; margin: 0 0 4px; }
+  h2 { font-size: 12px; margin: 0 0 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .status { color: var(--muted); }
+  .status.on { color: #8fd18f; }
+  .pad {
+    display: grid;
+    grid-template-columns: repeat(3, 56px);
+    grid-template-rows: repeat(3, 44px);
+    gap: 6px;
+    justify-content: center;
+  }
+  button, select {
+    font: inherit;
+    color: var(--ink);
+    background: #2a2c31;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  button:hover, select:hover { border-color: #4a4d55; }
+  button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .pad button { padding: 0; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  label { display: flex; gap: 8px; align-items: center; }
+  input[type="range"] { flex: 1; accent-color: var(--accent); }
+  .keys { color: var(--muted); margin-top: 10px; font-size: 12px; }
+  .log {
+    font: 12px/1.5 ui-monospace, monospace;
+    max-height: 220px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    color: var(--muted);
+  }
+  .log b { color: var(--ink); font-weight: 400; }
+  .recording { border-color: #e06c6c; color: #ffb3b3; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="scene" id="scene" data-scene="black"></div>
+  <div class="lens" id="lens"><div class="vd-screen" id="screen"></div></div>
+</div>
+<aside>
+  <section>
+    <h1>Display simulator</h1>
+    <div class="status" id="status">Connecting to visor fake...</div>
+  </section>
+  <section>
+    <h2>Touchpad and band</h2>
+    <div class="pad">
+      <span></span><button data-move="up" aria-label="Up">Up</button><span></span>
+      <button data-move="left" aria-label="Left">Left</button>
+      <button id="select">Select</button>
+      <button data-move="right" aria-label="Right">Right</button>
+      <span></span><button data-move="down" aria-label="Down">Down</button><button id="back">Back</button>
+    </div>
+    <div class="keys">Keys: arrows to move, Enter to select, Backspace or Esc to go back. A click on an element selects it.</div>
+  </section>
+  <section>
+    <h2>View</h2>
+    <div class="row">
+      <label for="background">Background</label>
+      <select id="background">
+        <option value="black">Black</option>
+        <option value="room">Room</option>
+        <option value="street">Street, daylight</option>
+        <option value="night">Night</option>
+        <option value="webcam">Webcam</option>
+      </select>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <label for="brightness" style="flex:1">Brightness <input id="brightness" type="range" min="10" max="100" value="100"></label>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <label><input id="dim" type="checkbox"> Dim and sleep as the Display does (20 s, 25 s)</label>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button id="shot">Screenshot</button>
+      <button id="record">Record</button>
+    </div>
+  </section>
+  <section>
+    <h2>Events</h2>
+    <div class="log" id="log"></div>
+  </section>
+</aside>
+<script src="/display/renderer.js"></script>
+<script>
+"use strict";
+const screen = document.getElementById("screen");
+const lens = document.getElementById("lens");
+const statusLine = document.getElementById("status");
+const logBox = document.getElementById("log");
+let socket = null;
+let view = null;
+
+function log(text) {
+  const line = document.createElement("div");
+  line.innerHTML = `${new Date().toLocaleTimeString()}  <b></b>`;
+  line.querySelector("b").textContent = text;
+  logBox.prepend(line);
+}
+
+function send(message) {
+  if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message));
+}
+
+const on = {
+  click(id) { wake(); log(`click ${id}`); send({ click: id }); },
+  back() { wake(); log("back"); send({ back: true }); },
+  video(state, error) { log(`video ${state}${error ? " " + error : ""}`); send({ video: { state, error: error || null } }); },
+};
+
+function show(layout) {
+  view = VisorDisplay.render(layout, screen, on);
+  wake();
+}
+
+function connect() {
+  socket = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/display/ws`);
+  socket.onopen = () => { statusLine.textContent = "Connected to visor fake"; statusLine.classList.add("on"); };
+  socket.onclose = () => {
+    statusLine.textContent = "Not connected. Is visor fake running?";
+    statusLine.classList.remove("on");
+    setTimeout(connect, 1000);
+  };
+  socket.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    if ("layout" in message) {
+      show(message.layout);
+      log(message.layout ? "layout shown" : `layout gone${message.state?.reason ? " (" + message.state.reason + ")" : ""}`);
+    }
+  };
+}
+
+// Dims after 20 s without input and sleeps after 25 s, as the Display does; any input wakes it.
+let dimTimer = null;
+let sleepTimer = null;
+function wake() {
+  lens.classList.remove("dim", "asleep");
+  clearTimeout(dimTimer);
+  clearTimeout(sleepTimer);
+  if (!document.getElementById("dim").checked) return;
+  dimTimer = setTimeout(() => lens.classList.add("dim"), 20000);
+  sleepTimer = setTimeout(() => lens.classList.add("asleep"), 25000);
+}
+document.getElementById("dim").addEventListener("change", wake);
+
+document.querySelectorAll("[data-move]").forEach((b) => b.addEventListener("click", () => { wake(); view?.move(b.dataset.move); }));
+document.getElementById("select").addEventListener("click", () => { wake(); view?.select(); });
+document.getElementById("back").addEventListener("click", () => view?.back());
+document.addEventListener("keydown", (event) => {
+  if (event.target.closest("select, input")) return;
+  const move = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" }[event.key];
+  if (move) { wake(); view?.move(move); event.preventDefault(); }
+  else if (event.key === "Enter" || event.key === " ") { wake(); view?.select(); event.preventDefault(); }
+  else if (event.key === "Backspace" || event.key === "Escape") { view?.back(); event.preventDefault(); }
+});
+
+document.getElementById("brightness").addEventListener("input", (event) => {
+  screen.style.filter = `brightness(${event.target.value / 100})`;
+});
+
+let camera = null;
+document.getElementById("background").addEventListener("change", async (event) => {
+  const scene = document.getElementById("scene");
+  camera?.getTracks().forEach((t) => t.stop());
+  camera = null;
+  scene.replaceChildren();
+  scene.dataset.scene = event.target.value;
+  if (event.target.value !== "webcam") return;
+  try {
+    camera = await navigator.mediaDevices.getUserMedia({ video: true });
+    const feed = document.createElement("video");
+    feed.autoplay = true;
+    feed.muted = true;
+    feed.srcObject = camera;
+    scene.append(feed);
+  } catch (error) {
+    log(`webcam: ${error.message}`);
+    event.target.value = "black";
+    scene.dataset.scene = "black";
+  }
+});
+
+// Screenshots and recordings capture this tab, cropped to the stage where the browser can (Chrome).
+async function captureStage() {
+  const stream = await navigator.mediaDevices.getDisplayMedia({ video: { displaySurface: "browser" }, preferCurrentTab: true });
+  const [track] = stream.getVideoTracks();
+  if ("CropTarget" in window && track.cropTo) {
+    await track.cropTo(await CropTarget.fromElement(document.getElementById("stage")));
+  }
+  return stream;
+}
+
+function download(blob, name) {
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = name;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+}
+
+document.getElementById("shot").addEventListener("click", async () => {
+  try {
+    const stream = await captureStage();
+    const video = document.createElement("video");
+    video.srcObject = stream;
+    video.muted = true;
+    await video.play();
+    await new Promise((r) => setTimeout(r, 300));
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d").drawImage(video, 0, 0);
+    stream.getTracks().forEach((t) => t.stop());
+    canvas.toBlob((blob) => download(blob, "display.png"), "image/png");
+  } catch (error) {
+    log(`screenshot: ${error.message}`);
+  }
+});
+
+let recorder = null;
+document.getElementById("record").addEventListener("click", async (event) => {
+  const button = event.currentTarget;
+  if (recorder) { recorder.stop(); return; }
+  try {
+    const stream = await captureStage();
+    const chunks = [];
+    recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+    recorder.ondataavailable = (e) => chunks.push(e.data);
+    recorder.onstop = () => {
+      stream.getTracks().forEach((t) => t.stop());
+      download(new Blob(chunks, { type: "video/webm" }), "display.webm");
+      recorder = null;
+      button.textContent = "Record";
+      button.classList.remove("recording");
+    };
+    recorder.start();
+    button.textContent = "Stop recording";
+    button.classList.add("recording");
+  } catch (error) {
+    log(`record: ${error.message}`);
+    recorder = null;
+  }
+});
+
+show(null);
+connect();
+</script>
+</body>
+</html>

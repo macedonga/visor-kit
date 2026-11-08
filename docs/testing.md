@@ -208,13 +208,15 @@ Android. `kit-testing` adds `connect()`, which needs the Android library.
 
 - JSON-RPC over WebSocket on `ws://127.0.0.1:7333/rpc`, as Visor's [network door](network.md), with no token;
 - MCP on `http://127.0.0.1:7333/mcp`, for an assistant on your computer;
-- the `visor` command, with `--fake` in place of `-s SERIAL`.
+- the `visor` command, with `--fake` in place of `-s SERIAL`;
+- the Display simulator on `http://127.0.0.1:7333/display`.
 
 Every scope is granted. Its console plays the glasses, and prints what apps do to them:
 
 ```
 $ visor fake
 FakeVisor on ws://127.0.0.1:7333/rpc and http://127.0.0.1:7333/mcp; visor --fake on port 7334. Type help.
+The Display simulator: http://127.0.0.1:7333/display
 00:23:47  Display: the prompter shows "Hello from the fake"
 00:23:47  Band: a buzz of 400 ms
 gesture index double_tap
@@ -237,12 +239,30 @@ ask what is on the calendar today
 | `tool NAME [JSON]` | The assistant calls an app's tool. |
 | `turn QUESTION / ANSWER` | The wearer asks the assistant and it answers, for `assistant.turns`. |
 | `click ID` | A tap on an element of the layout on the Display. |
+| `back` | The wearer goes back: the layout goes. |
+| `video STATE [ERROR]` | The layout's video moves to `playing`, `paused`, `ended`, or `failed` with an error. |
 | `grant SCOPE...`, `revoke SCOPE...` | The scopes the fake person granted. |
 
 From another terminal, the command works on the fake as on a phone: `visor --fake trace`, `visor --fake watch
 band.gestures`, `visor --fake call display.prompter.show '{"text":"Hi"}'`. The Python client has
 `visor_kit.connect_fake()` and the TypeScript one `Visor.connectFake()`. `--port N` moves the doors to N and the
 command's port to N + 1; `--lan` opens the doors to the local network.
+
+### The Display simulator
+
+Open `http://127.0.0.1:7333/display` while `visor fake` runs. It draws the layout an app shows on the fake Display
+at 600 by 600, by the same rules Visor uses to send it to the glasses, and it plays the wearer:
+
+- the arrow keys move the focus as the touchpad and the band do, Enter selects, Backspace or Esc goes back; a
+  click on an element selects it too. The app gets the clicks and the `back` as from the glasses;
+- the Display adds light, so its black is clear: the page draws it over a background (black, a room, a street in
+  daylight, a night street, or your webcam) with a brightness slider;
+- a box can dim and sleep after 20 and 25 seconds, as the Display does;
+- a video plays, and its pauses, end and failures reach the app on `display.video`;
+- Screenshot and Record save the display as a PNG or a WebM (Chrome crops them to the display).
+
+Icons are drawn with the nearest Material Symbol; the Display draws its own glyphs. Check a layout on the glasses
+before you ship it.
 
 ## The sample app
 

@@ -61,6 +61,12 @@ is a column; boxes nest. The elements are DAT's, with the same sizes and styles:
 Every element also takes `grow` and `shrink`, its share of the free space along its box, and `alignSelf`, its own
 place across the box.
 
+On the Display the three button styles look alike: Meta's renderer keeps only an icon's outline from them. A
+button bar shows its labels while they fit, and only its icons when they do not.
+
+To see a layout without the glasses, open the Display simulator that `visor fake` serves: see
+[Testing](testing.md#the-display-simulator).
+
 ```kotlin
 visor.display.layout.show(Layout {
     padding = 24

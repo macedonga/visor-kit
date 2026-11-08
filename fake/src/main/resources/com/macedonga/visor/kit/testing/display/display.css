@@ -1,0 +1,98 @@
+/* The Display as renderer.js draws it: 600 by 600, black is clear, white text, translucent pills and cards. */
+.vd-screen {
+  position: relative;
+  width: 600px;
+  height: 600px;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.vd-root {
+  box-sizing: border-box;
+  width: 600px;
+  min-height: 600px;
+  max-height: 600px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.vd-root::-webkit-scrollbar { display: none; }
+
+.vd-box {
+  display: flex;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.vd-card {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+}
+
+.vd-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.vd-clip {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.vd-image { display: block; }
+
+.vd-glyph {
+  font-family: "Material Symbols Rounded";
+  font-size: 32px;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  user-select: none;
+}
+
+.vd-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 88px;
+  padding: 0 32px;
+  box-sizing: border-box;
+  border-radius: 44px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 28px;
+  line-height: 36px;
+  white-space: nowrap;
+}
+
+.vd-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
+  height: 88px;
+  overflow: hidden;
+}
+
+.vd-tight .vd-grouped:has(.vd-glyph) .vd-label { display: none; }
+
+.vd-tight .vd-grouped:has(.vd-glyph) { padding: 0 28px; }
+
+.vd-focusable { cursor: pointer; }
+
+.vd-focused {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+  background-color: rgba(255, 255, 255, 0.32);
+}
+
+.vd-video {
+  width: 600px;
+  height: 600px;
+  object-fit: contain;
+  background: #000;
+}
