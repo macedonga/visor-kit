@@ -16,4 +16,5 @@ kotlin {
 dependencies {
     api(project(":kit"))
     api(project(":kit-fake"))
+    implementation(libs.kotlinx.coroutines.android)
 }

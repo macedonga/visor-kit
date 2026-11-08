@@ -257,12 +257,15 @@ at 600 by 600, by the same rules Visor uses to send it to the glasses, and it pl
   click on an element selects it too. The app gets the clicks and the `back` as from the glasses;
 - the Display adds light, so its black is clear: the page draws it over a background (black, a room, a street in
   daylight, a night street, or your webcam) with a brightness slider;
-- a box can dim and sleep after 20 and 25 seconds, as the Display does;
+- a checkbox makes it dim and sleep after 20 and 25 seconds, as the Display does;
 - a video plays, and its pauses, end and failures reach the app on `display.video`;
 - Screenshot and Record save the display as a PNG or a WebM (Chrome crops them to the display).
 
 Icons are drawn with the nearest Material Symbol; the Display draws its own glyphs. Check a layout on the glasses
 before you ship it.
+
+In the app itself, `fake.display.preview(context)` from `kit-testing` is a view with the same renderer: it draws
+what the fake Display shows and clicks what you tap, as DAT's `createPreviewView()` does.
 
 ## The sample app
 
