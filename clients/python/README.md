@@ -53,7 +53,7 @@ asyncio.run(main())
 | Connect with | What it needs | Scopes |
 |---|---|---|
 | `connect_adb(serial=None)` | adb, and Developer mode on in Visor | Every scope |
-| `connect_network("ws://127.0.0.1:7333/rpc", token)` | A client the person made in Visor's Advanced settings, under Network access, and the network extra | That client's |
+| `connect_network("ws://127.0.0.1:7333/rpc", token)` | A program the person added in Visor, under Settings, Apps, Programs and agents, and the network extra | That client's |
 | `connect_fake()` | `visor fake` running on this computer, and the network extra | The ones the fake grants |
 
 ## Use it

@@ -24,6 +24,6 @@ description: Layouts, Briefing cards and web apps on the Meta Ray-Ban Display: e
 
 - A web app on the Display uses the VDK from JavaScript: `if (onGlasses()) visor = await Visor.connectGlasses()`
   (TypeScript client). It fails with `refused`, reason `not_allowed`, until the person allows the app in Visor >
-  Settings > Web apps > the app > Visor access; show them that path. Elsewhere, `Visor.connectFake()`.
+  Settings > Apps > the app > Visor access; show them that path. Elsewhere, `Visor.connectFake()`.
 
 Details: `read_vdk_doc` with `display`, `briefing-cards` and `web-apps`, and `testing` for the simulator.

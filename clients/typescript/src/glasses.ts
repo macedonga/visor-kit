@@ -4,7 +4,7 @@
  * advertisements: a JSON-RPC message goes to Visor in a manufacturer-data filter, and comes back in an advertisement's
  * manufacturer data. One long scan carries everything Visor sends; each message to Visor is a scan of its own.
  *
- * The person allows it for each web app, in Visor's Settings > Web apps: "Nearby Bluetooth devices", which lets the
+ * The person allows it for each web app, in Visor's Settings > Apps: "Nearby Bluetooth devices", which lets the
  * page scan at all, and "Visor access", which picks the scopes.
  */
 

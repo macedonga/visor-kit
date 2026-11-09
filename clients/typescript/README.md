@@ -48,8 +48,8 @@ const visor =
 
 | From | Connect with | What it needs |
 |---|---|---|
-| A web app on the Display | `connectGlasses()` | The person allows the app in Visor, Settings > Web apps. Until then it rejects with `refused` and reason `not_allowed`. |
-| A program or a page | `connect(url, token)` | A client the person made in Visor's Advanced settings, under Network access. It holds the scopes they gave it. |
+| A web app on the Display | `connectGlasses()` | The person allows the app in Visor, Settings > Apps. Until then it rejects with `refused` and reason `not_allowed`. |
+| A program or a page | `connect(url, token)` | A program the person added in Visor, under Settings, Apps, Programs and agents. It holds the scopes they gave it. |
 | Your computer, with no phone | `connectFake()` | `visor fake` running. |
 
 ## Use it

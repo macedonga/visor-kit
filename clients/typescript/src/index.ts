@@ -113,7 +113,7 @@ export class Visor {
 
   /**
    * Connects from a web app on the Meta Ray-Ban Display, through the Display's browser and the phone's Visor. The
-   * person allows the app in Visor, Settings > Web apps > the app > Visor access.
+   * person allows the app in Visor, Settings > Apps > the app > Visor access.
    *
    * Rejects with a `VisorError`: `unsupported` outside the Display's browser (check `onGlasses()` first), `refused`
    * with the reason `not_allowed` when the app is not allowed, and `visor_gone` when Visor does not answer within
@@ -131,7 +131,7 @@ export class Visor {
         code: "refused",
         reason: "not_allowed",
         message: `The glasses did not let this web app reach Visor (${(e as Error).message}). ` +
-          "On the phone, in Visor: Settings > Web apps > this app > Visor access.",
+          "On the phone, in Visor: Settings > Apps > this app > Visor access.",
       });
     }
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -141,7 +141,7 @@ export class Visor {
         reject(new VisorError({
           code: "visor_gone",
           message: "Visor did not answer. Check that Visor runs on the phone, and that this web app has Visor access in " +
-            "Settings > Web apps.",
+            "Settings > Apps.",
         }));
       }, timeoutMs);
     });
