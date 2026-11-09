@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 0.1.1
+
+### Changed
+
+- The TypeScript client is published to npm by trusted publishing from this repository's release workflow, with a
+  provenance statement, and no token.
+- Each release also puts a copy of the libraries and of the TypeScript client on GitHub Packages, so the repository
+  lists them. Maven Central, npmjs.com and PyPI stay the places to install from.
+- The docs moved to visor.macedonga.com, and they name the first Visor with the VDK: Visor 3.0.0.
+- The `visor` command installs with one line, from visor.macedonga.com/install.sh or install.ps1.
+
 ## 0.1.0
 
 ### Added

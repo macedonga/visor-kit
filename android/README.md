@@ -9,7 +9,7 @@ the glasses, the Neural Band and the Display through one `Visor` object, with th
 
 ```kotlin
 dependencies {
-    implementation("com.macedonga.visor:kit:0.1.0")
+    implementation("com.macedonga.visor:kit:0.1.1")
 }
 ```
 

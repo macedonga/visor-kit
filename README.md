@@ -66,7 +66,7 @@ same from every language. The person grants each app its **scopes** in Visor, an
 
 ```kotlin
 dependencies {
-    implementation("com.macedonga.visor:kit:0.1.0")
+    implementation("com.macedonga.visor:kit:0.1.1")
 }
 ```
 

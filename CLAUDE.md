@@ -111,8 +111,8 @@ Library versions are semver. `KitProtocol.VERSION` counts separately and only go
 
 ## Roadmap
 
-Status as of 2026-11-09: phases 1 to 5 are built. On the glasses, tried means on the Meta Ray-Ban Display (A024 phone)
-unless said; Visor's own record is visor/memory/vdk.md.
+Status as of 2026-11-09: phases 1 to 5 are done. On 2026-11-09 the user marked every capability that was built and not
+yet tried on the glasses as done. Visor serves the VDK from Visor 3.0.0; Visor's own record is visor/memory/vdk.md.
 
 Parity with Meta's DAT (1.0.1) is a goal: every DAT capability gets a kit equivalent, and the docs' `porting-from-dat.md`
 maps all of it (written 2026-11-07 from github.com/meta/meta-wearables-dat-android). Status:
@@ -123,37 +123,31 @@ maps all of it (written 2026-11-07 from github.com/meta/meta-wearables-dat-andro
 | `DeviceSession` and its states | `VisorState` | done |
 | `DeviceSelector` | `glasses.pairs`, `glasses.select` | done |
 | `Device`: battery, charging, don, hinge, link, thermal, display | `glasses.status` | done |
-| Camera stream: quality, frame rate, HEVC or decoded | `camera.live`, `LiveVideoDecoder` | built, not tried on glasses (the camera only with the user's go) |
-| Stream audio (PCM) | `camera.live` audio, `LiveAudioDecoder` | built, not tried on glasses |
-| Photo during a stream; `PhotoResolution`, `PhotoQuality` | `camera.live.photo` (HEIC, full size) | built, not tried on glasses |
-| Speech: on-device transcription | `voice.transcripts` | Ray-Ban Meta: the headset mic into the phone's recogniser, not tried. The Display: the toolkit app's speech, built 2026-11-09, not tried |
+| Camera stream: quality, frame rate, HEVC or decoded | `camera.live`, `LiveVideoDecoder` | done |
+| Stream audio (PCM) | `camera.live` audio, `LiveAudioDecoder` | done |
+| Photo during a stream; `PhotoResolution`, `PhotoQuality` | `camera.live.photo` (HEIC, full size) | done |
+| Speech: on-device transcription | `voice.transcripts` | done |
 | Voice invocations (`LaunchApp`) | `voice.requests`, `VoiceLaunch` | done |
-| Motion: accelerometer, gyroscope, magnetometer, orientation | `glasses.motion` | tried: the glasses' data collection daemon (svc1027), nothing on screen |
-| Inputs: nav, select, back, button, capture, drag | `glasses.inputs`, `band.gestures` | tried while a layout shows (the toolkit app's input capability); outside layouts, touchpad taps are not found |
-| Display: FlexBox, Text, Image, Button, Icon, Video, taps back | `display.layout.*` | tried: through Visor's own toolkit session, videos included |
+| Motion: accelerometer, gyroscope, magnetometer, orientation | `glasses.motion` | done |
+| Inputs: nav, select, back, button, capture, drag | `glasses.inputs`, `band.gestures` | done |
+| Display: FlexBox, Text, Image, Button, Icon, Video, taps back | `display.layout.*` | done |
 | `MockDeviceKit` | `FakeVisor` | done; add the new capabilities as they come |
 
-Beyond DAT: `display.cards.*` (Briefing cards; cards, details, pages, colours, images and clicks in a detail tried;
-charts, weather illustrations, toasts and live cards not yet),
-`voice.speak` (tried), `settings.*` (tried), `assistant.*`, `notify.post`, `display.prompter.*` (tried), webhooks
-(tried), the network door and MCP, `visor fake` and its simulator.
+Beyond DAT, all done: `display.cards.*` (Briefing cards with details, pages, charts, weather illustrations, toasts,
+live updates and clicks), `voice.speak`, `settings.*`, `assistant.*`, `notify.post`, `display.prompter.*`, webhooks,
+the network door and MCP, `visor fake` and its simulator, the band shared with the phone and `band.motion`, and the
+VDK in the Display's web apps with their WebMCP tools.
 
-0. Measure on the glasses, with the user: touchpad and capture button events on glasses without a display (the
-   Gen 2 pair); `assistant.turns` live. Dropped by the user (2026-11-09): touchpad data outside layouts on the
-   Display ("what's an actual use case?"). `band.buzz` as it is, borrowing the band, is "useless if it disconnects
-   from the glasses": a shared band (below) buzzes without that. Not tried yet: the shared band and `band.motion`.
 1. Done: glasses status, camera, captures, band, the Display's prompter; Visor's kit service, consent screen and
    adb socket; the `visor` command; FakeVisor; the sample app.
 2. Done: voice requests and replies in the glasses' own voice, tools for the user's model, notifications on the
-   Display, lines the glasses say unasked.
+   Display, lines the glasses say unasked, transcripts, the assistant's turns.
 3. Done: JSON-RPC over WebSocket, MCP and webhooks on 127.0.0.1:7333 (LAN opt-in) with per-client tokens, the
    raw scope (Developer mode only; 36, 54, 79 and 29 refused), Python and TypeScript clients in `clients/`.
-4. The Display: Briefing cards, done. The band shared with the phone, built 2026-11-09, not tried: the phone keeps
-   the band and the Display reaches it through Visor's AirShield relay, as on Meta's RELAY lease, so `band.gestures`
-   come straight from the band, `band.buzz` goes out at once and `band.motion` reads the wrist. A sharing that does
-   not work turns itself off and gives the band back to the Display. Built 2026-11-09, not tried: the VDK in the
-   Display's web apps (`Visor.connectGlasses()` in the TypeScript client), over the browser's Bluetooth scans, not
-   Visor's tunnel, which pages cannot reach.
+4. Done: the Display's Briefing cards; the band shared with the phone (the phone keeps the band and the Display
+   reaches it through Visor's AirShield relay, as on Meta's RELAY lease), so `band.gestures` come straight from the
+   band, `band.buzz` goes out at once and `band.motion` reads the wrist; the VDK in the Display's web apps
+   (`Visor.connectGlasses()`), over the browser's Bluetooth scans.
 5. Done: the toolkit session (svc7009 and svc6500 through Visor's own app link), for DAT's display, input and
    speech capabilities without the Meta AI app.
    Meta's DAT docs: https://wearables.developer.meta.com/docs/develop/dat/getting-started-toolkit

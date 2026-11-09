@@ -9,7 +9,7 @@ It runs the same server code as Visor: scopes, errors and streams behave as they
 
 ```kotlin
 dependencies {
-    testImplementation("com.macedonga.visor:kit-testing:0.1.0")
+    testImplementation("com.macedonga.visor:kit-testing:0.1.1")
 }
 ```
 
