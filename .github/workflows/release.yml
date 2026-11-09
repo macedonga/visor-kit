@@ -1,6 +1,7 @@
 # Publishes a version tag (v1.2.3): the visor command to the GitHub release, the libraries to Maven Central, signed,
 # and the TypeScript and Python clients to npm and PyPI at the same version. Maven Central is a job of its own, so
-# the rest goes out even when Central refuses.
+# the rest goes out even when Central refuses. The libraries and the npm package also get a copy on GitHub Packages,
+# so the repository's page lists them; Maven Central and npmjs.com stay the ones to use. PyPI has no such copy.
 # Run it by hand with a tag already released to publish its packages again, with this workflow as it is on main: the
 # GitHub release stays as it is. Run it by hand with no tag for a dry run: everything is built, nothing is published.
 #
@@ -121,6 +122,9 @@ jobs:
     if: github.event_name == 'push' || (inputs.tag != '' && inputs.packages != 'clients')
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
     env:
       ORG_GRADLE_PROJECT_vdkDocs: ${{ github.workspace }}/visor-site/src/content/docs
     steps:
@@ -154,13 +158,33 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
         run: |
+          name="${TAG#v}"
+          if curl -fsI "https://repo1.maven.org/maven2/com/macedonga/visor/kit/$name/kit-$name.pom" >/dev/null; then
+            echo "$name is on Maven Central already."
+            exit 0
+          fi
           for secret in ORG_GRADLE_PROJECT_mavenCentralUsername ORG_GRADLE_PROJECT_mavenCentralPassword ORG_GRADLE_PROJECT_signingInMemoryKey; do
             if [ -z "${!secret}" ]; then
               echo "error: a release secret is not set: $secret" >&2
               exit 1
             fi
           done
-          ./gradlew publishToMavenCentral -PkitVersion="${TAG#v}"
+          ./gradlew publishToMavenCentral -PkitVersion="$name"
+
+      - name: Publish a copy to GitHub Packages
+        env:
+          ORG_GRADLE_PROJECT_GitHubPackagesUsername: ${{ github.actor }}
+          ORG_GRADLE_PROJECT_GitHubPackagesPassword: ${{ github.token }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          name="${TAG#v}"
+          if gh api "/users/macedonga/packages/maven/com.macedonga.visor.kit/versions" --jq '.[].name' 2>/dev/null | grep -qx "$name"; then
+            echo "$name is on GitHub Packages already."
+            exit 0
+          fi
+          ./gradlew publishAllPublicationsToGitHubPackagesRepository -PkitVersion="$name"
 
   clients:
     needs: release
@@ -173,6 +197,8 @@ jobs:
       contents: read
       # npm's and PyPI's trusted publishing.
       id-token: write
+      # The npm package's copy on GitHub Packages.
+      packages: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -222,6 +248,23 @@ jobs:
           fi
           cd clients/typescript
           npm publish
+
+      # GitHub's npm registry takes only scoped names: the copy is @macedonga/visor-kit.
+      - name: Publish a copy to GitHub Packages
+        if: env.TAG != ''
+        env:
+          NAME: ${{ steps.version.outputs.name }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=$GITHUB_TOKEN" > "$RUNNER_TEMP/github.npmrc"
+          github=(--registry https://npm.pkg.github.com --userconfig "$RUNNER_TEMP/github.npmrc")
+          if npm view "@macedonga/visor-kit@$NAME" version "${github[@]}" >/dev/null 2>&1; then
+            echo "@macedonga/visor-kit@$NAME is on GitHub Packages already."
+            exit 0
+          fi
+          cd clients/typescript
+          npm pkg set name=@macedonga/visor-kit
+          npm publish "${github[@]}"
 
       - name: Publish to PyPI
         if: env.TAG != ''
