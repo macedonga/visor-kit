@@ -15,11 +15,13 @@ public final class com/macedonga/visor/kit/testing/FakeBand {
 	public final fun getHeld ()Z
 	public final fun getLeftHanded ()Ljava/lang/Boolean;
 	public final fun getPaired ()Z
+	public final fun getShared ()Z
 	public final fun setBattery (Ljava/lang/Integer;)V
 	public final fun setCharging (Ljava/lang/Boolean;)V
 	public final fun setHeld (Z)V
 	public final fun setLeftHanded (Ljava/lang/Boolean;)V
 	public final fun setPaired (Z)V
+	public final fun setShared (Z)V
 }
 
 public final class com/macedonga/visor/kit/testing/FakeDisplay {

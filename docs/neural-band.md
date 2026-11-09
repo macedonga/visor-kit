@@ -11,6 +11,19 @@ can do only once the person sets the band up in Visor's band settings; until the
 The band talks to the Display, which uses its gestures to move around. Visor reads them through a session with the
 Display, so the band stays with the Display: the Display acts on each gesture as usual, and the app gets it too.
 
+## Sharing the band with the phone
+
+The person can share a band set up in Visor: **Settings > Neural Band > Share with the phone**. The band then stays
+connected to the phone, and the Display reaches it through the phone, as it does on Meta's relay lease. The Display
+still gets every gesture and acts on it. For apps:
+
+- `gestures` come straight from the band, without a session with the Display, with the band's own `action` (`press`,
+  `release`, `tap`, `click`, a swipe) and what it made of them in `derived`.
+- `buzz` goes out at once. It does not take the band from the Display.
+- `status.shared` is true, and `status.link` stays `connected`.
+
+Nothing changes in your code: the same calls work either way, and `shared` only tells you which way they go.
+
 ## Gestures
 
 ```kotlin
@@ -51,12 +64,13 @@ A `BandStatus`:
 | Field | Type | Meaning |
 |---|---|---|
 | `paired` | `Boolean` | False when no band is paired with the glasses. |
-| `link` | `Link` | The phone's own link to the band, which is up only while the phone borrows it for a buzz. |
+| `link` | `Link` | The phone's own link to the band: up while the phone borrows it for a buzz, and all along while the band is shared. |
 | `battery` | `Int?` | 0 to 100. |
 | `charging` | `Boolean?` | |
 | `leftHanded` | `Boolean?` | True when the band is set for the left wrist. |
 | `borrowed` | `Boolean` | True while the phone holds the band. |
 | `held` | `Boolean?` | True when Visor holds the band's keys, so the phone can borrow it. False for a band only the Display holds. |
+| `shared` | `Boolean` | True while the person shares the band with the phone: gestures come straight from it and a buzz goes out at once. |
 
 ## Vibration
 
@@ -65,8 +79,8 @@ visor.band.buzz()                             // 400 ms at full strength: the we
 visor.band.buzz(80.milliseconds, 0.5f)        // 10 ms to 1 s, strength above 0 up to 1
 ```
 
-A buzz borrows the band for a moment. It fails with `not_connected` when the band's link does not come up in
-time, and with `refused` when the band turns it down.
+A buzz borrows the band for a moment, unless the band is shared: then it goes out at once. It fails with
+`not_connected` when the band's link does not come up in time, and with `refused` when the band turns it down.
 
 ## JSON-RPC
 

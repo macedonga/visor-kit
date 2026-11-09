@@ -1425,6 +1425,9 @@
                                 "type": "null"
                             }
                         ]
+                    },
+                    "shared": {
+                        "type": "boolean"
                     }
                 },
                 "required": [

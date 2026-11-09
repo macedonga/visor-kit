@@ -449,6 +449,9 @@ public class FakeBand internal constructor() {
     /** False for a band only the fake Display holds: its status shows, but gestures and buzzes fail. */
     public var held: Boolean by published(true)
 
+    /** True to play a band the person shares with the phone: its link stays up whether or not an app borrows it. */
+    public var shared: Boolean by published(false)
+
     private var borrowers = 0
     private val gestures = MutableSharedFlow<Gesture>(extraBufferCapacity = 64)
     internal val status: MutableStateFlow<BandStatus> = MutableStateFlow(build())
@@ -496,12 +499,13 @@ public class FakeBand internal constructor() {
     } else {
         BandStatus(
             paired = true,
-            link = if (borrowed) Link.CONNECTED else Link.DISCONNECTED,
+            link = if (borrowed || shared) Link.CONNECTED else Link.DISCONNECTED,
             battery = battery,
             charging = charging,
             leftHanded = leftHanded,
             borrowed = borrowed,
             held = held,
+            shared = shared,
         )
     }
 

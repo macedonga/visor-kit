@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 public class BandStatus @KitInternal constructor(
     /** False when no band is paired with the glasses. Every other field is then empty. */
     public val paired: Boolean,
-    /** The phone's own link to the band, which is up only while an app or Visor borrows it. */
+    /** The phone's own link to the band, up while an app or Visor borrows it and all along while it is [shared]. */
     public val link: Link,
     /** The battery, from 0 to 100. */
     public val battery: Int? = null,
@@ -23,6 +23,11 @@ public class BandStatus @KitInternal constructor(
      * the Display holds: the person sets it up in Visor's band settings first. Null when no band is paired.
      */
     public val held: Boolean? = null,
+    /**
+     * True while the person shares the band with the phone (Visor's band settings): the band stays on the phone, where
+     * gestures come straight from it and a buzz goes out at once, and the Display reaches it through the phone.
+     */
+    public val shared: Boolean = false,
 )
 
 /** A finger the band reads. */

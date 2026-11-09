@@ -541,6 +541,7 @@ private class Commands(private val session: Session, private val json: Boolean) 
         if (!b.paired) return "none paired"
         return listOfNotNull(
             when {
+                b.shared -> "shared: on the phone, the Display through it"
                 b.borrowed -> "borrowed by the phone"
                 b.held == false -> "with the Display, not set up in Visor"
                 else -> "with the Display"
