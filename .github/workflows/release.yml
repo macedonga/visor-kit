@@ -1,7 +1,8 @@
 # Publishes a version tag (v1.2.3): the visor command to the GitHub release, the libraries to Maven Central, signed,
 # and the TypeScript and Python clients to npm and PyPI at the same version. Maven Central is a job of its own, so
-# the rest goes out even when Central refuses, and the job can be re-run alone from the workflow run.
-# Run it by hand for a dry run: everything is built and checked, nothing is published.
+# the rest goes out even when Central refuses.
+# Run it by hand with a tag already released to publish its packages again, with this workflow as it is on main: the
+# GitHub release stays as it is. Run it by hand with no tag for a dry run: everything is built, nothing is published.
 #
 # Secrets: MAVEN_CENTRAL_USERNAME and MAVEN_CENTRAL_PASSWORD (a Central Portal user token), SIGNING_KEY (the
 # ASCII-armored private key) and SIGNING_KEY_PASSWORD; NPM_TOKEN, an npm granular token with "Read and write (stage
@@ -13,6 +14,11 @@ on:
   push:
     tags: ["v*.*.*"]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: A tag already released, such as v0.1.0, to publish its packages again. Empty for a dry run.
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -20,6 +26,10 @@ permissions:
 concurrency:
   group: release
   cancel-in-progress: false
+
+env:
+  # The tag to publish: the one pushed, or the one given by hand. Empty for a dry run.
+  TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
 
 jobs:
   release:
@@ -30,6 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ env.TAG }}
           fetch-depth: 0
 
       # The visor command bundles the docs, which live in the site repo.
@@ -41,8 +52,8 @@ jobs:
       - name: Work out the version
         id: version
         run: |
-          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
-            name="${GITHUB_REF_NAME#v}"
+          if [ -n "$TAG" ]; then
+            name="${TAG#v}"
           else
             name="0.0.0-dryrun"
           fi
@@ -69,23 +80,27 @@ jobs:
       # The tag is compared with the one before it, so check against that one, not against itself.
       - name: Check
         run: |
-          git tag -d "$GITHUB_REF_NAME" 2>/dev/null || true
+          git tag -d "$TAG" 2>/dev/null || true
           ./gradlew check -PkitVersion="${{ steps.version.outputs.name }}"
 
       - name: Dry run
-        if: github.event_name != 'push'
+        if: env.TAG == ''
         run: ./gradlew publishToMavenLocal :cli:distZip -PkitVersion="${{ steps.version.outputs.name }}"
 
       - name: Build the visor command
-        if: github.event_name == 'push'
+        if: env.TAG != ''
         run: ./gradlew :cli:distZip -PkitVersion="${{ steps.version.outputs.name }}"
 
       - name: Publish the release
-        if: github.event_name == 'push'
+        if: env.TAG != ''
         env:
           GH_TOKEN: ${{ github.token }}
           NAME: ${{ steps.version.outputs.name }}
         run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "The release $TAG is out already: it stays as it is."
+            exit 0
+          fi
           # The notes are the version's section of CHANGELOG.md.
           awk -v v="## $NAME" '$0 == v {on=1; next} /^## / && on {exit} on' CHANGELOG.md > notes.md
           if [ ! -s notes.md ]; then
@@ -98,13 +113,15 @@ jobs:
 
   maven:
     needs: release
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || inputs.tag != ''
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
       ORG_GRADLE_PROJECT_vdkDocs: ${{ github.workspace }}/visor-site/src/content/docs
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TAG }}
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -138,7 +155,7 @@ jobs:
               exit 1
             fi
           done
-          ./gradlew publishToMavenCentral -PkitVersion="${GITHUB_REF_NAME#v}"
+          ./gradlew publishToMavenCentral -PkitVersion="${TAG#v}"
 
   clients:
     needs: release
@@ -150,11 +167,13 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TAG }}
 
       - name: Work out the version
         id: version
         run: |
-          if [ "$GITHUB_EVENT_NAME" = "push" ]; then echo "name=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"; else echo "name=0.0.0-dryrun" >> "$GITHUB_OUTPUT"; fi
+          if [ -n "$TAG" ]; then echo "name=${TAG#v}" >> "$GITHUB_OUTPUT"; else echo "name=0.0.0-dryrun" >> "$GITHUB_OUTPUT"; fi
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -185,7 +204,7 @@ jobs:
       # Staged, not published: the version waits on npmjs.com until a maintainer approves it with 2FA. Staging needs
       # npm 11.15 or later.
       - name: Stage on npm
-        if: github.event_name == 'push'
+        if: env.TAG != ''
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
@@ -198,7 +217,7 @@ jobs:
           npm stage publish
 
       - name: Publish to PyPI
-        if: github.event_name == 'push'
+        if: env.TAG != ''
         uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
         with:
           packages-dir: clients/python/dist
