@@ -31,7 +31,7 @@ agent or your web app, and the person decides what each one may do. Nothing is s
 
 ## What you can build
 
-| | |
+| Area | What you can do |
 |---|---|
 | **Glasses** | Read the link, battery, model and firmware, and whether the glasses are worn, folded or recording, as it changes. See every pair set up in Visor and switch the active one. Follow the glasses' motion and every touch and press. |
 | **Camera** | Take a photo straight into the phone's gallery. Start and stop videos and hyperlapses. Stream the camera live, up to 1080p over Wi-Fi Direct, with the microphones. Import what is on the glasses. |
@@ -47,11 +47,13 @@ makes for them, and Visor can post events to a webhook.
 
 ## How it works
 
-```
-your app            --(VDK library, binder)------------+
-your computer       --(adb, JSON-RPC)------------------+
-programs, AI agents --(network door: WebSocket, MCP)---+--> Visor --(Bluetooth, Wi-Fi Direct)--> glasses, Neural Band
-a Display web app   --(the Display's browser)----------+
+```mermaid
+flowchart LR
+    app["Your Android app"] -- "VDK library" --> visor
+    computer["Your computer"] -- "adb, JSON-RPC" --> visor
+    agents["Programs and AI agents"] -- "WebSocket, MCP" --> visor
+    web["A web app on the Display"] -- "the Display's browser" --> visor
+    visor(["Visor, on the phone"]) -- "Bluetooth, Wi-Fi Direct" --> glasses["Glasses and Neural Band"]
 ```
 
 Every capability is a **method**, a **topic** (a stream of events) or a **feed** (a stream of binary records), the

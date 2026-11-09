@@ -175,7 +175,7 @@ as with the real band: start collecting before you call `fake.band.gesture(...)`
 
 What the fake offers:
 
-| | |
+| Part of the fake | What it offers |
 |---|---|
 | `fake.granted` | The scopes the fake person granted; all at first. Taking one back ends the streams that need it. |
 | `fake.glasses` | `paired`, `connected`, `display`, `model`, `battery`, `charging`, `worn`, `folded`, `thermal`: each change reaches `glasses.status`. `add(type)` puts a capture on the fake glasses, and `add(type, bytes, mime)` one with those bytes. `input(source, action)` sends a touch or a press. |

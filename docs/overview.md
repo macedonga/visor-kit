@@ -14,11 +14,13 @@ holds their Bluetooth and Wi-Fi links and speaks their protocol. The VDK gives t
 
 ## How it works
 
-```
-your app            --(VDK library, binder)------------+
-your computer       --(adb, JSON-RPC)------------------+
-programs, AI agents --(network door: WebSocket, MCP)---+--> Visor --(Bluetooth, Wi-Fi Direct)--> glasses, Neural Band
-a Display web app   --(the Display's browser)----------+
+```mermaid
+flowchart LR
+    app["Your Android app"] -- "VDK library" --> visor
+    computer["Your computer"] -- "adb, JSON-RPC" --> visor
+    agents["Programs and AI agents"] -- "WebSocket, MCP" --> visor
+    web["A web app on the Display"] -- "the Display's browser" --> visor
+    visor(["Visor, on the phone"]) -- "Bluetooth, Wi-Fi Direct" --> glasses["Glasses and Neural Band"]
 ```
 
 Everything the VDK does is a **method** (a request with one answer, like `camera.photo`), a **topic** (a
