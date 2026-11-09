@@ -2947,6 +2947,7 @@ public final class com/macedonga/visor/kit/protocol/Topics {
 	public final fun getASSISTANT_TURNS ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getAll ()Ljava/util/List;
 	public final fun getBAND_GESTURES ()Lcom/macedonga/visor/kit/protocol/Topic;
+	public final fun getBAND_MOTION ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getBAND_STATUS ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getCAPTURES_AVAILABLE ()Lcom/macedonga/visor/kit/protocol/Topic;
 	public final fun getCAPTURES_FAILED ()Lcom/macedonga/visor/kit/protocol/Topic;

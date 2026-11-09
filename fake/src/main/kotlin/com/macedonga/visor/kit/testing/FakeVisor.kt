@@ -32,6 +32,7 @@ import com.macedonga.visor.kit.protocol.Link
 import com.macedonga.visor.kit.protocol.Methods
 import com.macedonga.visor.kit.protocol.MotionRequest
 import com.macedonga.visor.kit.protocol.MotionSample
+import com.macedonga.visor.kit.protocol.MotionSource
 import com.macedonga.visor.kit.protocol.PrompterStyle
 import com.macedonga.visor.kit.protocol.Scope
 import com.macedonga.visor.kit.protocol.ThermalLevel
@@ -223,6 +224,7 @@ public class FakeVisor {
         }
         stream(Topics.BAND_STATUS) { _, _ -> band.status }
         stream(Topics.BAND_GESTURES) { _, _ -> band.borrow() }
+        stream(Topics.BAND_MOTION) { _, request -> band.motion(request) }
 
         answer(Methods.DISPLAY_PROMPTER_SHOW) { _, request ->
             called(Methods.DISPLAY_PROMPTER_SHOW.name)
@@ -480,6 +482,33 @@ public class FakeBand internal constructor() {
 
     internal fun buzzed(duration: Duration) {
         _buzzes.value += duration
+    }
+
+    private val samples = MutableSharedFlow<MotionSample>(extraBufferCapacity = 256)
+    private val _motionRate = MutableStateFlow<Int?>(null)
+
+    /** The rate the app collects the band's motion at, null while it does not. Wait for it before [motion]. */
+    public val motionRate: StateFlow<Int?> = _motionRate.asStateFlow()
+
+    /** Sends [sample] to every app that collects the band's motion now. */
+    public fun motion(sample: MotionSample) {
+        samples.tryEmit(sample)
+    }
+
+    /** Sends an accelerometer reading on the wrist, in m/s², to every app that collects the band's motion now. */
+    public fun motion(ax: Float, ay: Float, az: Float) {
+        motion(MotionSample(System.nanoTime(), accelerometer = Vector3(ax, ay, az), source = MotionSource.BAND))
+    }
+
+    internal fun motion(request: MotionRequest): Flow<MotionSample> {
+        paired()
+        if (!shared) {
+            throw KitException(ErrorCode.UNSUPPORTED, "The band's motion needs the band shared with the phone.", reason = "not_shared")
+        }
+        if (request.rateHz !in MotionRequest.RATES) {
+            throw KitException(ErrorCode.INVALID_PARAMS, "The band is read at ${MotionRequest.RATES.joinToString()} Hz, not ${request.rateHz}.")
+        }
+        return samples.onStart { _motionRate.value = request.rateHz }.onCompletion { _motionRate.value = null }
     }
 
     internal fun borrow(): Flow<Gesture> {

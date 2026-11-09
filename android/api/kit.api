@@ -11,7 +11,9 @@ public final class com/macedonga/visor/kit/Band {
 	public final fun buzz (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun buzz-KLykuaI (JFLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun getGestures ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getMotion ()Lkotlinx/coroutines/flow/Flow;
 	public final fun getStatus ()Lkotlinx/coroutines/flow/Flow;
+	public final fun motion (I)Lkotlinx/coroutines/flow/Flow;
 }
 
 public final class com/macedonga/visor/kit/Camera {

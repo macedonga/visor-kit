@@ -125,17 +125,18 @@ Beyond DAT: `display.cards.*` (Briefing cards; cards, details, pages, colours tr
 0. Measure on the glasses, with the user: touchpad and capture button events on glasses without a display (the
    Gen 2 pair); `assistant.turns` live. Dropped by the user (2026-11-09): touchpad data outside layouts on the
    Display ("what's an actual use case?"). `band.buzz` as it is, borrowing the band, is "useless if it disconnects
-   from the glasses": vibration waits on the RELAY lease work.
+   from the glasses": a shared band (below) buzzes without that. Not tried yet: the shared band and `band.motion`.
 1. Done: glasses status, camera, captures, band, the Display's prompter; Visor's kit service, consent screen and
    adb socket; the `visor` command; FakeVisor; the sample app.
 2. Done: voice requests and replies in the glasses' own voice, tools for the user's model, notifications on the
    Display, lines the glasses say unasked.
 3. Done: JSON-RPC over WebSocket, MCP and webhooks on 127.0.0.1:7333 (LAN opt-in) with per-client tokens, the
    raw scope (Developer mode only; 36, 54, 79 and 29 refused), Python and TypeScript clients in `clients/`.
-4. The Display: Briefing cards, done. Not built yet: `visor.js` for the Display's web apps through Visor's tunnel
-   (an earlier attempt at delivering layouts as a web app was stopped by a safety check in Claude's tooling, not by
-   the user), and the band shared with the Display under a RELAY lease, so apps get gestures and vibration while the
-   Display keeps the band (the user's priority, 2026-11-09).
+4. The Display: Briefing cards, done. The band shared with the phone, built 2026-11-09, not tried: the phone keeps
+   the band and the Display reaches it through Visor's AirShield relay, as on Meta's RELAY lease, so `band.gestures`
+   come straight from the band, `band.buzz` goes out at once and `band.motion` reads the wrist. Not built yet:
+   `visor.js` for the Display's web apps through Visor's tunnel (an earlier attempt at delivering layouts as a web
+   app was stopped by a safety check in Claude's tooling, not by the user).
 5. Done: the toolkit session (svc7009 and svc6500 through Visor's own app link), for DAT's display, input and
    speech capabilities without the Meta AI app.
    Meta's DAT docs: https://wearables.developer.meta.com/docs/develop/dat/getting-started-toolkit

@@ -14,8 +14,11 @@ public final class com/macedonga/visor/kit/testing/FakeBand {
 	public final fun getCharging ()Ljava/lang/Boolean;
 	public final fun getHeld ()Z
 	public final fun getLeftHanded ()Ljava/lang/Boolean;
+	public final fun getMotionRate ()Lkotlinx/coroutines/flow/StateFlow;
 	public final fun getPaired ()Z
 	public final fun getShared ()Z
+	public final fun motion (FFF)V
+	public final fun motion (Lcom/macedonga/visor/kit/protocol/MotionSample;)V
 	public final fun setBattery (Ljava/lang/Integer;)V
 	public final fun setCharging (Ljava/lang/Boolean;)V
 	public final fun setHeld (Z)V

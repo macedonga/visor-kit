@@ -14,6 +14,10 @@
 - `glasses.motion`, with the `motion` scope: the accelerometer, gyroscope, magnetometer and orientation at 5 to 60
   samples a second. Visor reads them from the glasses' own sensor service, with nothing on their screen, and fuses
   the orientation on the phone; FakeVisor also serves the band's motion.
+- `band.motion`, with the `motion` scope: the Neural Band's accelerometer, gyroscope, magnetometer and orientation
+  on the wrist, for a band the person shares with the phone. `BandStatus.shared` says when the band is shared: then
+  `band.gestures` come straight from it and `band.buzz` goes out at once, while the Display reaches the band through
+  the phone. FakeBand plays both (`shared`, `motion`), and the fake console has `band-shared` and `band-motion`.
 - `display.cards.set` and `display.cards.remove`: an app's own cards on the Display home's Briefing, beside Meta's
   weather and sports, kept until the app removes them, each with an optional `detail` that a click opens full
   screen, or pages the wearer swipes through. FakeVisor keeps them in `fake.display.cards`.

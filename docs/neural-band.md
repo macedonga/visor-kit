@@ -72,6 +72,24 @@ A `BandStatus`:
 | `held` | `Boolean?` | True when Visor holds the band's keys, so the phone can borrow it. False for a band only the Display holds. |
 | `shared` | `Boolean` | True while the person shares the band with the phone: gestures come straight from it and a buzz goes out at once. |
 
+## Motion
+
+```kotlin
+visor.band.motion.collect { sample -> }               // 30 samples a second
+visor.band.motion(rateHz = 60).collect { sample -> }
+```
+
+The band's own sensors on the wrist, in the same `MotionSample` as [the glasses' motion](glasses.md#motion), with
+`source` `band`: `accelerometer` in m/s², `gyroscope` in rad/s, `magnetometer` as the band reports it, and the
+band's own fused `orientation`. The band sends each sensor on its own, so a sample carries the newest reading of
+each; `time` is when the phone got it, in nanoseconds, and only the differences between samples mean something. Use it to point
+with the wrist, to know when the wearer raises the arm, or to count repetitions.
+
+It needs the `motion` scope and a band the person shares with the phone (see above): without sharing, it ends with
+`unsupported` and the reason `not_shared`, because reading the band's sensors would take the band from the Display.
+In a test, set `fake.band.shared = true`, wait for `fake.band.motionRate`, then send readings with
+`fake.band.motion(ax, ay, az)` or a whole `MotionSample`.
+
 ## Vibration
 
 ```kotlin
@@ -90,6 +108,7 @@ A buzz borrows the band for a moment, unless the band is shared: then it goes ou
 | Method | `band.buzz` | `durationMs` (10 to 1000, default 400), `strength` (1 to 255, default 255) | `{}` |
 | Topic | `band.status` | none | `BandStatus` now, then on each change |
 | Topic | `band.gestures` | none | `Gesture` |
+| Topic | `band.motion` | `rateHz` (5 to 60, default 30) | a `MotionSample` with `source` `band` |
 
 Without a band, `visor simulate band.gestures` makes Visor send only the gestures you type, and borrows nothing.
 See [Testing](testing.md).

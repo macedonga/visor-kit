@@ -54,7 +54,7 @@ public class MotionSample @KitInternal constructor(
     public val source: MotionSource = MotionSource.GLASSES,
 )
 
-/** The params of [Topics.GLASSES_MOTION]. */
+/** The params of [Topics.GLASSES_MOTION] and [Topics.BAND_MOTION]. */
 @Poko
 @Serializable
 public class MotionRequest @KitInternal constructor(

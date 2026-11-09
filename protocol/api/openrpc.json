@@ -1029,6 +1029,27 @@
             "x-since": 1
         },
         {
+            "name": "band.motion",
+            "summary": "The Neural Band's accelerometer, gyroscope, magnetometer and orientation, on the wrist, sample by sample.",
+            "params": [
+                {
+                    "name": "rateHz",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }
+            ],
+            "event": {
+                "name": "event",
+                "schema": {
+                    "$ref": "#/components/schemas/MotionSample"
+                }
+            },
+            "x-scope": "motion",
+            "x-since": 1
+        },
+        {
             "name": "display.layout.clicks",
             "summary": "Each click on a button or box of the layout the app shows.",
             "params": [],

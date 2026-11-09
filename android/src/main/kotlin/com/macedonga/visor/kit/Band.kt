@@ -4,6 +4,8 @@ import com.macedonga.visor.kit.protocol.BandStatus
 import com.macedonga.visor.kit.protocol.BuzzRequest
 import com.macedonga.visor.kit.protocol.Gesture
 import com.macedonga.visor.kit.protocol.Methods
+import com.macedonga.visor.kit.protocol.MotionRequest
+import com.macedonga.visor.kit.protocol.MotionSample
 import com.macedonga.visor.kit.protocol.Scope
 import com.macedonga.visor.kit.protocol.Topics
 import kotlin.math.roundToInt
@@ -17,12 +19,21 @@ public class Band internal constructor(private val visor: Visor) {
         get() = visor.subscribe(Topics.BAND_STATUS, Unit)
 
     /**
-     * Every gesture the band reads, while collected. The phone borrows the band for as long as any app collects
-     * this: the gestures stop reaching the Display, and Visor shows that in its notification. The band goes back
-     * to the Display when the last collector stops.
+     * Every gesture the band reads, while collected. The Display gets each one too and acts on it as usual. A band
+     * the person shares with the phone ([BandStatus.shared]) gives them straight from its link.
      */
     public val gestures: Flow<Gesture>
         get() = visor.subscribe(Topics.BAND_GESTURES, Unit)
+
+    /**
+     * The band's motion sensors on the wrist, 30 samples a second, while collected. Needs [Scope.MOTION] and a band
+     * the person shares with the phone ([BandStatus.shared]).
+     */
+    public val motion: Flow<MotionSample>
+        get() = visor.subscribe(Topics.BAND_MOTION, MotionRequest())
+
+    /** [motion] at [rateHz] samples a second, one of [MotionRequest.RATES]. */
+    public fun motion(rateHz: Int): Flow<MotionSample> = visor.subscribe(Topics.BAND_MOTION, MotionRequest(rateHz))
 
     /** Vibrates the band once, long and strong enough that the wearer notices. */
     public suspend fun buzz(): Unit = visor.call(Methods.BAND_BUZZ, BuzzRequest())

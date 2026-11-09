@@ -376,6 +376,17 @@ public object Topics {
     )
 
     /**
+     * The Neural Band's motion sensors at the rate asked for, while collected, each sample with source `band`. Needs a
+     * band the person shares with the phone ([BandStatus.shared]): otherwise it ends with [ErrorCode.UNSUPPORTED] and
+     * the reason `not_shared`. Ends with [ErrorCode.INVALID_PARAMS] for a rate not in [MotionRequest.RATES].
+     */
+    public val BAND_MOTION: Topic<MotionRequest, MotionSample> = Topic(
+        "band.motion", Scope.MOTION, 1,
+        "The Neural Band's accelerometer, gyroscope, magnetometer and orientation, on the wrist, sample by sample.",
+        MotionRequest.serializer(), MotionSample.serializer(),
+    )
+
+    /**
      * While the app subscribes, the wearer's questions that hold one of its [VoiceOffer.phrases] come to it instead of
      * the assistant's model. Each needs a [Methods.VOICE_REPLY] within about 20 seconds, or the glasses tell the
      * wearer the app did not answer. Ends with [ErrorCode.INVALID_PARAMS] when no phrase has a word in it.
@@ -437,7 +448,7 @@ public object Topics {
     public val all: List<Topic<*, *>> = listOf(
         GLASSES_STATUS, GLASSES_PAIRS, GLASSES_INPUTS, GLASSES_MOTION,
         CAPTURES_AVAILABLE, CAPTURES_PROGRESS, CAPTURES_IMPORTED, CAPTURES_FAILED,
-        BAND_STATUS, BAND_GESTURES,
+        BAND_STATUS, BAND_GESTURES, BAND_MOTION,
         DISPLAY_LAYOUT_CLICKS, DISPLAY_CARDS_CLICKS, DISPLAY_LAYOUT_STATE, DISPLAY_VIDEO,
         VOICE_REQUESTS, VOICE_TRANSCRIPTS,
         ASSISTANT_TOOLS, ASSISTANT_TURNS,

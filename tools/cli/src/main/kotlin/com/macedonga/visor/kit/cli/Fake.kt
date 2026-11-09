@@ -77,6 +77,8 @@ Type here to play the glasses:
   input SOURCE ACTION X Y DX DY   A drag step: band drag_move 120 40 6 0.
   gesture FINGER ACTION     A band gesture: index tap, middle double_tap, ...
   motion AX AY AZ           An accelerometer reading in m/s², for glasses.motion: motion 0 9.8 0.
+  band-shared on|off        The band shared with the phone, as the person turns it on in Visor's band settings.
+  band-motion AX AY AZ      The same reading on the wrist, for band.motion, which needs the band shared.
   motion-csv FILE           DAT's 14-column motion CSV, played over and over at its own pace.
   camera FILE WxH FPS       A recorded .h264 or .h265 stream as the live camera, looped; camera off stops it.
   photo|video               A new capture on the glasses.
@@ -207,6 +209,7 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
             "battery" -> glasses.battery = rest.toIntOrNull()?.takeIf { it in 0..100 } ?: throw CliError("battery needs 0 to 100.")
             "charging" -> glasses.charging = onOff(words)
             "worn" -> glasses.worn = onOff(words)
+            "band-shared" -> fake.band.shared = onOff(words)
             "folded" -> glasses.folded = onOff(words)
             "connected" -> glasses.connected = onOff(words)
             "display" -> glasses.display = onOff(words)
@@ -237,6 +240,12 @@ internal class FakeServer(private val port: Int, private val lan: Boolean, versi
                 if (axes.size != 3) throw CliError("Type motion AX AY AZ, in m/s².")
                 if (glasses.motionRate.value == null) say("Motion: no app collects motion; nobody got it")
                 glasses.motion(axes[0], axes[1], axes[2])
+            }
+            "band-motion" -> {
+                val axes = words.drop(1).joinToString(" ").split(Regex("\\s+")).mapNotNull(String::toFloatOrNull)
+                if (axes.size != 3) throw CliError("Type band-motion AX AY AZ, in m/s².")
+                if (fake.band.motionRate.value == null) say("Band motion: no app collects it; nobody got it")
+                fake.band.motion(axes[0], axes[1], axes[2])
             }
             "photo" -> say("Glasses: ${glasses.add(CaptureType.PHOTO).id} taken")
             "video" -> say("Glasses: ${glasses.add(CaptureType.VIDEO).id} filmed")
