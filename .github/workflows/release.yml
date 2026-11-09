@@ -5,9 +5,9 @@
 # GitHub release stays as it is. Run it by hand with no tag for a dry run: everything is built, nothing is published.
 #
 # Secrets: MAVEN_CENTRAL_USERNAME and MAVEN_CENTRAL_PASSWORD (a Central Portal user token), SIGNING_KEY (the
-# ASCII-armored private key) and SIGNING_KEY_PASSWORD; NPM_TOKEN, an npm granular token with "Read and write (stage
-# only)": the workflow stages the npm version, and a maintainer releases it on npmjs.com with 2FA. PyPI takes no
-# secret: it trusts this workflow as its trusted publisher (pypi.org > visor-kit > Publishing).
+# ASCII-armored private key) and SIGNING_KEY_PASSWORD. npm and PyPI take no secret: each trusts this workflow as its
+# trusted publisher, npm for the clients job in the Release environment (npmjs.com > visor-kit > Settings, and
+# pypi.org > visor-kit > Publishing).
 name: Release
 
 on:
@@ -19,6 +19,11 @@ on:
         description: A tag already released, such as v0.1.0, to publish its packages again. Empty for a dry run.
         required: false
         default: ""
+      packages:
+        description: Which packages a run with a tag publishes. A version already out is skipped.
+        type: choice
+        options: [all, maven, clients]
+        default: all
 
 permissions:
   contents: write
@@ -113,7 +118,7 @@ jobs:
 
   maven:
     needs: release
-    if: github.event_name == 'push' || inputs.tag != ''
+    if: github.event_name == 'push' || (inputs.tag != '' && inputs.packages != 'clients')
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -159,11 +164,14 @@ jobs:
 
   clients:
     needs: release
+    if: github.event_name == 'push' || inputs.packages != 'maven'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # npm's trusted publisher names this environment: its token is only for jobs that run in it.
+    environment: Release
     permissions:
       contents: read
-      # PyPI's trusted publishing.
+      # npm's and PyPI's trusted publishing.
       id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -201,23 +209,23 @@ jobs:
           python -m build
           python -m twine check dist/*
 
-      # Staged, not published: the version waits on npmjs.com until a maintainer approves it with 2FA. Staging needs
-      # npm 11.15 or later.
-      - name: Stage on npm
+      # Trusted publishing, with no token: npm takes the job's OIDC identity, and adds a provenance statement.
+      - name: Publish to npm
         if: env.TAG != ''
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NAME: ${{ steps.version.outputs.name }}
         run: |
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "error: a release secret is not set: NPM_TOKEN" >&2
-            exit 1
-          fi
           npm install --global npm@11
+          if npm view "visor-kit@$NAME" version >/dev/null 2>&1; then
+            echo "visor-kit@$NAME is on npm already."
+            exit 0
+          fi
           cd clients/typescript
-          npm stage publish
+          npm publish
 
       - name: Publish to PyPI
         if: env.TAG != ''
         uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
         with:
           packages-dir: clients/python/dist
+          skip-existing: true

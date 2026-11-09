@@ -83,8 +83,8 @@ User docs (README, the site's docs, client READMEs) say what each feature does, 
 the user, 2026-11-09, "The users do not care about if something has been tried or not". Tried status lives here and
 in Visor's memory only.
 
-Publishing: the release workflow publishes Maven Central, the visor command, npm (`visor-kit`, NPM_TOKEN) and PyPI
-(`visor-kit`, trusted publishing) on a `v*.*.*` tag. 0.1.0 was tagged on 2026-11-09, at the user's word, when the
+Publishing: the release workflow publishes Maven Central, the visor command, npm (`visor-kit`, trusted publishing
+from the Release environment) and PyPI (`visor-kit`, trusted publishing) on a `v*.*.*` tag. 0.1.0 was tagged on 2026-11-09, at the user's word, when the
 repo went public. Maven Central is its own job: it needs the com.macedonga namespace verified and the SIGNING_KEY
 secrets (release key 52BDFC0453E2AA07, kept in the user's keys folder), and is re-run alone from the release run.
 
