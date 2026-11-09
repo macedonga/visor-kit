@@ -2,10 +2,7 @@
 
 The developer kit for Visor, the Android app that runs Meta's glasses. Apps and computers use the glasses through
 Visor: their state, camera and captures, the Neural Band, and the Display. Visor itself lives in `../visor`
-(github.com/macedonga/visor, AGPL); this repo is Apache-2.0 so apps can link it.
-
-Nothing here is public until the whole roadmap below is built: the GitHub repo stays private, nothing goes to Maven
-Central, no tags. Then the history is reset to one commit and the documentation moves to visor.macedonga.com.
+(github.com/macedonga/visor, AGPL); this repo is Apache-2.0 so apps can link it. Visor serves the VDK from 3.0.0.
 
 ## Modules
 
@@ -17,14 +14,14 @@ Central, no tags. Then the history is reset to one commit and the documentation 
   of the server (`server/`: `KitServer` for binder, `ShellServer` for adb).
 - `fake` (`kit-fake`, JVM): `FakeVisor` and its parts, in plain Kotlin.
 - `testing` (`kit-testing`, AAR): `FakeVisor.connect()`, the fake in the app's own process, for tests.
-- `tools/cli` (not published): the `visor` command. It reaches Visor through `adb forward` to the abstract socket
+- `tools/cli` (not on Maven): the `visor` command. It reaches Visor through `adb forward` to the abstract socket
   `visor-kit`, which only the shell uid may use, and speaks JSON-RPC lines. `visor fake` serves `kit-fake` on
   /rpc, /mcp and a line socket for `visor --fake`, with a console that plays the glasses.
+- `tools/contract` (not published): writes `protocol/api/openrpc.json` and checks it against the last release.
+- `clients/python`, `clients/typescript`: JSON-RPC clients, over adb or the network door, on PyPI and npm.
 
 Apps need only the scopes the person grants on the consent screen. Visor's Developer mode opens nothing for apps:
 it only opens the adb socket, for the computer-side tools.
-- `tools/contract` (not published): writes `protocol/api/openrpc.json` and checks it against the last release.
-- `clients/python`, `clients/typescript` (not published yet): JSON-RPC clients, over adb or the network door.
 
 Maven group `com.macedonga.visor`, namespace `com.macedonga` proven by a TXT record on macedonga.com.
 
@@ -74,20 +71,14 @@ Visor's side, in the Visor repo:
     glasses has a timeout.
 16. Developer mode's intents (`com.macedonga.visor.action.*`) are public API too, under the same rules.
 
+## Docs
+
 The docs live only in the site repo, visor-site (`src/content/docs`, served at visor.macedonga.com/developers/docs),
 next to the protocol pages (`src/content/protocol`). This repo has no docs folder: a change to the VDK updates the
 page there, and links here point at the site. The `visor` command bundles the docs from that folder, so a build
 needs visor-site checked out beside visor-kit, or `-PvdkDocs=<path>`.
 
-User docs (README, the site's docs, client READMEs) say what each feature does, never whether it was tried on the glasses:
-the user, 2026-11-09, "The users do not care about if something has been tried or not". Tried status lives here and
-in Visor's memory only.
-
-Publishing: the release workflow publishes Maven Central, the visor command, npm (`visor-kit`, trusted publishing
-from the Release environment) and PyPI (`visor-kit`, trusted publishing). The libraries and the npm package also get a copy on GitHub Packages
-(`@macedonga/visor-kit` for npm), so the repository's page lists them; PyPI has no such registry on a `v*.*.*` tag. 0.1.0 was tagged on 2026-11-09, at the user's word, when the
-repo went public. Maven Central is its own job: it needs the com.macedonga namespace verified and the SIGNING_KEY
-secrets (release key 52BDFC0453E2AA07, kept in the user's keys folder), and is re-run alone from the release run.
+User docs (the READMEs, the site's docs) say what each feature does, never whether it was tried on the glasses.
 
 ## Working on it
 
@@ -103,51 +94,37 @@ secrets (release key 52BDFC0453E2AA07, kept in the user's keys folder), and is r
 ## Releases
 
 1. Move `## Unreleased` in `CHANGELOG.md` under `## X.Y.Z` (Added, Changed, Fixed).
-2. Tag `vX.Y.Z` and push it. `release.yml` runs every check against the tag before it, publishes the libraries
-   to Maven Central signed, and puts the `visor` command's zip on the GitHub release. Run it by hand for a dry run.
-3. Bump the VDK in Visor's `gradle/libs.versions.toml` and release Visor.
+2. Tag `vX.Y.Z` and push it. `release.yml` runs every check against the tag before it, puts the `visor` command's
+   zip on the GitHub release, publishes the libraries to Maven Central, signed, the TypeScript client to npm and
+   the Python client to PyPI, and a copy of the libraries and the npm package on GitHub Packages. npm and PyPI trust
+   the workflow as their publisher; Maven Central takes the `MAVEN_CENTRAL_*` and `SIGNING_KEY*` secrets.
+3. A run by hand with a released tag publishes what is missing for it, with the workflow from main; a run with no
+   tag is a dry run.
+4. Bump the VDK in Visor's `gradle/libs.versions.toml` and release Visor.
 
 Library versions are semver. `KitProtocol.VERSION` counts separately and only goes up.
 
-## Roadmap
+## Meta's DAT
 
-Status as of 2026-11-09: phases 1 to 5 are done. On 2026-11-09 the user marked every capability that was built and not
-yet tried on the glasses as done. Visor serves the VDK from Visor 3.0.0; Visor's own record is visor/memory/vdk.md.
+Every capability of Meta's Wearables Device Access Toolkit has a VDK equivalent, mapped in the docs'
+`porting-from-dat.md`. DAT's docs: https://wearables.developer.meta.com/docs/develop/dat/getting-started-toolkit
 
-Parity with Meta's DAT (1.0.1) is a goal: every DAT capability gets a kit equivalent, and the docs' `porting-from-dat.md`
-maps all of it (written 2026-11-07 from github.com/meta/meta-wearables-dat-android). Status:
+| DAT | VDK |
+|---|---|
+| `Wearables`, registration, permissions | `Visor.connect`, `RequestScopes` |
+| `DeviceSession` and its states | `VisorState` |
+| `DeviceSelector` | `glasses.pairs`, `glasses.select` |
+| `Device`: battery, charging, don, hinge, link, thermal, display | `glasses.status` |
+| Camera stream: quality, frame rate, HEVC or decoded | `camera.live`, `LiveVideoDecoder` |
+| Stream audio (PCM) | `camera.live` audio, `LiveAudioDecoder` |
+| Photo during a stream; `PhotoResolution`, `PhotoQuality` | `camera.live.photo` (HEIC, full size) |
+| Speech: on-device transcription | `voice.transcripts` |
+| Voice invocations (`LaunchApp`) | `voice.requests`, `VoiceLaunch` |
+| Motion: accelerometer, gyroscope, magnetometer, orientation | `glasses.motion` |
+| Inputs: nav, select, back, button, capture, drag | `glasses.inputs`, `band.gestures` |
+| Display: FlexBox, Text, Image, Button, Icon, Video, taps back | `display.layout.*` |
+| `MockDeviceKit` | `FakeVisor`; a new capability gets its fake part too |
 
-| DAT | Kit | Status |
-|---|---|---|
-| `Wearables`, registration, permissions | `Visor.connect`, `RequestScopes` | done |
-| `DeviceSession` and its states | `VisorState` | done |
-| `DeviceSelector` | `glasses.pairs`, `glasses.select` | done |
-| `Device`: battery, charging, don, hinge, link, thermal, display | `glasses.status` | done |
-| Camera stream: quality, frame rate, HEVC or decoded | `camera.live`, `LiveVideoDecoder` | done |
-| Stream audio (PCM) | `camera.live` audio, `LiveAudioDecoder` | done |
-| Photo during a stream; `PhotoResolution`, `PhotoQuality` | `camera.live.photo` (HEIC, full size) | done |
-| Speech: on-device transcription | `voice.transcripts` | done |
-| Voice invocations (`LaunchApp`) | `voice.requests`, `VoiceLaunch` | done |
-| Motion: accelerometer, gyroscope, magnetometer, orientation | `glasses.motion` | done |
-| Inputs: nav, select, back, button, capture, drag | `glasses.inputs`, `band.gestures` | done |
-| Display: FlexBox, Text, Image, Button, Icon, Video, taps back | `display.layout.*` | done |
-| `MockDeviceKit` | `FakeVisor` | done; add the new capabilities as they come |
-
-Beyond DAT, all done: `display.cards.*` (Briefing cards with details, pages, charts, weather illustrations, toasts,
-live updates and clicks), `voice.speak`, `settings.*`, `assistant.*`, `notify.post`, `display.prompter.*`, webhooks,
-the network door and MCP, `visor fake` and its simulator, the band shared with the phone and `band.motion`, and the
-VDK in the Display's web apps with their WebMCP tools.
-
-1. Done: glasses status, camera, captures, band, the Display's prompter; Visor's kit service, consent screen and
-   adb socket; the `visor` command; FakeVisor; the sample app.
-2. Done: voice requests and replies in the glasses' own voice, tools for the user's model, notifications on the
-   Display, lines the glasses say unasked, transcripts, the assistant's turns.
-3. Done: JSON-RPC over WebSocket, MCP and webhooks on 127.0.0.1:7333 (LAN opt-in) with per-client tokens, the
-   raw scope (Developer mode only; 36, 54, 79 and 29 refused), Python and TypeScript clients in `clients/`.
-4. Done: the Display's Briefing cards; the band shared with the phone (the phone keeps the band and the Display
-   reaches it through Visor's AirShield relay, as on Meta's RELAY lease), so `band.gestures` come straight from the
-   band, `band.buzz` goes out at once and `band.motion` reads the wrist; the VDK in the Display's web apps
-   (`Visor.connectGlasses()`), over the browser's Bluetooth scans.
-5. Done: the toolkit session (svc7009 and svc6500 through Visor's own app link), for DAT's display, input and
-   speech capabilities without the Meta AI app.
-   Meta's DAT docs: https://wearables.developer.meta.com/docs/develop/dat/getting-started-toolkit
+Beyond DAT: Briefing cards (`display.cards.*`), `voice.speak`, `settings.*`, `assistant.*`, `notify.post`, the
+teleprompter (`display.prompter.*`), webhooks, the network door and MCP, `visor fake` and its simulator, the band
+shared with the phone and `band.motion`, and the VDK in the Display's web apps with their WebMCP tools.
