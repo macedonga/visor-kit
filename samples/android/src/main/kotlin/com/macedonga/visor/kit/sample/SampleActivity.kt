@@ -4,247 +4,170 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import android.view.Surface
-import android.view.SurfaceHolder
-import android.view.SurfaceView
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.unit.sp
 import com.macedonga.visor.kit.KitException
-import com.macedonga.visor.kit.LiveVideoDecoder
 import com.macedonga.visor.kit.RequestScopes
 import com.macedonga.visor.kit.Visor
 import com.macedonga.visor.kit.VisorState
-import com.macedonga.visor.kit.protocol.LiveConfig
-import com.macedonga.visor.kit.protocol.LiveQuality
-import com.macedonga.visor.kit.protocol.Scope
-import kotlin.time.Duration.Companion.minutes
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.launch
+import com.macedonga.visor.kit.protocol.GlassesStatus
+import com.macedonga.visor.kit.protocol.Link
 
-/** Every capability of the VDK on one screen: the app's side of the VDK, tried on the phone. */
+/** Every part of the VDK, one tab each, on whatever glasses Visor runs. */
 class SampleActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme(colorScheme = darkColorScheme()) {
-                Surface(Modifier.fillMaxSize()) { Sample() }
+            MaterialTheme(colorScheme = LabColors) {
+                Surface(Modifier.fillMaxSize(), color = Ink.page) { App() }
             }
         }
     }
 }
 
-private val CARDS = listOf("weather", "stocks", "pasta")
+private enum class Page(val title: String) { GLASSES("Glasses"), MOTION("Motion"), CAMERA("Camera"), VOICE("Voice"), ASSISTANT("Assistant"), SETTINGS("Settings"), DISPLAY("Display and band"), LOG("Log") }
 
 @Composable
-private fun Sample() {
+private fun App() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val log = remember { mutableStateListOf<String>() }
-    var visor by remember { mutableStateOf<Visor?>(null) }
-    // Raised after the consent screen, so the streams the person just allowed start again.
-    var grants by remember { mutableIntStateOf(0) }
-    val ask = rememberLauncherForActivityResult(RequestScopes()) { held ->
-        log.add(0, "Holds: ${held.joinToString().ifEmpty { "nothing" }}")
-        grants++
-    }
-
-    fun run(what: String, block: suspend (Visor) -> Any?) {
-        val v = visor ?: return
-        scope.launch {
-            val answer = try {
-                block(v)?.takeUnless { it == Unit }?.toString() ?: "done"
-            } catch (e: KitException) {
-                "${e.code}: ${e.message}"
-            }
-            log.add(0, "$what: $answer")
-        }
-    }
+    var lab by remember { mutableStateOf<Lab?>(null) }
+    var problem by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
-        visor = try {
-            Visor.connect(context)
+        if (!Visor.isInstalled(context)) {
+            problem = "Visor is not installed on this phone."
+            return@LaunchedEffect
+        }
+        try {
+            lab = Lab(Visor.connect(context), scope)
         } catch (e: KitException) {
-            log.add(0, "connect: ${e.code}: ${e.message}")
-            null
+            problem = "${e.code}: ${e.message}"
         }
     }
 
-    Column(
-        Modifier.fillMaxSize().safeDrawingPadding().padding(16.dp).verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Text("Visor Development Kit", style = MaterialTheme.typography.headlineSmall)
-        val v = visor
-        if (v != null) {
-            val state by v.state.collectAsState()
-            Text(
-                when (val s = state) {
-                    VisorState.Connecting -> "Connecting to Visor"
-                    is VisorState.Open -> "Visor ${s.welcome.visor}, protocol ${s.welcome.protocol}"
-                    is VisorState.Closed -> "Closed: ${s.error?.message}"
-                },
-            )
-            Button({ ask.launch(setOf(Scope.STATE, Scope.INPUTS, Scope.MICROPHONE, Scope.CAMERA, Scope.BAND, Scope.DISPLAY, Scope.SETTINGS, Scope.CONVERSATIONS)) }) { Text("Grant access") }
-
-            val glasses by remember(v, grants) { v.glasses.status.logged(log, "glasses") }.collectAsState(null)
-            Text("Glasses: ${glasses ?: "-"}", style = MaterialTheme.typography.bodySmall)
-            val band by remember(v, grants) { v.band.status.logged(log, "band") }.collectAsState(null)
-            Text("Band: ${band ?: "-"}", style = MaterialTheme.typography.bodySmall)
-
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton({ run("photo") { it.camera.takePhoto() } }) { Text("Take photo") }
-                OutlinedButton({ run("video") { it.camera.startVideo() } }) { Text("Start video") }
-                OutlinedButton({ run("stop") { it.camera.stopVideo() } }) { Text("Stop") }
-                OutlinedButton({ run("captures") { it.captures.list() } }) { Text("Captures") }
-                OutlinedButton({ run("buzz") { it.band.buzz() } }) { Text("Buzz") }
-                OutlinedButton({ run("sound") { it.settings.list("Sound").map { s -> "${s.label ?: s.key} = ${s.value}" } } }) { Text("Sound settings") }
-                OutlinedButton({ run("history") { it.assistant.history().take(3).map { t -> t.question } } }) { Text("Last questions") }
+    Column(Modifier.fillMaxSize().safeDrawingPadding()) {
+        val current = lab
+        if (current == null) {
+            Header(null, null, onAsk = {})
+            Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
+                Text(problem ?: "Connecting to Visor", color = if (problem != null) Ink.bad else Ink.dim, fontSize = 15.sp)
             }
-
-            var listening by remember { mutableStateOf(false) }
-            FlowRow(verticalArrangement = Arrangement.Center, itemVerticalAlignment = Alignment.CenterVertically) {
-                Switch(listening, { listening = it })
-                Text("  Band gestures (borrows the band)")
-            }
-            if (listening) {
-                LaunchedEffect(v, grants) {
-                    v.band.gestures.logged(log, "gestures").collect { log.add(0, "gesture: ${it.finger} ${it.action} ${it.derived ?: ""}") }
-                }
-            }
-
-            var touches by remember { mutableStateOf(false) }
-            FlowRow(verticalArrangement = Arrangement.Center, itemVerticalAlignment = Alignment.CenterVertically) {
-                Switch(touches, { touches = it })
-                Text("  Touchpad and buttons")
-            }
-            if (touches) {
-                LaunchedEffect(v, grants) {
-                    v.glasses.inputs.logged(log, "inputs").collect { log.add(0, "input: ${it.source} ${it.action}") }
-                }
-            }
-
-            var hearing by remember { mutableStateOf(false) }
-            FlowRow(verticalArrangement = Arrangement.Center, itemVerticalAlignment = Alignment.CenterVertically) {
-                Switch(hearing, { hearing = it })
-                Text("  What the glasses hear")
-            }
-            if (hearing) {
-                LaunchedEffect(v, grants) {
-                    v.voice.transcripts().logged(log, "transcripts").collect { log.add(0, "heard: ${it.text}") }
-                }
-            }
-
-            var asking by remember { mutableStateOf(false) }
-            FlowRow(verticalArrangement = Arrangement.Center, itemVerticalAlignment = Alignment.CenterVertically) {
-                Switch(asking, { asking = it })
-                Text("  What the wearer asks the assistant")
-            }
-            if (asking) {
-                LaunchedEffect(v, grants) {
-                    v.assistant.turns.logged(log, "turns").collect { log.add(0, "asked: ${it.question} -> ${it.answer.ifEmpty { it.failure }}") }
-                }
-            }
-
-            var watching by remember { mutableStateOf(false) }
-            FlowRow(verticalArrangement = Arrangement.Center, itemVerticalAlignment = Alignment.CenterVertically) {
-                Switch(watching, { watching = it })
-                Text("  Camera live")
-            }
-            if (watching) {
-                LivePreview(v, grants, log)
-                OutlinedButton({ run("live photo") { it.camera.takeLivePhoto().uri } }) { Text("Take live photo") }
-            }
-
-            var script by remember { mutableStateOf("Hello from the Visor Development Kit") }
-            OutlinedTextField(script, { script = it }, Modifier.fillMaxWidth(), label = { Text("Teleprompter") })
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton({ run("prompter") { it.display.prompter.show(script) } }) { Text("Show") }
-                OutlinedButton({ run("prompter") { it.display.prompter.close() } }) { Text("Close") }
-            }
-
-            // The recipes of the Briefing cards page of the docs: cards on the Display home's Briefing.
-            Text("Briefing", style = MaterialTheme.typography.titleSmall)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton({ run("weather card") { it.display.cards.set(weatherCard()) } }) { Text("Weather card") }
-                OutlinedButton({ run("stocks card") { it.display.cards.set(stocksCard()) } }) { Text("Stocks card") }
-                OutlinedButton({ run("timer") { kitchenTimer(it, 4.minutes) } }) { Text("Timer, 4 min") }
-                OutlinedButton({ run("remove") { CARDS.forEach { id -> it.display.cards.remove(id) } } }) { Text("Remove cards") }
-            }
+            return@Column
         }
-        log.take(LOG_LINES).forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
+        Connected(current)
     }
 }
 
-/** The camera live on a SurfaceView, decoded by the phone, for as long as it is shown. */
 @Composable
-private fun LivePreview(visor: Visor, grants: Int, log: MutableList<String>) {
-    var surface by remember { mutableStateOf<Surface?>(null) }
-    AndroidView(
-        factory = { context ->
-            SurfaceView(context).apply {
-                holder.addCallback(object : SurfaceHolder.Callback {
-                    override fun surfaceCreated(holder: SurfaceHolder) {
-                        surface = holder.surface
-                    }
+private fun Connected(lab: Lab) {
+    val ask = rememberLauncherForActivityResult(RequestScopes()) { held ->
+        lab.held = held
+        lab.grants++
+        lab.note("Holds ${held.size} of ${SCOPES.size} scopes")
+    }
+    LaunchedEffect(lab.grants) {
+        lab.held = runCatching { lab.visor.scopes() }.getOrDefault(emptySet())
+    }
+    val status by remember(lab.grants) { with(lab) { visor.glasses.status.logged("glasses.status") } }.collectAsState(null)
+    val state by lab.visor.state.collectAsState()
 
-                    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) = Unit
+    Header(status, state, onAsk = { ask.launch(SCOPES) }, missing = SCOPES - lab.held)
 
-                    override fun surfaceDestroyed(holder: SurfaceHolder) {
-                        surface = null
-                    }
-                })
+    // The Display and band tab only for glasses with a display: other pairs have neither.
+    val pages = Page.entries.filter { it != Page.DISPLAY || status?.display == true }
+    var selected by rememberSaveable { mutableStateOf(Page.GLASSES.name) }
+    val page = pages.firstOrNull { it.name == selected } ?: Page.GLASSES
+    PrimaryScrollableTabRow(selectedTabIndex = pages.indexOf(page), edgePadding = 16.dp, containerColor = Ink.page) {
+        pages.forEach { p ->
+            Tab(selected = p == page, onClick = { selected = p.name }, text = { Text(p.title) })
+        }
+    }
+    Column(
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+    ) {
+        when (page) {
+            Page.GLASSES -> GlassesTab(lab, status)
+            Page.MOTION -> MotionTab(lab)
+            Page.CAMERA -> CameraTab(lab, status)
+            Page.VOICE -> VoiceTab(lab)
+            Page.ASSISTANT -> AssistantTab(lab, status)
+            Page.SETTINGS -> SettingsTab(lab)
+            Page.DISPLAY -> DisplayTab(lab)
+            Page.LOG -> LogTab(lab)
+        }
+        Spacer(Modifier.size(24.dp))
+    }
+}
+
+/** The pair and the connection in one line, and the way to the consent screen while scopes are missing. */
+@Composable
+private fun Header(status: GlassesStatus?, state: VisorState?, onAsk: () -> Unit, missing: Set<com.macedonga.visor.kit.protocol.Scope> = emptySet()) {
+    Column(Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            val link = status?.link
+            Box(Modifier.size(10.dp).clip(CircleShape).background(when (link) { Link.CONNECTED -> Ink.good; Link.CONNECTING -> Ink.warn; else -> Ink.faint }))
+            Spacer(Modifier.size(10.dp))
+            Column(Modifier.weight(1f)) {
+                Text(status?.name ?: status?.model ?: "VDK Lab", color = Ink.text, fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    when {
+                        state is VisorState.Open -> listOfNotNull(status?.model, "Visor ${state.welcome.visor}").joinToString(", ")
+                        state is VisorState.Closed -> "Visor closed the connection"
+                        else -> "Connecting to Visor"
+                    },
+                    color = Ink.dim, fontSize = 13.sp,
+                )
             }
-        },
-        // The glasses film upright.
-        modifier = Modifier.fillMaxWidth().aspectRatio(9f / 16f),
-    )
-    val target = surface ?: return
-    LaunchedEffect(visor, grants, target) {
-        LiveVideoDecoder(target).use { video ->
-            visor.camera.live(LiveConfig { quality = LiveQuality.HIGH })
-                .logged(log, "live")
-                .flowOn(Dispatchers.IO)
-                .collect { video.decode(it) }
+            if (status?.battery != null) Text("${status.battery}%", color = if (status.charging == true) Ink.good else Ink.text, fontSize = 18.sp, fontFamily = Mono)
+        }
+        if (state is VisorState.Open && missing.isNotEmpty()) {
+            Button(onAsk, Modifier.fillMaxWidth()) { Text("Allow ${missing.size} more on Visor") }
         }
     }
 }
 
-/** The flow, with its failure written to [log] instead of thrown: a stream ends on a missing scope, for one. */
-private fun <T> Flow<T>.logged(log: MutableList<String>, what: String): Flow<T> =
-    catch { e -> log.add(0, "$what: ${(e as? KitException)?.code ?: "error"}: ${e.message}") }
-
-private const val LOG_LINES = 30
+@Composable
+private fun LogTab(lab: Lab) {
+    Panel("Every call and stream, newest first") {
+        if (lab.log.isEmpty()) Absent("Nothing yet.")
+        lab.log.forEach { line -> EventLine(line.text, line.time, if (line.failed) Ink.bad else Ink.text) }
+    }
+}

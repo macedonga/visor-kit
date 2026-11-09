@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Phrases that start VDK Lab by voice when it is not running: "Hey Meta, ask VDK lab for the battery". -->
+    <string-array name="voice_phrases">
+        <item>vdk lab</item>
+        <item>lab app</item>
+    </string-array>
+</resources>

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:label="Visor Development Kit sample"
+        android:label="VDK Lab"
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity
             android:name=".SampleActivity"
@@ -11,6 +11,17 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".VoiceActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.macedonga.visor.kit.action.VOICE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data
+                android:name="com.macedonga.visor.kit.VOICE_PHRASES"
+                android:resource="@array/voice_phrases" />
         </activity>
     </application>
 
