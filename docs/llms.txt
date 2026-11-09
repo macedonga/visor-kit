@@ -14,7 +14,8 @@
 - [Camera and captures](camera-and-captures.md): photos, videos, the live camera and imports.
 - [Display](display.md): the teleprompter, layouts and Briefing cards on the Meta Ray-Ban Display.
 - [Briefing cards](briefing-cards.md): cards on the Display's home with details, pages, charts and clicks, with recipes.
-- [Neural Band](neural-band.md): gestures and vibration.
+- [Web apps on the Display](web-apps.md): the VDK from JavaScript in a web app on the Display, with Visor.connectGlasses.
+- [Neural Band](neural-band.md): gestures, wrist motion, vibration, and sharing the band with the phone.
 - [Voice and the assistant](voice-and-assistant.md): questions that name the app, starting it by voice, transcripts, tools for the model.
 - [Settings](settings.md): the glasses' settings.
 - [Errors](errors.md): KitException codes and reasons.

@@ -24,6 +24,9 @@ still gets every gesture and acts on it. For apps:
 
 Nothing changes in your code: the same calls work either way, and `shared` only tells you which way they go.
 
+Sharing turns itself off when it does not work: when the phone cannot reach the band, or when the Display does not
+reach the band through the phone. The band then goes back to the Display, and Visor's band settings say why.
+
 ## Gestures
 
 ```kotlin
@@ -85,8 +88,10 @@ band's own fused `orientation`. The band sends each sensor on its own, so a samp
 each; `time` is when the phone got it, in nanoseconds, and only the differences between samples mean something. Use it to point
 with the wrist, to know when the wearer raises the arm, or to count repetitions.
 
-It needs the `motion` scope and a band the person shares with the phone (see above): without sharing, it ends with
-`unsupported` and the reason `not_shared`, because reading the band's sensors would take the band from the Display.
+It needs the `motion` scope and a band the person shares with the phone (see above). Check `status.shared` before
+you offer it. Without sharing, or when sharing stops while you read, it ends with `unsupported` and the reason
+`not_shared`, whose message names the setting: reading the band's sensors otherwise would take the band from the
+Display.
 In a test, set `fake.band.shared = true`, wait for `fake.band.motionRate`, then send readings with
 `fake.band.motion(ax, ay, az)` or a whole `MotionSample`.
 

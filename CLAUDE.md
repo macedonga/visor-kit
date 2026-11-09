@@ -134,9 +134,10 @@ Beyond DAT: `display.cards.*` (Briefing cards; cards, details, pages, colours tr
    raw scope (Developer mode only; 36, 54, 79 and 29 refused), Python and TypeScript clients in `clients/`.
 4. The Display: Briefing cards, done. The band shared with the phone, built 2026-11-09, not tried: the phone keeps
    the band and the Display reaches it through Visor's AirShield relay, as on Meta's RELAY lease, so `band.gestures`
-   come straight from the band, `band.buzz` goes out at once and `band.motion` reads the wrist. Not built yet:
-   `visor.js` for the Display's web apps through Visor's tunnel (an earlier attempt at delivering layouts as a web
-   app was stopped by a safety check in Claude's tooling, not by the user).
+   come straight from the band, `band.buzz` goes out at once and `band.motion` reads the wrist. A sharing that does
+   not work turns itself off and gives the band back to the Display. Built 2026-11-09, not tried: the VDK in the
+   Display's web apps (`Visor.connectGlasses()` in the TypeScript client), over the browser's Bluetooth scans, not
+   Visor's tunnel, which pages cannot reach.
 5. Done: the toolkit session (svc7009 and svc6500 through Visor's own app link), for DAT's display, input and
    speech capabilities without the Meta AI app.
    Meta's DAT docs: https://wearables.developer.meta.com/docs/develop/dat/getting-started-toolkit

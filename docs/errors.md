@@ -27,4 +27,12 @@ try {
 | `visor_gone` | The connection to Visor broke during the call, for example because Visor restarted. Raised by the library. | Call again; the connection comes back on its own. |
 | `closed` | Your app closed the connection while the call ran. Raised by the library. | Nothing. |
 
-Visor adds codes over time. Treat a code you do not know as `failed`.
+Some failures carry a `reason` that says what the person can change:
+
+| Reason | With | What to tell the person |
+|---|---|---|
+| `not_set_up` | `unsupported` | Set the band up in Visor's band settings: only the Display holds it now. |
+| `not_shared` | `unsupported` | Turn on Visor > Settings > Neural Band > Share with the phone, for `band.motion`. |
+| `not_allowed` | `refused` | Allow the web app in Visor > Settings > Web apps > the app > Visor access. |
+
+Visor adds codes and reasons over time. Treat a code you do not know as `failed`.

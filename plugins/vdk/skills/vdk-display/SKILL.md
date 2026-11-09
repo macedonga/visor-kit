@@ -1,6 +1,6 @@
 ---
 name: vdk-display
-description: Layouts and Briefing cards on the Meta Ray-Ban Display: elements, blocks, clicks, back, video, live cards, the simulator and the in-app preview
+description: Layouts, Briefing cards and web apps on the Meta Ray-Ban Display: elements, blocks, clicks, back, video, live cards, connectGlasses, the simulator and the in-app preview
 ---
 
 # The Display
@@ -22,4 +22,8 @@ description: Layouts and Briefing cards on the Meta Ray-Ban Display: elements, b
   cards); `visor --fake card card.json`. In an app, `fake.display.preview(context)` and
   `fake.display.briefingPreview(context)` from `kit-testing` draw the same.
 
-Details: `read_vdk_doc` with `display` and `briefing-cards`, and `testing` for the simulator.
+- A web app on the Display uses the VDK from JavaScript: `if (onGlasses()) visor = await Visor.connectGlasses()`
+  (TypeScript client). It fails with `refused`, reason `not_allowed`, until the person allows the app in Visor >
+  Settings > Web apps > the app > Visor access; show them that path. Elsewhere, `Visor.connectFake()`.
+
+Details: `read_vdk_doc` with `display`, `briefing-cards` and `web-apps`, and `testing` for the simulator.

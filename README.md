@@ -91,8 +91,8 @@ For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [T
 - [Scopes and consent](docs/scopes-and-consent.md)
 - [The connection](docs/connection.md)
 - [Glasses](docs/glasses.md), [Camera and captures](docs/camera-and-captures.md), [Neural Band](docs/neural-band.md),
-  [Display](docs/display.md), [Briefing cards](docs/briefing-cards.md), [Voice and the assistant](docs/voice-and-assistant.md),
-  [Settings](docs/settings.md)
+  [Display](docs/display.md), [Briefing cards](docs/briefing-cards.md), [Web apps on the Display](docs/web-apps.md),
+  [Voice and the assistant](docs/voice-and-assistant.md), [Settings](docs/settings.md)
 - [Errors](docs/errors.md)
 - [Testing](docs/testing.md)
 - [JSON-RPC](docs/json-rpc.md): the VDK from any language

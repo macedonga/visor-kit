@@ -1,7 +1,7 @@
 {
   "name": "visor-kit",
   "version": "0.1.0",
-  "description": "The Visor Development Kit from TypeScript: Meta's glasses through Visor's network door.",
+  "description": "The Visor Development Kit from TypeScript: Meta's glasses through Visor's network door, or from a web app on the Display.",
   "license": "Apache-2.0",
   "type": "module",
   "main": "dist/index.js",
@@ -14,6 +14,10 @@
     "./layout": {
       "types": "./dist/layout.d.ts",
       "default": "./dist/layout.js"
+    },
+    "./glasses": {
+      "types": "./dist/glasses.d.ts",
+      "default": "./dist/glasses.js"
     }
   },
   "files": [

@@ -1,11 +1,17 @@
 /**
- * The Visor Development Kit from TypeScript, through Visor's network door: JSON-RPC over a WebSocket. Runs in
- * browsers and in Node 22 or later, which have WebSocket built in.
+ * The Visor Development Kit from TypeScript: JSON-RPC through Visor's network door, over a WebSocket, in browsers and
+ * in Node 22 or later; or, in a web app on the Meta Ray-Ban Display, through the Display's browser.
  *
  *     const visor = await Visor.connect("ws://127.0.0.1:7333/rpc", token);
  *     console.log(await visor.call("glasses.status"));
  *     visor.subscribe("band.gestures", {}, (gesture) => console.log(gesture));
+ *
+ *     const onDisplay = await Visor.connectGlasses();   // in a web app on the Display
  */
+
+import { GlassesTransport, onGlasses } from "./glasses.js";
+
+export { onGlasses } from "./glasses.js";
 
 export const PROTOCOL = 1;
 
@@ -48,7 +54,35 @@ interface Stream {
 
 const GONE: Failure = { code: "visor_gone", message: "The connection to Visor broke." };
 
-/** One connection to Visor's network door. */
+/** How messages travel between a client and Visor: whole JSON-RPC messages, in order, both ways. */
+export interface Transport {
+  send(message: string): void;
+  onMessage(receive: (message: string) => void): void;
+  onClose(ended: () => void): void;
+  close(): void;
+}
+
+class SocketTransport implements Transport {
+  constructor(private readonly socket: WebSocket) {}
+
+  send(message: string): void {
+    this.socket.send(message);
+  }
+
+  onMessage(receive: (message: string) => void): void {
+    this.socket.addEventListener("message", (e) => receive(String(e.data)));
+  }
+
+  onClose(ended: () => void): void {
+    this.socket.addEventListener("close", () => ended());
+  }
+
+  close(): void {
+    this.socket.close();
+  }
+}
+
+/** One connection to Visor. */
 export class Visor {
   /** Visor's answer to the hello: its version, its methods and topics, and the scopes this client holds. */
   welcome: unknown = null;
@@ -57,9 +91,9 @@ export class Visor {
   private readonly calls = new Map<number, Pending>();
   private readonly streams = new Map<number, Stream>();
 
-  private constructor(private readonly socket: WebSocket) {
-    socket.addEventListener("message", (e) => this.dispatch(JSON.parse(String(e.data))));
-    socket.addEventListener("close", () => {
+  private constructor(private readonly transport: Transport) {
+    transport.onMessage((message) => this.dispatch(JSON.parse(message)));
+    transport.onClose(() => {
       this.calls.forEach((c) => c.reject(new VisorError(GONE)));
       this.streams.forEach((s) => s.onEnd?.(new VisorError(GONE)));
       this.calls.clear();
@@ -74,8 +108,54 @@ export class Visor {
       socket.addEventListener("open", () => resolve(), { once: true });
       socket.addEventListener("error", () => reject(new VisorError(GONE)), { once: true });
     });
-    const visor = new Visor(socket);
-    visor.welcome = await visor.call("kit.hello", { protocol: PROTOCOL, kit: "typescript" });
+    return Visor.over(new SocketTransport(socket), "typescript");
+  }
+
+  /**
+   * Connects from a web app on the Meta Ray-Ban Display, through the Display's browser and the phone's Visor. The
+   * person allows the app in Visor, Settings > Web apps > the app > Visor access.
+   *
+   * Rejects with a `VisorError`: `unsupported` outside the Display's browser (check `onGlasses()` first), `refused`
+   * with the reason `not_allowed` when the app is not allowed, and `visor_gone` when Visor does not answer within
+   * `timeoutMs`.
+   */
+  static async connectGlasses(timeoutMs: number = 10_000): Promise<Visor> {
+    if (!onGlasses()) {
+      throw new VisorError({ code: "unsupported", message: "This page is not running in the Meta Ray-Ban Display's browser." });
+    }
+    let transport: GlassesTransport;
+    try {
+      transport = await GlassesTransport.open();
+    } catch (e) {
+      throw new VisorError({
+        code: "refused",
+        reason: "not_allowed",
+        message: `The glasses did not let this web app reach Visor (${(e as Error).message}). ` +
+          "On the phone, in Visor: Settings > Web apps > this app > Visor access.",
+      });
+    }
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const late = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        transport.close();
+        reject(new VisorError({
+          code: "visor_gone",
+          message: "Visor did not answer. Check that Visor runs on the phone, and that this web app has Visor access in " +
+            "Settings > Web apps.",
+        }));
+      }, timeoutMs);
+    });
+    try {
+      return await Promise.race([Visor.over(transport, "web"), late]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  /** Says hello over [transport], which any other way to reach Visor can supply. */
+  static async over(transport: Transport, kit: string = "typescript"): Promise<Visor> {
+    const visor = new Visor(transport);
+    visor.welcome = await visor.call("kit.hello", { protocol: PROTOCOL, kit });
     return visor;
   }
 
@@ -89,7 +169,7 @@ export class Visor {
     const id = this.nextId++;
     return new Promise<T>((resolve, reject) => {
       this.calls.set(id, { resolve: resolve as (r: unknown) => void, reject });
-      this.socket.send(JSON.stringify({ jsonrpc: "2.0", id, method, params }));
+      this.transport.send(JSON.stringify({ jsonrpc: "2.0", id, method, params }));
     });
   }
 
@@ -105,7 +185,7 @@ export class Visor {
         onEnd?.(error);
       },
     });
-    this.socket.send(JSON.stringify({ jsonrpc: "2.0", id, method: "kit.subscribe", params: { topic, params } }));
+    this.transport.send(JSON.stringify({ jsonrpc: "2.0", id, method: "kit.subscribe", params: { topic, params } }));
     return {
       close: () => {
         if (this.streams.delete(id)) this.call("kit.unsubscribe", { subscription: id }).catch(() => undefined);
@@ -124,7 +204,7 @@ export class Visor {
   }
 
   close(): void {
-    this.socket.close();
+    this.transport.close();
   }
 
   private dispatch(message: { id?: number; method?: string; params?: any; result?: unknown; error?: { message: string; data?: Failure } }): void {
