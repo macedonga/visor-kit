@@ -20,7 +20,8 @@
   the phone. FakeBand plays both (`shared`, `motion`), and the fake console has `band-shared` and `band-motion`.
 - The VDK in the Display's web apps: the TypeScript client's `Visor.connectGlasses()` reaches Visor through the
   Display browser's Bluetooth scans, for the web apps the person allows in Visor, and fails with `refused`, reason
-  `not_allowed`, until they do. `Visor.over(transport)` takes any other `Transport`.
+  `not_allowed`, until they do. `Visor.over(transport)` takes any other `Transport`. A web app's WebMCP tools reach
+  the person's own model through Visor once they turn that on.
 - `display.cards.set` and `display.cards.remove`: an app's own cards on the Display home's Briefing, beside Meta's
   weather and sports, kept until the app removes them, each with an optional `detail` that a click opens full
   screen, or pages the wearer swipes through. FakeVisor keeps them in `fake.display.cards`.

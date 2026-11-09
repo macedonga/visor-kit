@@ -66,6 +66,23 @@ of milliseconds more than over a socket: use `subscribe` rather than polling.
 A web app's origin is all Visor knows about it. Every page on that origin gets the same access, so allow only
 origins you trust.
 
+## Tools for the assistant
+
+A web app can give the wearer's assistant tools of its own, with the browser's WebMCP API, while it is open:
+
+```js
+document.modelContext.registerTool({
+  name: "add_to_list",
+  description: "Add an item to the shopping list.",
+  inputSchema: { type: "object", properties: { item: { type: "string" } }, required: ["item"] },
+  execute: async ({ item }) => ({ content: [{ type: "text", text: `Added ${item}.` }] }),
+});
+```
+
+The person turns this on once, in Visor: **Settings > Web apps > Web app tools for your assistant**. Visor then
+hands the tools to the model the person set up in Visor, with your description and schema, and runs the calls the
+model makes. Without it, `document.modelContext` is missing: check for it before you register.
+
 ## Other parts of the web-app SDK
 
 The Display's browser gives web apps more than the VDK, from the phone Visor runs on:
