@@ -184,7 +184,24 @@ jobs:
             echo "$name is on GitHub Packages already."
             exit 0
           fi
-          ./gradlew publishAllPublicationsToGitHubPackagesRepository -PkitVersion="$name"
+          # The repository is added here rather than in the build, so the copy works for any tag, older ones too.
+          init="$RUNNER_TEMP/github-packages.gradle"
+          cat > "$init" <<'GRADLE'
+          allprojects {
+              plugins.withId('maven-publish') {
+                  publishing {
+                      repositories {
+                          maven {
+                              name = 'GitHubPackages'
+                              url = 'https://maven.pkg.github.com/macedonga/visor-kit'
+                              credentials(PasswordCredentials)
+                          }
+                      }
+                  }
+              }
+          }
+          GRADLE
+          ./gradlew --init-script "$init" publishAllPublicationsToGitHubPackagesRepository -PkitVersion="$name"
 
   clients:
     needs: release
