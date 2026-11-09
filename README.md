@@ -13,19 +13,19 @@ runs them. It needs no Meta account, no Meta AI app and no developer review, and
 
 | | |
 |---|---|
-| **Glasses** | Read the link, battery, model and firmware, and whether the glasses are worn, folded or recording, as it changes. See every pair set up in Visor, with its name and looks, and switch the active one. |
+| **Glasses** | Read the link, battery, model and firmware, and whether the glasses are worn, folded or recording, as it changes. See every pair set up in Visor, with its name and looks, and switch the active one. Follow the glasses' motion (accelerometer, gyroscope, magnetometer, orientation), and the wearer's navigation on the Display. |
 | **Camera** | Take a photo and get it in the phone's gallery. Start and stop videos and hyperlapses. Stream the camera live, up to 1080p over Wi-Fi Direct, with the microphones. |
 | **Captures** | List what is on the glasses, import it over Wi-Fi Direct, and follow each import. |
-| **Neural Band** | Receive every gesture: finger, action and the band's own reading of it. Make the band vibrate. |
-| **Display** | Show layouts with DAT's elements (text, images, icons, buttons, video) and get the clicks; put a script on the teleprompter, and notifications on the Display. |
-| **Voice** | Answer the questions the wearer asks that name your app, in the glasses' own voice, or start your app by a phrase. Turn what the glasses hear into text, live. |
+| **Neural Band** | Receive every gesture: finger, action and the band's own reading of it, while the band stays with the Display. Make the band vibrate (for now Visor borrows the band from the Display for it). |
+| **Display** | Show layouts with DAT's elements (text, images, icons, buttons, video) and more of Meta's own (pages, charts, any colour) and get the clicks. Keep cards on the Display home's Briefing, beside Meta's weather and stocks, with details, pages, buttons and live updates. Put a script on the teleprompter, and notifications on the Display. |
+| **Voice** | Answer the questions the wearer asks that name your app, in the glasses' own voice, or start your app by a phrase. Have the glasses say a line unasked. Turn what the glasses hear into text, live; on the Display, with its own speech recognition. |
 | **Assistant** | Give the assistant's model your app's tools, which it calls while it answers the wearer. Read every question and answer. |
 | **Settings** | Read every setting the glasses keep, and change the everyday ones. |
-| **Without the glasses** | `visor fake` runs a fake Visor on your computer, with a Display simulator in the browser; `visor record` and `visor replay` play back what the wearer did. |
+| **Without the glasses** | `visor fake` runs a fake Visor on your computer, with a Display simulator in the browser that draws layouts and the Briefing with your cards; `visor record` and `visor replay` play back what the wearer did. |
 
 Programs and AI agents can reach the glasses over the network too, through JSON-RPC or MCP, with a token the
-person makes for them. Coming next: JavaScript for the Display's web apps. See the
-[roadmap](docs/overview.md#roadmap).
+person makes for them, and Visor can post events to a webhook. Coming next: JavaScript for the Display's web apps,
+and the Neural Band shared with the Display. See the [roadmap](docs/overview.md#roadmap).
 
 ## How it works
 
@@ -62,7 +62,7 @@ Visor's settings. Nothing else needs turning on.
 
    val photo = visor.camera.takePhoto()        // photo.uri is in the gallery
    visor.band.gestures.collect { gesture ->
-       if (gesture.derived == GestureAction.DOUBLE_TAP) visor.band.buzz()
+       if (gesture.derived == GestureAction.DOUBLE_TAP) visor.camera.takePhoto()
    }
    ```
 
@@ -79,6 +79,7 @@ visor status                              # Visor, the glasses, the band, the ap
 visor trace                               # every call and event between your app and Visor
 visor simulate band.gestures              # no band needed: type "index double_tap", your app gets it
 visor grant com.example.app camera band   # skip the consent screen while you develop
+visor card card.json                      # put a card on the Display's Briefing from a file
 ```
 
 For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [Testing](docs/testing.md).
@@ -90,12 +91,15 @@ For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [T
 - [Scopes and consent](docs/scopes-and-consent.md)
 - [The connection](docs/connection.md)
 - [Glasses](docs/glasses.md), [Camera and captures](docs/camera-and-captures.md), [Neural Band](docs/neural-band.md),
-  [Display](docs/display.md), [Voice and the assistant](docs/voice-and-assistant.md)
+  [Display](docs/display.md), [Briefing cards](docs/briefing-cards.md), [Voice and the assistant](docs/voice-and-assistant.md),
+  [Settings](docs/settings.md)
 - [Errors](docs/errors.md)
 - [Testing](docs/testing.md)
 - [JSON-RPC](docs/json-rpc.md): the VDK from any language
 - [The network door](docs/network.md): WebSocket, MCP for AI agents, Python and TypeScript
 - [Compatibility](docs/compatibility.md)
+- [Porting from Meta's DAT](docs/porting-from-dat.md)
+- [AI tools](docs/ai-tools.md): the docs search, its MCP server, and guidance for coding assistants
 
 ## Modules
 

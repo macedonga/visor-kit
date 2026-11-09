@@ -94,5 +94,6 @@ and the touchpad's gestures from a session without the toolkit app, so neither p
 3. **The network:** JSON-RPC over WebSocket and an MCP server on the phone, webhooks, Python and TypeScript
    clients, and raw access to the glasses' services for research.
 4. **The Display:** cards on the Display's home, done: [Briefing cards](briefing-cards.md) with details, pages,
-   charts, clicks and live updates. Next, the Neural Band as an input device without glasses.
+   charts, clicks and live updates. Next: a JavaScript library for the Display's web apps, and the Neural Band
+   shared with the Display, so apps get its gestures and vibration while the Display keeps it.
 5. **The Display's toolkit session:** layouts, inputs and the Display's own speech recognition through it, done.
