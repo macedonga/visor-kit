@@ -8,6 +8,7 @@
 </p>
 
 <p align="center">
+  <a href="https://visor.macedonga.com/developers/"><img src="https://img.shields.io/badge/Website-visor.macedonga.com-2563EB?style=for-the-badge&labelColor=0B1220" alt="Website: visor.macedonga.com"></a>
   <a href="https://visor.macedonga.com/developers/docs/"><img src="https://img.shields.io/badge/Docs-read%20the%20guide-2563EB?style=for-the-badge&labelColor=0B1220" alt="Documentation"></a>
   <a href="https://visor.macedonga.com/developers/docs/getting-started/"><img src="https://img.shields.io/badge/Start-getting%20started-2563EB?style=for-the-badge&labelColor=0B1220" alt="Getting started"></a>
   <a href="https://visor.macedonga.com/developers/docs/compatibility/"><img src="https://img.shields.io/badge/Protocol-1-2563EB?style=for-the-badge&labelColor=0B1220" alt="Protocol 1"></a>
@@ -15,6 +16,7 @@
 </p>
 
 <p align="center">
+  <a href="https://visor.macedonga.com/developers/">Website</a> |
   <a href="#what-you-can-build">Features</a> |
   <a href="#quick-start">Quick start</a> |
   <a href="#test-without-the-glasses">Testing</a> |
@@ -61,9 +63,6 @@ same from every language. The person grants each app its **scopes** in Visor, an
 
 ## Quick start
 
-> [!NOTE]
-> The libraries are in development and not on Maven Central, npm or PyPI yet: build them from this repo.
-
 ### Android
 
 ```kotlin
@@ -96,6 +95,11 @@ visor.display.cards.set("pasta", "Kitchen timer", LayoutIconName.CLOCK) {
 
 ### Python and TypeScript
 
+```
+pip install visor-kit          # Python
+npm install visor-kit          # TypeScript, Node and web apps on the Display
+```
+
 ```python
 async with await visor_kit.connect_adb() as visor:
     print(await visor.call("glasses.status"))
@@ -123,7 +127,14 @@ The [getting started guide](https://visor.macedonga.com/developers/docs/getting-
 
 ## Test without the glasses
 
-The `visor` command reaches Visor on the phone through adb, once Developer mode is on in Visor. Call any method,
+Install the `visor` command with one line; it needs Java 17 or later, which Android Studio brings:
+
+```
+curl -fsSL https://visor.macedonga.com/install.sh | sh          # macOS and Linux
+irm https://visor.macedonga.com/install.ps1 | iex               # Windows
+```
+
+It reaches Visor on the phone through adb, once Developer mode is on in Visor. Call any method,
 watch any stream, see your app's traffic, and stand in for the glasses or the band:
 
 ```

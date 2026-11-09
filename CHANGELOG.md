@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.0
+
 ### Added
 
 - `kit-protocol`: the wire contract, protocol version 1, with its OpenRPC document.

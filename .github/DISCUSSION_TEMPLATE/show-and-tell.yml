@@ -1,0 +1,17 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Show what you built with the VDK: an app, a script, an agent, a web app on the Display.
+  - type: textarea
+    id: what
+    attributes:
+      label: What it does
+      description: A few lines, and a screenshot or a short video if you have one.
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Where to get it
+      placeholder: A repository, a store page, a web address

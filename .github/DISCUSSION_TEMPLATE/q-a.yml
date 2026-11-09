@@ -1,0 +1,29 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If something in the VDK is broken, open a bug report in Issues instead. Security problems go through the Security tab.
+        Remove serial numbers, Bluetooth addresses and tokens from everything you paste.
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What you want to build, and what you tried.
+    validations:
+      required: true
+  - type: dropdown
+    id: from
+    attributes:
+      label: From
+      options:
+        - Android
+        - TypeScript
+        - Python
+        - The visor command
+        - JSON-RPC or MCP
+        - A web app on the Display
+  - type: input
+    id: version
+    attributes:
+      label: VDK and Visor versions
+      placeholder: VDK 0.1.0, Visor 1.4.0

@@ -1,0 +1,21 @@
+name: Feature request
+description: Something the glasses can do that the VDK does not give your code yet.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What you want to build
+      description: Describe the app or the task, not the API. For example, "show a timer on the Display that the wearer stops with a pinch".
+    validations:
+      required: true
+  - type: textarea
+    id: dat
+    attributes:
+      label: How Meta's toolkit does it
+      description: If Meta's Wearables Device Access Toolkit (DAT) or the Meta AI app already does this, say how. The VDK aims to cover all of DAT.
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else
+      description: Links, screenshots, the part of the protocol reference that covers it.

@@ -20,8 +20,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/macedonga/visor-kit/tree/main/clients/python"
-Documentation = "https://github.com/macedonga/visor-kit/tree/main/docs"
+Homepage = "https://visor.macedonga.com/developers/"
+Documentation = "https://visor.macedonga.com/developers/docs/"
 Source = "https://github.com/macedonga/visor-kit"
 Issues = "https://github.com/macedonga/visor-kit/issues"
 

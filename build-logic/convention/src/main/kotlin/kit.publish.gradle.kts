@@ -29,7 +29,7 @@ mavenPublishing {
         name.set(project.name)
         description.set(provider { project.description })
         inceptionYear.set("2026")
-        url.set("https://github.com/macedonga/visor-kit")
+        url.set("https://visor.macedonga.com/developers/")
         licenses {
             license {
                 name.set("The Apache License, Version 2.0")

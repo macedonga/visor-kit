@@ -1,0 +1,56 @@
+name: Bug report
+description: Something in the VDK does not work as the docs say.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Security problems go through the Security tab, not here. See SECURITY.md.
+        Remove serial numbers, Bluetooth addresses and tokens from everything you paste.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you called, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: code
+    attributes:
+      label: The smallest code that shows it
+      description: A few lines are enough. `visor trace` shows every call and event between your app and Visor.
+      render: text
+    validations:
+      required: true
+  - type: dropdown
+    id: from
+    attributes:
+      label: From
+      options:
+        - Android library (com.macedonga.visor:kit)
+        - TypeScript (visor-kit on npm)
+        - Python (visor-kit on PyPI)
+        - The visor command
+        - JSON-RPC or MCP, by hand
+        - A web app on the Display
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: VDK version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: visor
+    attributes:
+      label: Visor version, or visor fake
+      description: Visor's Settings, About. Or say that it happens with `visor fake`.
+    validations:
+      required: true
+  - type: input
+    id: glasses
+    attributes:
+      label: Glasses and firmware
+      placeholder: Meta Ray-Ban Display, with the Neural Band

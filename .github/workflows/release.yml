@@ -1,5 +1,6 @@
-# Publishes a version tag (v1.2.3): the libraries to Maven Central, signed, the visor command to the GitHub release,
-# and the TypeScript and Python clients to npm and PyPI at the same version.
+# Publishes a version tag (v1.2.3): the visor command to the GitHub release, the libraries to Maven Central, signed,
+# and the TypeScript and Python clients to npm and PyPI at the same version. Maven Central is a job of its own, so
+# the rest goes out even when Central refuses, and the job can be re-run alone from the workflow run.
 # Run it by hand for a dry run: everything is built and checked, nothing is published.
 #
 # Secrets: MAVEN_CENTRAL_USERNAME and MAVEN_CENTRAL_PASSWORD (a Central Portal user token), SIGNING_KEY (the
@@ -75,21 +76,9 @@ jobs:
         if: github.event_name != 'push'
         run: ./gradlew publishToMavenLocal :cli:distZip -PkitVersion="${{ steps.version.outputs.name }}"
 
-      - name: Publish to Maven Central
+      - name: Build the visor command
         if: github.event_name == 'push'
-        env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
-          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        run: |
-          for secret in ORG_GRADLE_PROJECT_mavenCentralUsername ORG_GRADLE_PROJECT_mavenCentralPassword ORG_GRADLE_PROJECT_signingInMemoryKey; do
-            if [ -z "${!secret}" ]; then
-              echo "error: a release secret is not set: $secret" >&2
-              exit 1
-            fi
-          done
-          ./gradlew publishToMavenCentral :cli:distZip -PkitVersion="${{ steps.version.outputs.name }}"
+        run: ./gradlew :cli:distZip -PkitVersion="${{ steps.version.outputs.name }}"
 
       - name: Publish the release
         if: github.event_name == 'push'
@@ -106,6 +95,50 @@ jobs:
           flags=(--title "Visor Development Kit $NAME" --notes-file notes.md)
           if [[ "$NAME" == *-* ]]; then flags+=(--prerelease); fi
           gh release create "v$NAME" "tools/cli/build/distributions/visor-$NAME.zip" "${flags[@]}"
+
+  maven:
+    needs: release
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ORG_GRADLE_PROJECT_vdkDocs: ${{ github.workspace }}/visor-site/src/content/docs
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: macedonga/visor-site
+          path: visor-site
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
+        with:
+          packages: platform-tools platforms;android-37.0
+          log-accepted-android-sdk-licenses: false
+
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-read-only: true
+
+      - name: Publish to Maven Central
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          for secret in ORG_GRADLE_PROJECT_mavenCentralUsername ORG_GRADLE_PROJECT_mavenCentralPassword ORG_GRADLE_PROJECT_signingInMemoryKey; do
+            if [ -z "${!secret}" ]; then
+              echo "error: a release secret is not set: $secret" >&2
+              exit 1
+            fi
+          done
+          ./gradlew publishToMavenCentral -PkitVersion="${GITHUB_REF_NAME#v}"
 
   clients:
     needs: release
