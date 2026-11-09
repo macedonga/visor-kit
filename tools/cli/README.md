@@ -9,8 +9,15 @@ runs a fake Visor with a Display simulator in your browser.
 | Java 17 or later, and adb | Android Studio brings both |
 | Developer mode on in Visor | For a phone; `visor fake` needs nothing |
 
-Download `visor-<version>.zip` from the [releases](https://github.com/macedonga/visor-kit/releases), unzip it, and
-put its `bin` folder on your PATH. From a clone: `./gradlew :cli:installDist`, then
+Install it with one line, which puts `visor` on your PATH; run it again to update:
+
+```
+curl -fsSL https://visor.macedonga.com/install.sh | sh          # macOS and Linux
+irm https://visor.macedonga.com/install.ps1 | iex               # Windows, in PowerShell
+```
+
+Or by hand: download `visor-<version>.zip` from the [releases](https://github.com/macedonga/visor-kit/releases),
+unzip it, and put its `bin` folder on your PATH. From a clone: `./gradlew :cli:installDist`, then
 `tools/cli/build/install/visor/bin/visor`.
 
 ## Commands
