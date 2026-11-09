@@ -90,10 +90,10 @@ it leaves; `slide_*` is a finger that moves while it rests there. `time` is when
 actions a pair reports depends on its model and firmware: treat an action you do not know as unknown, and a source
 you do not know too.
 
-On the Display the touchpad's and the band's gestures come as `tap`, `double_tap`, `triple_tap`, `tap_hold` and
-`nav_*` at any time. While your app shows a layout they also navigate, as in DAT: `nav_*`, `select` and `back`, and
-drags with `x`, `y`, `dx` and `dy` in the glasses' own units. A tap then comes twice, as `tap` and as `select`: act on
-one of them. Ask for some sources only, and keep back for your app, with an `InputsRequest`:
+On the Display the band's gestures come as `tap`, `double_tap`, `triple_tap`, `tap_hold` and `nav_*` at any
+time. While your app shows a layout, the touchpad's come too, and both navigate, as in DAT: `nav_*`, `select` and
+`back`, and drags with `x`, `y`, `dx` and `dy` in the glasses' own units. A tap then comes twice, as `tap` and as
+`select`: act on one of them. Ask for some sources only, and keep back for your app, with an `InputsRequest`:
 
 ```kotlin
 visor.glasses.inputs(InputsRequest { sources = listOf(InputSource.BAND); keepBack = true }).collect { input -> }
@@ -111,7 +111,7 @@ visor.glasses.motion(rateHz = 60).collect { sample -> }
 
 > On the glasses, Visor reads motion from their own sensor service, with nothing on the screen and no toolkit app.
 > The phone fuses the accelerometer, gyroscope and magnetometer into `orientation`, which settles within two
-> seconds of the start. `source` is `glasses`: the band's motion comes only from FakeVisor.
+> seconds of the start. `source` is `glasses`; the band's motion on the wrist is [`band.motion`](neural-band.md#motion).
 
 Motion needs the `motion` scope. The rate is one of 5, 10, 15, 24, 30 or 60 samples a second. A `MotionSample`:
 

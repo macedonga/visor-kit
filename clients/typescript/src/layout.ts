@@ -35,6 +35,8 @@ export interface Placement {
 
 export interface BoxFields extends Placement {
   id?: string;
+  /** With an `id`, in a card's detail: a word the Display shows at once when the wearer clicks the box. */
+  toast?: string;
   gap?: number;
   padding?: number;
   paddingTop?: number;
@@ -130,7 +132,26 @@ export function icon(name: string, fields: IconFields = {}): LayoutNode {
   return node("icon", { ...rest, icon: name, height: size });
 }
 
-export function button(id: string, label: string, fields: { style?: string; icon?: string; primary?: boolean } = {}): LayoutNode {
+export interface ButtonFields extends Placement {
+  style?: "primary" | "secondary" | "outline";
+  icon?: string;
+  primary?: boolean;
+  /** In a card's detail: a word the Display shows at once when the wearer clicks the button. */
+  toast?: string;
+}
+
+export interface VideoFields extends Placement {
+  /** True to show play and pause. */
+  controls?: boolean;
+  height?: number;
+}
+
+/** A video, MP4 over `https://`, at most 400 pixels a side. It fills the screen alone: a layout with a video holds nothing else. */
+export function video(url: string, fields: VideoFields = {}): LayoutNode {
+  return { type: "video", url, ...fields };
+}
+
+export function button(id: string, label: string, fields: ButtonFields = {}): LayoutNode {
   return node("button", { ...fields, id, text: label });
 }
 

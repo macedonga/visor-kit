@@ -1,8 +1,10 @@
-# Publishes a version tag (v1.2.3): the libraries to Maven Central, signed, and the visor command to the GitHub release.
+# Publishes a version tag (v1.2.3): the libraries to Maven Central, signed, the visor command to the GitHub release,
+# and the TypeScript and Python clients to npm and PyPI at the same version.
 # Run it by hand for a dry run: everything is built and checked, nothing is published.
 #
 # Secrets: MAVEN_CENTRAL_USERNAME and MAVEN_CENTRAL_PASSWORD (a Central Portal user token), SIGNING_KEY (the
-# ASCII-armored private key) and SIGNING_KEY_PASSWORD.
+# ASCII-armored private key) and SIGNING_KEY_PASSWORD; NPM_TOKEN (an npm automation token). PyPI takes no secret:
+# it trusts this workflow once the project names it as a trusted publisher (pypi.org > visor-kit > Publishing).
 name: Release
 
 on:
@@ -95,3 +97,63 @@ jobs:
           flags=(--title "Visor Development Kit $NAME" --notes-file notes.md)
           if [[ "$NAME" == *-* ]]; then flags+=(--prerelease); fi
           gh release create "v$NAME" "tools/cli/build/distributions/visor-$NAME.zip" "${flags[@]}"
+
+  clients:
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      # PyPI's trusted publishing.
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Work out the version
+        id: version
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then echo "name=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"; else echo "name=0.0.0-dryrun" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+
+      # Both packages take the tag's version and the repo's license.
+      - name: Build the clients
+        env:
+          NAME: ${{ steps.version.outputs.name }}
+        run: |
+          cp LICENSE clients/typescript/ && cp LICENSE clients/python/
+          cd clients/typescript
+          npm ci
+          npm version "$NAME" --no-git-tag-version
+          npm run build
+          npm pack --dry-run
+          cd ../python
+          sed -i "s/^version = .*/version = \"$NAME\"/" pyproject.toml
+          python -m pip install --quiet build twine
+          python -m build
+          python -m twine check dist/*
+
+      - name: Publish to npm
+        if: github.event_name == 'push'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "error: a release secret is not set: NPM_TOKEN" >&2
+            exit 1
+          fi
+          cd clients/typescript
+          npm publish --access public
+
+      - name: Publish to PyPI
+        if: github.event_name == 'push'
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        with:
+          packages-dir: clients/python/dist

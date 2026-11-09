@@ -164,6 +164,15 @@ export class Visor {
     return Visor.connect(`ws://127.0.0.1:${port}/rpc`, "fake");
   }
 
+  /**
+   * True when this Visor answers the method, topic or feed `name`, as its hello said: check before using something
+   * newer than the oldest Visor you support.
+   */
+  supports(name: string): boolean {
+    const w = (this.welcome ?? {}) as { methods?: string[]; topics?: string[]; feeds?: string[] };
+    return [w.methods, w.topics, w.feeds].some((list) => list?.includes(name) ?? false);
+  }
+
   /** Runs `method` with `params` and resolves with its result; rejects with a `VisorError`. */
   call<T = unknown>(method: string, params: object = {}): Promise<T> {
     const id = this.nextId++;

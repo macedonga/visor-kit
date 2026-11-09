@@ -185,9 +185,9 @@ gives the assistant's model tools to call while it answers.
 | `MotionError.SENSOR_UNAVAILABLE` | the stream ends with `unsupported` |
 
 > On the glasses, Visor reads motion from their own sensor service, with nothing on the screen, where DAT opens
-> its toolkit app. The phone fuses the sensors into `orientation`, and every sample comes from the glasses, not the
-> band. FakeVisor serves all the fields: `fake.glasses.motion(...)`, or DAT's motion CSV with
-> `fake.glasses.playMotion(...)`.
+> its toolkit app. The phone fuses the sensors into `orientation`. The band's motion is a stream of its own,
+> `visor.band.motion`, for a band the person shares with the phone. FakeVisor serves all the fields:
+> `fake.glasses.motion(...)`, DAT's motion CSV with `fake.glasses.playMotion(...)`, and `fake.band.motion(...)`.
 
 ## Display
 

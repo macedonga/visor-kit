@@ -89,6 +89,12 @@ class Visor:
         self._reader = asyncio.ensure_future(self._read())
         self.welcome = None
 
+    def supports(self, name):
+        """True when this Visor answers the method, topic or feed ``name``, as its hello said: check before using
+        something newer than the oldest Visor you support."""
+        welcome = self.welcome or {}
+        return any(name in welcome.get(key, []) for key in ("methods", "topics", "feeds"))
+
     async def call(self, method, params=None):
         """Runs ``method`` with ``params`` and returns its result. Raises ``VisorError``."""
         id = next(self._ids)

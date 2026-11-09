@@ -179,8 +179,8 @@ What the fake offers:
 |---|---|
 | `fake.granted` | The scopes the fake person granted; all at first. Taking one back ends the streams that need it. |
 | `fake.glasses` | `paired`, `connected`, `display`, `model`, `battery`, `charging`, `worn`, `folded`, `thermal`: each change reaches `glasses.status`. `add(type)` puts a capture on the fake glasses, and `add(type, bytes, mime)` one with those bytes. `input(source, action)` sends a touch or a press. |
-| `fake.band` | `paired`, `battery`, `charging`, `leftHanded`; `gesture(...)` sends a gesture; `buzzes` lists the buzzes asked for. |
-| `fake.display` | `prompter`: the script on the teleprompter, null while closed; `layout`: the layout shown; `click(id)` taps one of its elements. |
+| `fake.band` | `paired`, `battery`, `charging`, `leftHanded`, `held`, `shared`; `gesture(...)` sends a gesture; `motion(...)` sends a reading for `band.motion` once `motionRate` is set; `buzzes` lists the buzzes asked for. |
+| `fake.display` | `prompter`: the script on the teleprompter, null while closed; `layout`: the layout shown; `click(id)` taps one of its elements; `back()` goes back; `video(state, error)` moves the video along; `cards`: the app's Briefing cards; `clickCard(card, id)` clicks in a card's detail. |
 | `fake.notify` | `shown`: the app's notifications on the Display, by id. |
 | `fake.settings` | `all`: five sample settings by key; `change(key, value)` changes one as the wearer would. |
 | `fake.assistant` turns | `turn(question, answer)` adds a turn the app gets on `assistant.turns`; `history` lists them. |
@@ -251,6 +251,8 @@ ask what is on the calendar today
 | `motion-csv FILE` | DAT's 14-column motion CSV, played over and over at the pace of its timestamps. |
 | `camera FILE WIDTHxHEIGHT FPS`, `camera off` | A recorded `.h264` or `.h265` stream as the live camera, looped. |
 | `gesture FINGER ACTION` | A band gesture for `band.gestures`, such as `index double_tap`. |
+| `band-shared on`, `band-shared off` | The band shared with the phone, as the person sets it in Visor. |
+| `band-motion AX AY AZ` | An accelerometer reading on the wrist for `band.motion`, which needs the band shared. |
 | `photo`, `video` | A new capture on the glasses. |
 | `ask QUESTION` | The wearer asks; the app whose phrase the question holds answers. |
 | `say TEXT` | The glasses hear TEXT, for `voice.transcripts`. |
@@ -295,7 +297,15 @@ what the fake Display shows and clicks what you tap, as DAT's `createPreviewView
 `fake.display.briefingPreview(context)` draws the Briefing with the app's cards: a tap opens a card's detail, a tap
 there clicks, and a double tap goes back.
 
-## The sample app
+## Web apps on the Display
 
-`samples/android` in this repo is an app with a button for every capability. Build it with
-`./gradlew :sample:installDebug`, and use it with `visor trace` to see a whole exchange.
+`Visor.connectGlasses()` works only in the Display's browser. Elsewhere, connect the same page to `visor fake` with
+`Visor.connectFake()`, and pick with `onGlasses()`: see [Web apps on the Display](web-apps.md).
+
+## The samples
+
+- `samples/android` is an app with a button for every capability. Build it with `./gradlew :sample:installDebug`,
+  and use it with `visor trace` to see a whole exchange.
+- `samples/python` holds small scripts on the Python client: a teleprompter pager turned by the band, a journal of
+  the assistant's answers, and the glasses' settings.
+- `samples/web` is a glasses console in one page, on the network door, with no build step.

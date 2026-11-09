@@ -2,6 +2,22 @@
   "name": "visor-kit",
   "version": "0.1.0",
   "description": "The Visor Development Kit from TypeScript: Meta's glasses through Visor's network door, or from a web app on the Display.",
+  "keywords": [
+    "meta",
+    "ray-ban",
+    "smart-glasses",
+    "neural-band",
+    "wearables",
+    "visor",
+    "vdk"
+  ],
+  "homepage": "https://github.com/macedonga/visor-kit/tree/main/clients/typescript",
+  "bugs": "https://github.com/macedonga/visor-kit/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/macedonga/visor-kit.git",
+    "directory": "clients/typescript"
+  },
   "license": "Apache-2.0",
   "type": "module",
   "main": "dist/index.js",
@@ -23,8 +39,13 @@
   "files": [
     "dist"
   ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "typescript": "5.9.3"

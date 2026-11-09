@@ -160,7 +160,8 @@ visor.assistant.tools(tools).collect { call ->
 }
 ```
 
-While the app collects `tools`, the model can call them, alongside the person's own MCP servers. Each call comes
+While the app collects `tools`, the model can call them, alongside the person's own MCP servers, the Display's
+own tools and those of a [web app](web-apps.md#tools-for-the-assistant) open on it. Each call comes
 as a `ToolCall`; answer it with `answer` or `fail` within 15 seconds. The model reads the text and words its answer
 to the wearer from it, so say what happened, not how to say it.
 

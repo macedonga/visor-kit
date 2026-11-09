@@ -98,4 +98,6 @@ All of them are in [Testing](testing.md).
 - [Scopes and consent](scopes-and-consent.md)
 - [Errors](errors.md): what each code means and what to do about it
 - The capability pages: [Glasses](glasses.md), [Camera and captures](camera-and-captures.md),
-  [Neural Band](neural-band.md), [Display](display.md)
+  [Neural Band](neural-band.md), [Display](display.md), [Briefing cards](briefing-cards.md),
+  [Voice and the assistant](voice-and-assistant.md), [Settings](settings.md)
+- Building a web app for the Display instead: [Web apps on the Display](web-apps.md)

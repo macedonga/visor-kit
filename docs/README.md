@@ -9,9 +9,12 @@ Start with the overview, then getting started. The rest is reference.
 5. Capabilities:
    - [Glasses](glasses.md): status, pairs, touches and presses, motion.
    - [Camera and captures](camera-and-captures.md): the camera live, photos, videos, imports.
-   - [Neural Band](neural-band.md): gestures, status, vibration.
+   - [Neural Band](neural-band.md): gestures, status, motion on the wrist, vibration, and sharing the band with the
+     phone.
    - [Display](display.md): the teleprompter, layouts, and cards on the Briefing.
    - [Briefing cards](briefing-cards.md): the guide, with recipes for weather, stocks, a live timer and photos.
+   - [Web apps on the Display](web-apps.md): the VDK from JavaScript in a web app on the Display, and its tools for
+     the assistant.
    - [Voice and the assistant](voice-and-assistant.md): questions for the app, starting it by voice, transcripts,
      tools for the model, notifications.
    - [Settings](settings.md): reading and changing the glasses' settings.

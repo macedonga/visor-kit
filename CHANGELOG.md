@@ -13,7 +13,7 @@
   `keepBack`.
 - `glasses.motion`, with the `motion` scope: the accelerometer, gyroscope, magnetometer and orientation at 5 to 60
   samples a second. Visor reads them from the glasses' own sensor service, with nothing on their screen, and fuses
-  the orientation on the phone; FakeVisor also serves the band's motion.
+  the orientation on the phone.
 - `band.motion`, with the `motion` scope: the Neural Band's accelerometer, gyroscope, magnetometer and orientation
   on the wrist, for a band the person shares with the phone. `BandStatus.shared` says when the band is shared: then
   `band.gestures` come straight from it and `band.buzz` goes out at once, while the Display reaches the band through

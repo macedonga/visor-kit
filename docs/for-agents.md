@@ -35,12 +35,15 @@ Access Toolkit (DAT): no Meta AI app, no Meta account, no developer centre. Port
    name, icon, flow) { }`, with clicks in its detail on `display.cards.clicks`. A card takes at most 256 KiB.
 5. A voice phrase reaches the app while it collects `visor.voice.requests(phrases)`, or starts it when its
    activity declares the phrases (`VoiceLaunch`). Reply within about 20 seconds with `visor.voice.reply`.
-6. Do not invent methods. The methods and topics are in `kit-protocol` (`Methods`, `Topics`) and in the docs'
+6. `band.motion` needs a band the person shares with the phone: check `band.status` `shared` first, and on
+   `unsupported` with reason `not_shared`, show the person the exception's message, which names the setting.
+7. Do not invent methods. The methods and topics are in `kit-protocol` (`Methods`, `Topics`) and in the docs'
    JSON-RPC tables; `visor methods` lists what a Visor answers.
 
 ## Testing without glasses
 
-- `FakeVisor` in unit tests: set `fake.glasses.*`, send `fake.glasses.input(...)`, `fake.band.gesture(...)`,
+- `FakeVisor` in unit tests: set `fake.glasses.*` and `fake.band.shared`, send `fake.glasses.input(...)`,
+  `fake.band.gesture(...)`, `fake.band.motion(...)`,
   `fake.voice.say(...)`, `fake.display.click(id)`, `fake.display.back()`, `fake.display.clickCard(card, id)`.
 - `visor fake` on a computer: JSON-RPC on `ws://127.0.0.1:7333/rpc`, MCP on `/mcp`, the Display simulator on
   `http://127.0.0.1:7333/display`, and a console that plays the glasses.

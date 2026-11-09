@@ -3,9 +3,11 @@
 The Visor Development Kit (VDK) from Python, over adb or Visor's network door.
 
 ```
-pip install ./clients/python            # adb only
-pip install "./clients/python[network]"  # the network door too
+pip install visor-kit              # adb only
+pip install "visor-kit[network]"   # the network door and visor fake too
 ```
+
+From a clone of this repo: `pip install "./clients/python[network]"`.
 
 ```python
 import asyncio
@@ -28,12 +30,16 @@ asyncio.run(main())
 - `call(method, params)` returns the result; `subscribe(topic, params)` yields events, subscribing when the
   iteration starts; `open(topic, params)` subscribes first and returns a `Stream` to iterate and `aclose()`, for
   events that follow something you do; `feed(name, params)`
-  yields a feed's records as `(header, payload)`, the payload as bytes. All raise `VisorError`, whose `code` is
-  the kit's error code.
+  yields a feed's records as `(header, payload)`, the payload as bytes. All raise `VisorError`, whose `code` and
+  `reason` are the kit's.
+- `supports(name)` says whether this Visor answers a method, topic or feed; `welcome` holds its whole hello.
+
+Every method and topic of the VDK works this way, by its name, with the scopes the connection holds.
 
 `visor_kit.layout` builds layouts and Briefing cards for the Display as plain dicts, with the same pieces as the
-Kotlin builder: `column`, `row`, `text`, `image`, `icon`, `chart`, `pager`, `page`, and the blocks `header`, `stat`,
-`change`, `field` and `progress`. Fields take snake_case: `max_lines=1` is `maxLines`.
+Kotlin builder: `column`, `row`, `text`, `image`, `icon`, `button`, `buttons`, `video`, `chart`, `pager`, `page`,
+and the blocks `header`, `stat`, `change`, `field` and `progress`. Fields take snake_case: `max_lines=1` is
+`maxLines`.
 
 ```python
 from visor_kit.layout import card, header, stat, progress, page, chart, field

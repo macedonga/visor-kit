@@ -139,8 +139,8 @@ visor.display.cards.remove("pasta")
 ```
 
 A card is a layout, drawn in the Briefing's own card style and padded 24 px as Meta's cards are unless it sets its
-padding. Setting a card with the same id replaces it; the Display shows the change the next time it asks, within
-about a minute. The name and the icon show in the Display's list of Briefing cards, where the wearer can turn a card
+padding. Setting a card with the same id replaces it; the Display shows the change the next time it asks, every
+15 seconds while the wearer looks at the Briefing. The name and the icon show in the Display's list of Briefing cards, where the wearer can turn a card
 off. On the card itself buttons and videos do nothing: a click on the card opens its detail.
 
 A card and its detail take at most 256 KiB as JSON (`BriefingCard.MAX_BYTES`), images inside them included; past

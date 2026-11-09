@@ -10,6 +10,20 @@ readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.9"
 dependencies = []
+keywords = ["meta", "ray-ban", "smart-glasses", "neural-band", "wearables", "visor", "vdk"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries",
+]
+
+[project.urls]
+Homepage = "https://github.com/macedonga/visor-kit/tree/main/clients/python"
+Documentation = "https://github.com/macedonga/visor-kit/tree/main/docs"
+Source = "https://github.com/macedonga/visor-kit"
+Issues = "https://github.com/macedonga/visor-kit/issues"
 
 [project.optional-dependencies]
 network = ["websockets>=13"]

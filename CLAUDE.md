@@ -74,6 +74,13 @@ Visor's side, in the Visor repo:
     glasses has a timeout.
 16. Developer mode's intents (`com.macedonga.visor.action.*`) are public API too, under the same rules.
 
+User docs (README, docs/, client READMEs) say what each feature does, never whether it was tried on the glasses:
+the user, 2026-11-09, "The users do not care about if something has been tried or not". Tried status lives here and
+in Visor's memory only.
+
+Publishing: the release workflow publishes Maven Central, the visor command, npm (`visor-kit`, NPM_TOKEN) and PyPI
+(`visor-kit`, trusted publishing) on a `v*.*.*` tag. Both names were free on 2026-11-09. No tag until the user says.
+
 ## Working on it
 
 - A change starts in `protocol`, then the client, then FakeVisor, then Visor.
@@ -118,7 +125,8 @@ maps all of it (written 2026-11-07 from github.com/meta/meta-wearables-dat-andro
 | Display: FlexBox, Text, Image, Button, Icon, Video, taps back | `display.layout.*` | tried: through Visor's own toolkit session, videos included |
 | `MockDeviceKit` | `FakeVisor` | done; add the new capabilities as they come |
 
-Beyond DAT: `display.cards.*` (Briefing cards; cards, details, pages, colours tried, clicks in details not yet),
+Beyond DAT: `display.cards.*` (Briefing cards; cards, details, pages, colours, images and clicks in a detail tried;
+charts, weather illustrations, toasts and live cards not yet),
 `voice.speak` (tried), `settings.*` (tried), `assistant.*`, `notify.post`, `display.prompter.*` (tried), webhooks
 (tried), the network door and MCP, `visor fake` and its simulator.
 

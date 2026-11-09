@@ -24,7 +24,7 @@ import mimetypes
 __all__ = [
     "BLUE", "GREEN", "PRIMARY", "RED", "SECONDARY", "TRACK",
     "button", "buttons", "card", "change", "chart", "column", "field", "header", "icon", "image", "image_file",
-    "layout", "page", "pager", "progress", "rgb", "row", "stat", "text",
+    "layout", "page", "pager", "progress", "rgb", "row", "stat", "text", "video",
 ]
 
 PRIMARY = "primary"
@@ -88,8 +88,15 @@ def icon(name, size=None, **fields):
     return _node("icon", dict(fields, icon=name, height=size))
 
 
+def video(url, **fields):
+    """A video, MP4 over ``https://``, at most 400 pixels a side; ``controls=True`` shows play and pause. It fills the
+    screen alone: a layout with a video holds nothing else."""
+    return _node("video", dict(fields, url=url))
+
+
 def button(id, label, **fields):
-    """A button whose clicks come with ``id``: ``style``, ``icon``, ``primary``."""
+    """A button whose clicks come with ``id``: ``style``, ``icon``, ``primary``, and ``toast``, a word the Display
+    shows at once when the wearer clicks it in a card's detail."""
     return _node("button", dict(fields, id=id, text=label))
 
 

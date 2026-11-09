@@ -1,7 +1,8 @@
 # Visor Development Kit
 
-> The Visor Development Kit (VDK) lets Android apps and programs on a computer use Ray-Ban Meta glasses, the Meta
-> Ray-Ban Display and the Meta Neural Band through Visor, the Android app that runs them. It is an alternative to
+> The Visor Development Kit (VDK) lets Android apps, programs on a computer and web apps on the Display use
+> Ray-Ban Meta glasses, the Meta Ray-Ban Display and the Meta Neural Band through Visor, the Android app that runs
+> them. It is an alternative to
 > Meta's Wearables Device Access Toolkit (DAT), with no Meta AI app, Meta account or developer review.
 
 ## Docs
