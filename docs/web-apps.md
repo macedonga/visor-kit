@@ -80,8 +80,9 @@ document.modelContext.registerTool({
 ```
 
 The person turns this on once, in Visor: **Settings > Web apps > Web app tools for your assistant**. Visor then
-hands the tools to the model the person set up in Visor, with your description and schema, and runs the calls the
-model makes. Without it, `document.modelContext` is missing: check for it before you register.
+hands the tools to the model the person set up in Visor and runs the calls the model makes. Visor asks the glasses
+for your description and schema; until that is tried on the glasses, write tool names that say what they do.
+Without the setting, `document.modelContext` is missing: check for it before you register.
 
 ## Other parts of the web-app SDK
 
