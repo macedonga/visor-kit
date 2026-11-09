@@ -3,8 +3,9 @@
 # Run it by hand for a dry run: everything is built and checked, nothing is published.
 #
 # Secrets: MAVEN_CENTRAL_USERNAME and MAVEN_CENTRAL_PASSWORD (a Central Portal user token), SIGNING_KEY (the
-# ASCII-armored private key) and SIGNING_KEY_PASSWORD; NPM_TOKEN (an npm automation token). PyPI takes no secret:
-# it trusts this workflow once the project names it as a trusted publisher (pypi.org > visor-kit > Publishing).
+# ASCII-armored private key) and SIGNING_KEY_PASSWORD; NPM_TOKEN, an npm granular token with "Read and write (stage
+# only)": the workflow stages the npm version, and a maintainer releases it on npmjs.com with 2FA. PyPI takes no
+# secret: it trusts this workflow as its trusted publisher (pypi.org > visor-kit > Publishing).
 name: Release
 
 on:
@@ -140,7 +141,9 @@ jobs:
           python -m build
           python -m twine check dist/*
 
-      - name: Publish to npm
+      # Staged, not published: the version waits on npmjs.com until a maintainer approves it with 2FA. Staging needs
+      # npm 11.15 or later.
+      - name: Stage on npm
         if: github.event_name == 'push'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -149,8 +152,9 @@ jobs:
             echo "error: a release secret is not set: NPM_TOKEN" >&2
             exit 1
           fi
+          npm install --global npm@11
           cd clients/typescript
-          npm publish --access public
+          npm stage publish
 
       - name: Publish to PyPI
         if: github.event_name == 'push'
