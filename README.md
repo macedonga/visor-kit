@@ -8,7 +8,6 @@
 </p>
 
 <p align="center">
-  <a href="https://visor.macedonga.com/developers/"><img src="https://img.shields.io/badge/Website-visor.macedonga.com-2563EB?style=for-the-badge&labelColor=0B1220" alt="Website: visor.macedonga.com"></a>
   <a href="https://visor.macedonga.com/developers/docs/"><img src="https://img.shields.io/badge/Docs-read%20the%20guide-2563EB?style=for-the-badge&labelColor=0B1220" alt="Documentation"></a>
   <a href="https://visor.macedonga.com/developers/docs/getting-started/"><img src="https://img.shields.io/badge/Start-getting%20started-2563EB?style=for-the-badge&labelColor=0B1220" alt="Getting started"></a>
   <a href="https://visor.macedonga.com/developers/docs/compatibility/"><img src="https://img.shields.io/badge/Protocol-1-2563EB?style=for-the-badge&labelColor=0B1220" alt="Protocol 1"></a>
