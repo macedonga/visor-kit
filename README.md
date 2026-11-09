@@ -1,37 +1,51 @@
-# Visor Development Kit
+<p align="center">
+  <img src=".github/banner.png" alt="Visor Development Kit: build your own apps for Meta glasses" width="100%">
+</p>
 
-Build your own apps and tools for Meta's smart glasses.
+<p align="center">
+  <b>Build apps, scripts, AI agents and Display web apps for Meta glasses.</b><br>
+  Through <a href="https://github.com/macedonga/visor">Visor</a>, with the wearer's consent. No Meta account, no Meta AI app, no developer review.
+</p>
 
-The Visor Development Kit (VDK) lets an Android app, or a script on your computer, use Ray-Ban Meta glasses, the Meta Ray-Ban
-Display and the Meta Neural Band through [Visor](https://github.com/macedonga/visor), the open Android app that
-runs them. It needs no Meta account, no Meta AI app and no developer review, and it sends nothing anywhere.
+<p align="center">
+  <a href="docs/README.md"><img src="https://img.shields.io/badge/Docs-read%20the%20guide-2563EB?style=for-the-badge&labelColor=0B1220" alt="Documentation"></a>
+  <a href="docs/getting-started.md"><img src="https://img.shields.io/badge/Start-getting%20started-2563EB?style=for-the-badge&labelColor=0B1220" alt="Getting started"></a>
+  <a href="docs/compatibility.md"><img src="https://img.shields.io/badge/Protocol-1-2563EB?style=for-the-badge&labelColor=0B1220" alt="Protocol 1"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache--2.0-2563EB?style=for-the-badge&labelColor=0B1220" alt="License: Apache-2.0"></a>
+</p>
 
-> **Status:** in development. Protocol 1 and the 0.1 libraries are not on Maven Central, npm or PyPI yet: build
-> them from this repo.
+<p align="center">
+  <a href="#what-you-can-build">Features</a> |
+  <a href="#quick-start">Quick start</a> |
+  <a href="#test-without-the-glasses">Testing</a> |
+  <a href="#documentation">Docs</a> |
+  <a href="#packages">Packages</a>
+</p>
 
-## What you can do
+---
+
+The Visor Development Kit (VDK) lets your code use Ray-Ban Meta glasses, the Meta Ray-Ban Display and the Meta
+Neural Band through [Visor](https://github.com/macedonga/visor), the open Android app that runs them in place of
+Meta AI. Visor holds the glasses' link and speaks their protocol; the VDK hands that to your app, your script, your
+agent or your web app, and the person decides what each one may do. Nothing is sent anywhere.
+
+## What you can build
 
 | | |
 |---|---|
-| **Glasses** | Read the link, battery, model and firmware, and whether the glasses are worn, folded or recording, as it changes. See every pair set up in Visor, with its name and looks, and switch the active one. Follow the glasses' motion (accelerometer, gyroscope, magnetometer, orientation), and the wearer's navigation on the Display. |
-| **Camera** | Take a photo and get it in the phone's gallery. Start and stop videos and hyperlapses. Stream the camera live, up to 1080p over Wi-Fi Direct, with the microphones. |
-| **Captures** | List what is on the glasses, import it over Wi-Fi Direct, and follow each import. |
-| **Neural Band** | Receive every gesture: finger, action and the band's own reading of it, while the band stays with the Display. Make the band vibrate. With the band shared with the phone, get its gestures straight from it, buzz it at once, and follow its motion on the wrist, while the Display keeps using it. |
-| **Display** | Show layouts with DAT's elements (text, images, icons, buttons, video) and more of Meta's own (pages, charts, any colour) and get the clicks. Keep cards on the Display home's Briefing, beside Meta's weather and stocks, with details, pages, buttons and live updates. Put a script on the teleprompter, and notifications on the Display. |
+| **Glasses** | Read the link, battery, model and firmware, and whether the glasses are worn, folded or recording, as it changes. See every pair set up in Visor and switch the active one. Follow the glasses' motion and every touch and press. |
+| **Camera** | Take a photo straight into the phone's gallery. Start and stop videos and hyperlapses. Stream the camera live, up to 1080p over Wi-Fi Direct, with the microphones. Import what is on the glasses. |
+| **Display** | Show layouts with text, images, icons, buttons and video, and get the clicks. Keep cards of your own on the Display home's Briefing, beside Meta's weather and stocks, with details, pages, charts, buttons and live updates. Put a script on the teleprompter, and notifications on the Display. |
 | **Web apps** | Use every part of the VDK from JavaScript in a web app on the Display, and give the wearer's assistant the page's own tools. |
-| **Voice** | Answer the questions the wearer asks that name your app, in the glasses' own voice, or start your app by a phrase. Have the glasses say a line unasked. Turn what the glasses hear into text, live; on the Display, with its own speech recognition. |
+| **Neural Band** | Receive every gesture, with the band left on the Display. Make it vibrate. With the band shared with the phone, read its motion on the wrist too. |
+| **Voice** | Answer the questions that name your app, in the glasses' own voice, or start your app with a phrase. Have the glasses say a line unasked. Turn what the glasses hear into text, live. |
 | **Assistant** | Give the assistant's model your app's tools, which it calls while it answers the wearer. Read every question and answer. |
 | **Settings** | Read every setting the glasses keep, and change the everyday ones. |
-| **Without the glasses** | `visor fake` runs a fake Visor on your computer, with a Display simulator in the browser that draws layouts and the Briefing with your cards; `visor record` and `visor replay` play back what the wearer did. |
 
-Programs and AI agents can reach the glasses over the network too, through JSON-RPC or MCP, with a token the
-person makes for them, and Visor can post events to a webhook. Web apps on the Display reach them through the
-Display's browser. See the [overview](docs/overview.md).
+Programs and AI agents reach the glasses over the network too, through JSON-RPC or MCP, with a token the person
+makes for them, and Visor can post events to a webhook.
 
 ## How it works
-
-Visor is the phone side of the glasses: it holds the Bluetooth and Wi-Fi link and speaks their protocol. The VDK
-asks Visor to do things, and Visor asks the person first.
 
 ```
 your app            --(VDK library, binder)------------+
@@ -40,41 +54,75 @@ programs, AI agents --(network door: WebSocket, MCP)---+--> Visor --(Bluetooth, 
 a Display web app   --(the Display's browser)----------+
 ```
 
-The person grants each app its **scopes** on Visor's consent screen, and can take them back at any time from
-Visor's settings. Nothing else needs turning on.
+Every capability is a **method**, a **topic** (a stream of events) or a **feed** (a stream of binary records), the
+same from every language. The person grants each app its **scopes** in Visor, and can take them back at any time.
 
 ## Quick start
 
-1. Install Visor on the phone and set up the glasses.
-2. Add the library:
+> [!NOTE]
+> The libraries are in development and not on Maven Central, npm or PyPI yet: build them from this repo.
 
-   ```kotlin
-   dependencies {
-       implementation("com.macedonga.visor:kit:0.1.0")
-   }
-   ```
+### Android
 
-3. Connect, ask for scopes, and use the glasses:
+```kotlin
+dependencies {
+    implementation("com.macedonga.visor:kit:0.1.0")
+}
+```
 
-   ```kotlin
-   val visor = Visor.connect(context)
+```kotlin
+val visor = Visor.connect(context)
 
-   val ask = registerForActivityResult(RequestScopes()) { held -> /* scopes the app holds now */ }
-   ask.launch(setOf(Scope.CAMERA, Scope.BAND))
+val ask = registerForActivityResult(RequestScopes()) { held -> /* the scopes the app holds now */ }
+ask.launch(setOf(Scope.CAMERA, Scope.BAND))
 
-   val photo = visor.camera.takePhoto()        // photo.uri is in the gallery
-   visor.band.gestures.collect { gesture ->
-       if (gesture.derived == GestureAction.DOUBLE_TAP) visor.camera.takePhoto()
-   }
-   ```
+visor.band.gestures.collect { gesture ->
+    if (gesture.derived == GestureAction.DOUBLE_TAP) visor.camera.takePhoto()   // the photo lands in the gallery
+}
+```
 
-The [getting started guide](docs/getting-started.md) goes through it step by step.
+### A card on the Display's home
 
-## Test from your computer
+```kotlin
+visor.display.cards.set("pasta", "Kitchen timer", LayoutIconName.CLOCK) {
+    header(LayoutIconName.CLOCK, "Kitchen timer")
+    stat("4:00", "Pasta")
+    progress(0.6)
+    detail { buttons { button("stop", "Stop") { toast = "Stopped" } } }
+}
+```
 
-The `visor` command reaches Visor on the phone through adb, over USB or wireless debugging, once Developer mode
-is on in Visor. You can call any method, watch any stream, see your app's traffic, and stand in for the glasses or
-the band:
+### Python and TypeScript
+
+```python
+async with await visor_kit.connect_adb() as visor:
+    print(await visor.call("glasses.status"))
+    async for gesture in visor.subscribe("band.gestures"):
+        print(gesture["finger"], gesture["derived"])
+```
+
+```ts
+const visor = await Visor.connect("ws://192.168.1.20:7333/rpc", token);
+visor.subscribe("band.gestures", {}, (gesture) => console.log(gesture));
+```
+
+### A web app on the Display
+
+```ts
+import { Visor, onGlasses } from "visor-kit";
+
+if (onGlasses()) {
+  const visor = await Visor.connectGlasses();
+  await visor.call("voice.speak", { text: "Hello from the web app" });
+}
+```
+
+The [getting started guide](docs/getting-started.md) goes through an Android app step by step.
+
+## Test without the glasses
+
+The `visor` command reaches Visor on the phone through adb, once Developer mode is on in Visor. Call any method,
+watch any stream, see your app's traffic, and stand in for the glasses or the band:
 
 ```
 visor status                              # Visor, the glasses, the band, the apps that use the VDK
@@ -84,41 +132,39 @@ visor grant com.example.app camera band   # skip the consent screen while you de
 visor card card.json                      # put a card on the Display's Briefing from a file
 ```
 
-For unit tests, `FakeVisor` runs Visor inside your app's process. Both are in [Testing](docs/testing.md).
+No phone at hand: `visor fake` runs a fake Visor on your computer, with a Display simulator in the browser that
+draws your layouts and your Briefing cards. In unit tests, `FakeVisor` runs Visor inside your app's process. Both
+are in [Testing](docs/testing.md).
 
 ## Documentation
 
 - [Overview](docs/overview.md): what the VDK is, how it compares with Meta's toolkit, and the roadmap
-- [Getting started](docs/getting-started.md)
-- [Scopes and consent](docs/scopes-and-consent.md)
-- [The connection](docs/connection.md)
-- [Glasses](docs/glasses.md), [Camera and captures](docs/camera-and-captures.md), [Neural Band](docs/neural-band.md),
-  [Display](docs/display.md), [Briefing cards](docs/briefing-cards.md), [Web apps on the Display](docs/web-apps.md),
-  [Voice and the assistant](docs/voice-and-assistant.md), [Settings](docs/settings.md)
-- [Errors](docs/errors.md)
-- [Testing](docs/testing.md)
-- [JSON-RPC](docs/json-rpc.md): the VDK from any language
-- [The network door](docs/network.md): WebSocket, MCP for AI agents, Python and TypeScript
-- [Compatibility](docs/compatibility.md)
+- [Getting started](docs/getting-started.md), [Scopes and consent](docs/scopes-and-consent.md),
+  [The connection](docs/connection.md)
+- Capabilities: [Glasses](docs/glasses.md), [Camera and captures](docs/camera-and-captures.md),
+  [Neural Band](docs/neural-band.md), [Display](docs/display.md), [Briefing cards](docs/briefing-cards.md),
+  [Web apps on the Display](docs/web-apps.md), [Voice and the assistant](docs/voice-and-assistant.md),
+  [Settings](docs/settings.md)
+- [Errors](docs/errors.md), [Testing](docs/testing.md), [Compatibility](docs/compatibility.md)
+- Other languages: [JSON-RPC](docs/json-rpc.md), [The network door](docs/network.md)
 - [Porting from Meta's DAT](docs/porting-from-dat.md)
 - [AI tools](docs/ai-tools.md): the docs search, its MCP server, and guidance for coding assistants
 
-## Modules
+## Packages
 
-| Artifact | What it is |
+| Package | What it is |
 |---|---|
 | `com.macedonga.visor:kit` | The Android library. |
-| `com.macedonga.visor:kit-testing` | `FakeVisor`, for tests. |
+| `com.macedonga.visor:kit-testing` | `FakeVisor` for an app's tests, with the Display preview. |
 | `com.macedonga.visor:kit-fake` | `FakeVisor` in plain Kotlin, for JVM tests and tools. |
 | `com.macedonga.visor:kit-server` | The server engine Visor and FakeVisor share. |
 | `com.macedonga.visor:kit-protocol` | The wire contract, for JVM tools and for Visor itself. |
-| `visor` | The command for your computer, on the [releases](https://github.com/macedonga/visor-kit/releases) page. `visor fake` runs FakeVisor for building without a phone. |
-| `visor-kit` for Python and TypeScript | Clients for other languages, in [`clients/`](clients). The TypeScript one also runs in web apps on the Display. |
-
-## Compatibility
+| `visor` | The command for your computer, on the [releases](https://github.com/macedonga/visor-kit/releases) page. |
+| [`visor-kit` for TypeScript](clients/typescript) | For browsers, Node and web apps on the Display. |
+| [`visor-kit` for Python](clients/python) | For scripts, over adb or the network. |
 
 An app built against any VDK release keeps working with every later Visor, and a newer app works with an older
-Visor as far as that Visor goes. The build enforces this against the last release. See
+Visor as far as that Visor goes. The build enforces this against the last release: see
 [Compatibility](docs/compatibility.md).
 
 ## License
