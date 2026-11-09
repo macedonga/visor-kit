@@ -2,7 +2,7 @@
 
 `index.html` is a console for the glasses in one page, with no build step: the glasses' status, the touchpad and
 buttons, the band's gestures, the questions asked of the assistant, and the teleprompter. It speaks JSON-RPC over
-a WebSocket to Visor's [network door](../../docs/network.md) in about 40 lines, which you can copy.
+a WebSocket to Visor's [network door](https://visor.macedonga.com/developers/docs/network/) in about 40 lines, which you can copy.
 
 Try it without a phone:
 

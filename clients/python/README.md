@@ -56,5 +56,5 @@ await visor.call("display.cards.set", card(
 
 `image_file(path)` turns a photo into a `data:` URI for `image()`; Visor scales it to the Display.
 
-Method and topic names, params and results are in [the JSON-RPC docs](../../docs/json-rpc.md) and
+Method and topic names, params and results are in [the JSON-RPC docs](https://visor.macedonga.com/developers/docs/json-rpc/) and
 [`openrpc.json`](../../protocol/api/openrpc.json).

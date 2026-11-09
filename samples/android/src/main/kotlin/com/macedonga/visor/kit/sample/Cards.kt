@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-// The recipes of docs/briefing-cards.md, as the sample's buttons run them.
+// The recipes of the Briefing cards page of the docs, as the sample's buttons run them.
 
 /** A card like Meta's Weather, with three pages behind it: now, the next hours, the week. */
 internal fun weatherCard(): BriefingCard = BriefingCard("weather", "Lake weather", LayoutIconName.CLOUD) {

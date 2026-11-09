@@ -24,10 +24,18 @@ jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      ORG_GRADLE_PROJECT_vdkDocs: ${{ github.workspace }}/visor-site/src/content/docs
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+
+      # The visor command bundles the docs, which live in the site repo.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: macedonga/visor-site
+          path: visor-site
 
       - name: Work out the version
         id: version

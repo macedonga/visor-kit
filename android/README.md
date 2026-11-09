@@ -52,5 +52,5 @@ Every call is a `suspend fun` and every stream a cold `Flow`. A failure is a `Ki
 
 ## Read more
 
-[Getting started](../docs/getting-started.md), then the page of each capability in [the docs](../docs/README.md).
+[Getting started](https://visor.macedonga.com/developers/docs/getting-started/), then the page of each capability in [the docs](https://visor.macedonga.com/developers/docs/).
 For tests, add [`kit-testing`](../testing).

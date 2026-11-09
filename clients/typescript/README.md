@@ -66,7 +66,7 @@ await visor.call("display.cards.set", card("stocks", "My stocks", [
 
 It has every element (`column`, `row`, `text`, `image`, `icon`, `button`, `buttons`, `video`, `pager`, `chart`) and
 the building blocks `header`, `stat`, `change`, `field` and `progress`. See
-[Briefing cards](https://github.com/macedonga/visor-kit/blob/main/docs/briefing-cards.md).
+[Briefing cards](https://visor.macedonga.com/developers/docs/briefing-cards/).
 
 ## License
 

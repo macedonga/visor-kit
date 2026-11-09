@@ -74,7 +74,12 @@ Visor's side, in the Visor repo:
     glasses has a timeout.
 16. Developer mode's intents (`com.macedonga.visor.action.*`) are public API too, under the same rules.
 
-User docs (README, docs/, client READMEs) say what each feature does, never whether it was tried on the glasses:
+The docs live only in the site repo, visor-site (`src/content/docs`, served at visor.macedonga.com/developers/docs),
+next to the protocol pages (`src/content/protocol`). This repo has no docs folder: a change to the VDK updates the
+page there, and links here point at the site. The `visor` command bundles the docs from that folder, so a build
+needs visor-site checked out beside visor-kit, or `-PvdkDocs=<path>`.
+
+User docs (README, the site's docs, client READMEs) say what each feature does, never whether it was tried on the glasses:
 the user, 2026-11-09, "The users do not care about if something has been tried or not". Tried status lives here and
 in Visor's memory only.
 
@@ -106,7 +111,7 @@ Library versions are semver. `KitProtocol.VERSION` counts separately and only go
 Status as of 2026-11-09: phases 1 to 5 are built. On the glasses, tried means on the Meta Ray-Ban Display (A024 phone)
 unless said; Visor's own record is visor/memory/vdk.md.
 
-Parity with Meta's DAT (1.0.1) is a goal: every DAT capability gets a kit equivalent, and `docs/porting-from-dat.md`
+Parity with Meta's DAT (1.0.1) is a goal: every DAT capability gets a kit equivalent, and the docs' `porting-from-dat.md`
 maps all of it (written 2026-11-07 from github.com/meta/meta-wearables-dat-android). Status:
 
 | DAT | Kit | Status |

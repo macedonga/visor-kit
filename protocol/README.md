@@ -30,4 +30,4 @@ dependencies {
 A released method, topic, field or type is never removed or renamed. A new field is optional, with a default. Sets
 that grow, such as scopes, error codes and gesture actions, are string value classes, so an older app reads a newer
 value as unknown instead of failing. The build checks all of it against the last release: see
-[Compatibility](../docs/compatibility.md).
+[Compatibility](https://visor.macedonga.com/developers/docs/compatibility/).

@@ -196,7 +196,7 @@ private fun Sample() {
                 OutlinedButton({ run("prompter") { it.display.prompter.close() } }) { Text("Close") }
             }
 
-            // The recipes of docs/briefing-cards.md: cards on the Display home's Briefing.
+            // The recipes of the Briefing cards page of the docs: cards on the Display home's Briefing.
             Text("Briefing", style = MaterialTheme.typography.titleSmall)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton({ run("weather card") { it.display.cards.set(weatherCard()) } }) { Text("Weather card") }

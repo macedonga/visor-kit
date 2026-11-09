@@ -8,9 +8,9 @@
 </p>
 
 <p align="center">
-  <a href="docs/README.md"><img src="https://img.shields.io/badge/Docs-read%20the%20guide-2563EB?style=for-the-badge&labelColor=0B1220" alt="Documentation"></a>
-  <a href="docs/getting-started.md"><img src="https://img.shields.io/badge/Start-getting%20started-2563EB?style=for-the-badge&labelColor=0B1220" alt="Getting started"></a>
-  <a href="docs/compatibility.md"><img src="https://img.shields.io/badge/Protocol-1-2563EB?style=for-the-badge&labelColor=0B1220" alt="Protocol 1"></a>
+  <a href="https://visor.macedonga.com/developers/docs/"><img src="https://img.shields.io/badge/Docs-read%20the%20guide-2563EB?style=for-the-badge&labelColor=0B1220" alt="Documentation"></a>
+  <a href="https://visor.macedonga.com/developers/docs/getting-started/"><img src="https://img.shields.io/badge/Start-getting%20started-2563EB?style=for-the-badge&labelColor=0B1220" alt="Getting started"></a>
+  <a href="https://visor.macedonga.com/developers/docs/compatibility/"><img src="https://img.shields.io/badge/Protocol-1-2563EB?style=for-the-badge&labelColor=0B1220" alt="Protocol 1"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache--2.0-2563EB?style=for-the-badge&labelColor=0B1220" alt="License: Apache-2.0"></a>
 </p>
 
@@ -119,7 +119,7 @@ if (onGlasses()) {
 }
 ```
 
-The [getting started guide](docs/getting-started.md) goes through an Android app step by step.
+The [getting started guide](https://visor.macedonga.com/developers/docs/getting-started/) goes through an Android app step by step.
 
 ## Test without the glasses
 
@@ -136,21 +136,21 @@ visor card card.json                      # put a card on the Display's Briefing
 
 No phone at hand: `visor fake` runs a fake Visor on your computer, with a Display simulator in the browser that
 draws your layouts and your Briefing cards. In unit tests, `FakeVisor` runs Visor inside your app's process. Both
-are in [Testing](docs/testing.md).
+are in [Testing](https://visor.macedonga.com/developers/docs/testing/).
 
 ## Documentation
 
-- [Overview](docs/overview.md): what the VDK is, how it compares with Meta's toolkit, and the roadmap
-- [Getting started](docs/getting-started.md), [Scopes and consent](docs/scopes-and-consent.md),
-  [The connection](docs/connection.md)
-- Capabilities: [Glasses](docs/glasses.md), [Camera and captures](docs/camera-and-captures.md),
-  [Neural Band](docs/neural-band.md), [Display](docs/display.md), [Briefing cards](docs/briefing-cards.md),
-  [Web apps on the Display](docs/web-apps.md), [Voice and the assistant](docs/voice-and-assistant.md),
-  [Settings](docs/settings.md)
-- [Errors](docs/errors.md), [Testing](docs/testing.md), [Compatibility](docs/compatibility.md)
-- Other languages: [JSON-RPC](docs/json-rpc.md), [The network door](docs/network.md)
-- [Porting from Meta's DAT](docs/porting-from-dat.md)
-- [AI tools](docs/ai-tools.md): the docs search, its MCP server, and guidance for coding assistants
+- [Overview](https://visor.macedonga.com/developers/docs/overview/): what the VDK is, how it compares with Meta's toolkit, and the roadmap
+- [Getting started](https://visor.macedonga.com/developers/docs/getting-started/), [Scopes and consent](https://visor.macedonga.com/developers/docs/scopes-and-consent/),
+  [The connection](https://visor.macedonga.com/developers/docs/connection/)
+- Capabilities: [Glasses](https://visor.macedonga.com/developers/docs/glasses/), [Camera and captures](https://visor.macedonga.com/developers/docs/camera-and-captures/),
+  [Neural Band](https://visor.macedonga.com/developers/docs/neural-band/), [Display](https://visor.macedonga.com/developers/docs/display/), [Briefing cards](https://visor.macedonga.com/developers/docs/briefing-cards/),
+  [Web apps on the Display](https://visor.macedonga.com/developers/docs/web-apps/), [Voice and the assistant](https://visor.macedonga.com/developers/docs/voice-and-assistant/),
+  [Settings](https://visor.macedonga.com/developers/docs/settings/)
+- [Errors](https://visor.macedonga.com/developers/docs/errors/), [Testing](https://visor.macedonga.com/developers/docs/testing/), [Compatibility](https://visor.macedonga.com/developers/docs/compatibility/)
+- Other languages: [JSON-RPC](https://visor.macedonga.com/developers/docs/json-rpc/), [The network door](https://visor.macedonga.com/developers/docs/network/)
+- [Porting from Meta's DAT](https://visor.macedonga.com/developers/docs/porting-from-dat/)
+- [AI tools](https://visor.macedonga.com/developers/docs/ai-tools/): the docs search, its MCP server, and guidance for coding assistants
 
 ## Packages
 
@@ -167,7 +167,7 @@ are in [Testing](docs/testing.md).
 
 An app built against any VDK release keeps working with every later Visor, and a newer app works with an older
 Visor as far as that Visor goes. The build enforces this against the last release: see
-[Compatibility](docs/compatibility.md).
+[Compatibility](https://visor.macedonga.com/developers/docs/compatibility/).
 
 ## License
 

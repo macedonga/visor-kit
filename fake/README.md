@@ -29,4 +29,4 @@ dependencies {
 
 ## Read more
 
-[Testing](../docs/testing.md).
+[Testing](https://visor.macedonga.com/developers/docs/testing/).

@@ -35,4 +35,4 @@ put its `bin` folder on your PATH. From a clone: `./gradlew :cli:installDist`, t
 
 ## Read more
 
-[Testing](../../docs/testing.md).
+[Testing](https://visor.macedonga.com/developers/docs/testing/).

@@ -34,9 +34,18 @@ dependencies {
     runtimeOnly(libs.slf4j.nop)
 }
 
-// The docs ride in the command for `visor docs` and `visor docs-mcp`, with an index of their pages.
+// The docs ride in the command for `visor docs` and `visor docs-mcp`, with an index of their pages. They live in the
+// site repo, visor-site, checked out beside this one; -PvdkDocs points elsewhere.
 val docsResources = tasks.register<Sync>("docsResources") {
-    from(rootProject.file("docs")) {
+    // Locals, not script properties: the configuration cache cannot keep a reference to the script.
+    val docsDir = rootProject.file(providers.gradleProperty("vdkDocs").getOrElse("../visor-site/src/content/docs"))
+    val overview = docsDir.resolve("overview.md")
+    doFirst {
+        require(overview.isFile) {
+            "The VDK's docs are not at $docsDir: check out visor-site beside visor-kit, or pass -PvdkDocs=<its src/content/docs>."
+        }
+    }
+    from(docsDir) {
         include("*.md", "llms.txt")
         into("docs")
     }

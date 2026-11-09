@@ -44,4 +44,4 @@ Everything else, the fake glasses, band, Display, voice and live camera, comes f
 
 ## Read more
 
-[Testing](../docs/testing.md): the fake's every part, recorded feeds, and the `visor` command.
+[Testing](https://visor.macedonga.com/developers/docs/testing/): the fake's every part, recorded feeds, and the `visor` command.
