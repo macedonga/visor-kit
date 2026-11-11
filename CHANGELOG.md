@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Changed
+
+- The `visor` command's zip on each release carries a build provenance attestation:
+  `gh attestation verify visor-<version>.zip -R macedonga/visor-kit` shows the workflow and commit that built it.
+
 ## 0.1.1
 
 ### Changed
