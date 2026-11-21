@@ -225,8 +225,9 @@ public object Methods {
 
     /**
      * Returns the setting with [GlassesSetting.pending] true: the glasses report it again within seconds, on
-     * [Topics.SETTINGS_CHANGES]. Fails with [ErrorCode.INVALID_PARAMS], reason `unknown_key` or `invalid_value`, and
-     * with [ErrorCode.REFUSED], reason `read_only`, for a setting apps may not change.
+     * [Topics.SETTINGS_CHANGES]. Glasses with no settings store (audio-only ones) cannot report it: there the setting
+     * comes back with the new value and pending false. Fails with [ErrorCode.INVALID_PARAMS], reason `unknown_key` or
+     * `invalid_value`, and with [ErrorCode.REFUSED], reason `read_only`, for a setting apps may not change.
      */
     public val SETTINGS_SET: Method<SettingWrite, GlassesSetting> = Method(
         "settings.set", Scope.SETTINGS, 1,
